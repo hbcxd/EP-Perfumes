@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tienda de Perfumes</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Perfumería Premium & Panel de Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* === ESTILOS BASE (CSS) === */
+        /* === ESTILOS GLOBALES MINIMALISTAS === */
         * {
             margin: 0;
             padding: 0;
@@ -15,11 +15,13 @@
         }
         body {
             background-color: #ffffff;
-            color: #333333;
-            overflow-x: hidden;
+            color: #222222;
+        }
+        button, input, select, textarea {
+            font-family: inherit;
         }
 
-        /* === BARRA SUPERIOR === */
+        /* === TIENDA PÚBLICA === */
         header {
             display: flex;
             justify-content: space-between;
@@ -29,11 +31,9 @@
             border-bottom: 1px solid #eeeeee;
             position: sticky;
             top: 0;
-            z-index: 1000;
+            z-index: 100;
         }
-        .logo img {
-            height: 40px; /* Ajusta según el tamaño de tu LOGO.png */
-        }
+        .logo img { height: 40px; }
         .menu-btn {
             font-size: 24px;
             cursor: pointer;
@@ -47,28 +47,23 @@
             display: block;
             width: 25px;
             height: 2px;
-            background-color: #333333;
-            transition: 0.3s;
+            background-color: #222222;
         }
-
-        /* === MENÚ LATERAL PLEGABLE === */
         .side-menu {
             position: fixed;
             top: 0;
             right: -300px;
             width: 300px;
             height: 100vh;
-            background-color: #fafafa;
-            box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+            background-color: #ffffff;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.05);
             transition: right 0.3s ease;
-            z-index: 1001;
+            z-index: 200;
             padding: 60px 20px 20px;
             display: flex;
             flex-direction: column;
         }
-        .side-menu.active {
-            right: 0;
-        }
+        .side-menu.active { right: 0; }
         .close-btn {
             position: absolute;
             top: 20px;
@@ -80,241 +75,774 @@
         }
         .side-menu a {
             text-decoration: none;
-            color: #333333;
-            font-size: 1.2rem;
-            margin: 15px 0;
-            transition: color 0.2s;
-        }
-        .side-menu a:hover {
-            color: #888888;
-        }
-        .admin-btn {
-            margin-top: auto; /* Empuja el botón al fondo */
-            background-color: #333333;
-            color: #ffffff !important;
-            padding: 10px;
-            text-align: center;
-            border-radius: 4px;
+            color: #222222;
+            font-size: 1.1rem;
+            margin: 12px 0;
             cursor: pointer;
         }
-
-        /* === BANNER PUBLICITARIO === */
-        .banner {
-            background-color: #f9f9f9;
-            padding: 40px 20px;
+        .admin-link {
+            margin-top: auto;
+            background-color: #222222;
+            color: #ffffff !important;
+            padding: 12px;
             text-align: center;
-            border-bottom: 1px solid #eeeeee;
+            border-radius: 5px;
+            font-weight: 500;
         }
-        .banner h1 {
-            font-size: 2rem;
-            font-weight: 600;
-            margin-bottom: 10px;
+
+        .banner {
+            background-color: #fcfcfc;
+            padding: 50px 20px;
+            text-align: center;
+            border-bottom: 1px solid #f5f5f5;
         }
-        .banner p {
-            font-size: 1.1rem;
-            color: #555555;
-            max-width: 600px;
-            margin: 0 auto 15px auto;
-        }
-        .price-tag {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #111111;
-        }
+        .banner h1 { font-size: 2.2rem; font-weight: 600; margin-bottom: 8px; }
+        .banner p { color: #666666; max-width: 600px; margin: 0 auto 15px; font-size: 1rem; }
+        .price-tag { font-size: 1.2rem; font-weight: 600; }
         .promo-tag {
             display: inline-block;
-            background-color: #333333;
+            background-color: #222222;
             color: #ffffff;
-            padding: 5px 15px;
+            padding: 6px 16px;
             border-radius: 20px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             margin-top: 10px;
+            font-weight: 500;
         }
 
-        /* === CATÁLOGO === */
-        .catalogo {
-            padding: 40px 5%;
-            max-width: 1200px;
-            margin: 0 auto;
+        .catalogo { padding: 40px 5%; max-width: 1200px; margin: 0 auto; }
+        details { margin-bottom: 25px; border-bottom: 1px solid #f0f0f0; padding-bottom: 15px; }
+        summary { font-size: 1.4rem; font-weight: 500; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+        summary::after { content: '+'; font-weight: 300; }
+        details[open] summary::after { content: '−'; }
+        
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; margin-top: 20px; }
+        .product-card { border: 1px solid #eeeeee; padding: 15px; text-align: center; border-radius: 6px; }
+        .product-card .img-placeholder { width: 100%; aspect-ratio: 1/1; background-color: #fafafa; border-radius: 4px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; color: #cccccc; font-size: 0.8rem; border: 1px dashed #e0e0e0; }
+        .product-title { font-weight: 500; margin-bottom: 6px; }
+        .product-stock { font-size: 0.85rem; color: #888888; }
+        .no-products { color: #999999; font-style: italic; font-size: 0.9rem; }
+
+        /* === PANEL ADMINISTRATIVO === */
+        #adminPanel {
+            display: none; /* Oculto por defecto */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #ffffff;
+            z-index: 500;
+            overflow-y: auto;
+            padding: 30px 5%;
         }
-        details {
-            margin-bottom: 20px;
-            border-bottom: 1px solid #eeeeee;
-            padding-bottom: 15px;
-        }
-        summary {
-            font-size: 1.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            list-style: none; /* Elimina la flecha por defecto */
+        .admin-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 2px solid #222222;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
         }
-        summary::-webkit-details-marker {
-            display: none; /* Para navegadores basados en webkit */
+        .admin-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #eeeeee;
+            padding-bottom: 10px;
+            overflow-x: auto;
         }
-        summary::after {
-            content: '+';
-            font-size: 1.5rem;
-            font-weight: 300;
-        }
-        details[open] summary::after {
-            content: '-';
-        }
-        
-        /* Cuadrícula de productos */
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        .product-card {
-            border: 1px solid #eeeeee;
-            padding: 15px;
-            text-align: center;
-            border-radius: 8px;
-            transition: box-shadow 0.3s;
-        }
-        .product-card:hover {
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-        .product-card img {
-            width: 100%;
-            height: auto;
-            background-color: #f0f0f0; /* Placeholder para la imagen */
-            aspect-ratio: 1/1;
-            object-fit: cover;
-            margin-bottom: 10px;
+        .tab-btn {
+            background: none;
+            border: 1px solid #dddddd;
+            padding: 8px 16px;
+            cursor: pointer;
             border-radius: 4px;
+            font-size: 0.9rem;
+            white-space: nowrap;
         }
-        .product-title {
-            font-weight: 600;
-            margin-bottom: 5px;
+        .tab-btn.active {
+            background-color: #222222;
+            color: #ffffff;
+            border-color: #222222;
         }
-        .product-stock {
-            font-size: 0.85rem;
-            color: #777777;
-        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Formularios y Tablas Admin */
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .card { background: #fafafa; padding: 20px; border-radius: 6px; border: 1px solid #eeeeee; margin-bottom: 20px; }
+        .card h3 { margin-bottom: 15px; font-weight: 600; font-size: 1.1rem; border-left: 3px solid #222222; padding-left: 8px; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.85rem; margin-bottom: 5px; color: #555555; }
+        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #cccccc; border-radius: 4px; font-size: 0.9rem; }
+        
+        .btn-submit { background-color: #222222; color: #ffffff; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; width: 100%; font-weight: 500; }
+        .btn-submit:hover { background-color: #444444; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
+        table th, table td { padding: 10px; border: 1px solid #eeeeee; text-align: left; }
+        table th { background-color: #f5f5f5; font-weight: 500; }
+        
+        .status-badge { padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; display: inline-block; }
+        .status-badge.pagada { background-color: #e2f5ea; color: #15803d; }
+        .status-badge.pendiente { background-color: #fef3c7; color: #b45309; }
+        
+        .btn-status { background: none; border: 1px solid #cccccc; padding: 2px 6px; border-radius: 3px; cursor: pointer; font-size: 0.8rem; margin-left: 5px; }
+
+        /* Métricas Financieras */
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .metric-box { background: #ffffff; border: 1px solid #eeeeee; padding: 15px; border-radius: 6px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .metric-box p { font-size: 0.8rem; color: #666666; margin-bottom: 5px; }
+        .metric-box h4 { font-size: 1.4rem; font-weight: 600; color: #222222; }
+
+        .top-list { list-style: none; }
+        .top-list li { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #eeeeee; }
+        
+        .logout-btn { background-color: #dc2626; color: #ffffff; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo">
-            <img src="LOGO.png" alt="Logo de la Perfumería">
+    <div id="publicSite">
+        <header>
+            <div class="logo">
+                <img src="LOGO.png" alt="LOGO">
+            </div>
+            <button class="menu-btn" onclick="toggleMenu()">
+                <span></span><span></span><span></span>
+            </button>
+        </header>
+
+        <nav class="side-menu" id="sideMenu">
+            <button class="close-btn" onclick="toggleMenu()">&times;</button>
+            <a onclick="navigateToCategory('cat-caballeros')">Caballeros</a>
+            <a onclick="navigateToCategory('cat-damas')">Damas</a>
+            <a onclick="navigateToCategory('cat-unisex')">Unisex</a>
+            <a onclick="navigateToCategory('cat-ninos')">Niños</a>
+            <a class="admin-link" onclick="solicitarAccesoAdmin()">Acceso Admin</a>
+        </nav>
+
+        <section class="banner">
+            <h1>Perfumes Premium 30ml</h1>
+            <p>Elaborados minuciosamente a base de finos aceites y feromonas de alta concentración para garantizar una fijación estelar.</p>
+            <div class="price-tag">Precio Unitario: $4 <span style="font-size:0.9rem; font-weight:300; color:#666;">(Tasa BCV)</span></div>
+            <div class="promo-tag">PROMO: 2x$5 en Divisas en efectivo</div>
+        </section>
+
+        <section class="catalogo">
+            <details id="cat-caballeros">
+                <summary>Caballeros</summary>
+                <div class="product-grid" id="grid-Caballeros"></div>
+            </details>
+            <details id="cat-damas">
+                <summary>Damas</summary>
+                <div class="product-grid" id="grid-Damas"></div>
+            </details>
+            <details id="cat-unisex">
+                <summary>Unisex</summary>
+                <div class="product-grid" id="grid-Unisex"></div>
+            </details>
+            <details id="cat-ninos">
+                <summary>Niños</summary>
+                <div class="product-grid" id="grid-Niños"></div>
+            </details>
+        </section>
+    </div>
+
+
+    <div id="adminPanel">
+        <div class="admin-header">
+            <h2>Panel de Control Estratégico</h2>
+            <div>
+                <span id="activeUserDisplay" style="font-weight: 500; margin-right: 15px;"></span>
+                <button class="logout-btn" onclick="cerrarSesionAdmin()">Cerrar Sesión</button>
+            </div>
         </div>
-        <button class="menu-btn" onclick="toggleMenu()" aria-label="Abrir menú">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-    </header>
 
-    <nav class="side-menu" id="sideMenu">
-        <button class="close-btn" onclick="toggleMenu()">&times;</button>
-        <a href="#caballeros" onclick="openCategory('cat-caballeros')">Caballeros</a>
-        <a href="#damas" onclick="openCategory('cat-damas')">Damas</a>
-        <a href="#unisex" onclick="openCategory('cat-unisex')">Unisex</a>
-        <a href="#ninos" onclick="openCategory('cat-ninos')">Niños</a>
-        
-        <a class="admin-btn" onclick="verificarAdmin()">Acceso Admin</a>
-    </nav>
+        <div class="admin-nav">
+            <button class="tab-btn active" onclick="switchTab('tab-finanzas', this)">1. Finanzas</button>
+            <button class="tab-btn" onclick="switchTab('tab-ventas', this)">2. Ventas</button>
+            <button class="tab-btn" onclick="switchTab('tab-inventario', this)">3. Inventario</button>
+            <button class="tab-btn" onclick="switchTab('tab-analitica', this)">4. Analítica & Egresos</button>
+            <button class="tab-btn" onclick="switchTab('tab-auditoria', this)">5. Registro de Auditoría</button>
+        </div>
 
-    <section class="banner">
-        <h1>Perfumes Premium 30ml</h1>
-        <p>A base de aceite y feromonas. Máxima fijación y estela irresistible.</p>
-        <div class="price-tag">Precio: $4 (Tasa BCV)</div>
-        <div class="promo-tag">¡Promo Especial! 2 x $5 (Pago en divisas)</div>
-    </section>
+        <div id="tab-finanzas" class="tab-content active">
+            <div class="metrics-grid">
+                <div class="metric-box"><p>Ventas Totales</p><h4 id="m-ventas">$0.00</h4></div>
+                <div class="metric-box"><p>Costo de Inventario</p><h4 id="m-costos">$0.00</h4></div>
+                <div class="metric-box"><p>Retiros Totales</p><h4 id="m-retiros">$0.00</h4></div>
+                <div class="metric-box"><p>Reinversiones</p><h4 id="m-reinversiones">$0.00</h4></div>
+                <div class="metric-box" style="background:#f4fbf7;"><p>Ganancia Neta</p><h4 id="m-ganancia" style="color:#16a34a;">$0.00</h4></div>
+            </div>
+            <div class="card">
+                <h3>Resumen Financiero del Negocio</h3>
+                <p style="font-size:0.9rem; color:#555;">Este panel calcula automáticamente los ingresos de ventas marcadas como <span class="status-badge pagada">Pagada</span> minus los costos de producción y los retiros declarados.</p>
+            </div>
+        </div>
 
-    <section class="catalogo">
-        
-        <details id="cat-caballeros">
-            <summary>Caballeros</summary>
-            <div class="product-grid">
-                <div class="product-card">
-                    <img src="perfume-placeholder.jpg" alt="Perfume Caballero 1">
-                    <div class="product-title">Aroma Maderoso</div>
-                    <div class="product-stock">Stock: 15 unidades</div>
+        <div id="tab-ventas" class="tab-content">
+            <div class="grid-2">
+                <div class="card">
+                    <h3>Registrar Nueva Venta</h3>
+                    <form id="saleForm" onsubmit="registrarVenta(event)">
+                        <div class="form-group">
+                            <label>Nombre del Cliente</label>
+                            <input type="text" id="saleClient" required placeholder="Ej. Juan Pérez">
+                        </div>
+                        <div class="form-group">
+                            <label>Seleccionar Perfume</label>
+                            <select id="salePerfumeSelect" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Cantidad</label>
+                            <input type="number" id="saleQty" min="1" required placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Estatus de Pago</label>
+                            <select id="saleStatus">
+                                <option value="Pendiente">Pendiente por Pagar</option>
+                                <option value="Pagada">Pagada</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-submit">Procesar Venta</button>
+                    </form>
                 </div>
-                <div class="product-card">
-                    <img src="perfume-placeholder.jpg" alt="Perfume Caballero 2">
-                    <div class="product-title">Cítrico Intenso</div>
-                    <div class="product-stock">Stock: 8 unidades</div>
+                <div class="card" style="grid-column: span 2;">
+                    <h3>Historial y Libro de Ventas</h3>
+                    <div style="overflow-x:auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Cliente</th>
+                                    <th>Perfume</th>
+                                    <th>Cant.</th>
+                                    <th>Estatus</th>
+                                    <th>Registrado Por</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salesTableBody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </details>
+        </div>
 
-        <details id="cat-damas">
-            <summary>Damas</summary>
-            <div class="product-grid">
-                <div class="product-card">
-                    <img src="perfume-placeholder.jpg" alt="Perfume Dama 1">
-                    <div class="product-title">Floral Dulce</div>
-                    <div class="product-stock">Stock: 22 unidades</div>
+        <div id="tab-inventario" class="tab-content">
+            <div class="grid-2">
+                <div class="card">
+                    <h3>Ingresar / Actualizar Perfume</h3>
+                    <form id="perfumeForm" onsubmit="registrarPerfume(event)">
+                        <div class="form-group">
+                            <label>Nombre del Perfume</label>
+                            <input type="text" id="perfumeName" required placeholder="Ej. Amaderado Intenso">
+                        </div>
+                        <div class="form-group">
+                            <label>Categoría</label>
+                            <select id="perfumeCategory">
+                                <option value="Caballeros">Caballeros</option>
+                                <option value="Damas">Damas</option>
+                                <option value="Unisex">Unisex</option>
+                                <option value="Niños">Niños</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Cantidad (Stock Inicial / Añadir)</label>
+                            <input type="number" id="perfumeStock" min="0" required placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Costo Interno ($)</label>
+                            <input type="number" id="perfumeCost" step="0.01" min="0" required placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Precio Venta Público ($)</label>
+                            <input type="number" id="perfumePrice" step="0.01" min="0" required placeholder="4.00">
+                        </div>
+                        <button type="submit" class="btn-submit">Guardar en Inventario</button>
+                    </form>
+                </div>
+                <div class="card">
+                    <h3>Existencias en Almacén</h3>
+                    <div style="overflow-x:auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Categoría</th>
+                                    <th>Stock</th>
+                                    <th>Costo Int.</th>
+                                    <th>PVP</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventoryTableBody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </details>
+        </div>
 
-        <details id="cat-unisex">
-            <summary>Unisex</summary>
-            <div class="product-grid">
-                <div class="product-card">
-                    <img src="perfume-placeholder.jpg" alt="Perfume Unisex 1">
-                    <div class="product-title">Frescura Total</div>
-                    <div class="product-stock">Stock: 5 unidades</div>
+        <div id="tab-analitica" class="tab-content">
+            <div class="grid-2">
+                <div class="card">
+                    <h3>Top 10 Perfumes Más Vendidos</h3>
+                    <ul class="top-list" id="topPerfumesList"></ul>
+                </div>
+                <div class="card">
+                    <h3>Registrar Salida de Dinero (Egresos)</h3>
+                    <form id="withdrawalForm" onsubmit="registrarEgreso(event)">
+                        <div class="form-group">
+                            <label>Monto ($)</label>
+                            <input type="number" id="wAmount" step="0.01" min="0.01" required placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo de Flujo</label>
+                            <select id="wType">
+                                <option value="Retiro">Retiro Personal</option>
+                                <option value="Reinversión">Reinversión en Materia Prima / Insumos</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Anotación / Justificación</label>
+                            <textarea id="wReason" rows="3" required placeholder="Explica detalladamente la razón de la salida de dinero..." style="width:100%; padding:8px; border:1px solid #cccccc; border-radius:4px; font-size:0.9rem;"></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">Registrar Salida</button>
+                    </form>
+                </div>
+                <div class="card" style="grid-column: span 2;">
+                    <h3>Libro de Egresos Declarados</h3>
+                    <div style="overflow-x:auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Tipo</th>
+                                    <th>Monto</th>
+                                    <th>Motivo / Justificación</th>
+                                    <th>Autorizado Por</th>
+                                </tr>
+                            </thead>
+                            <tbody id="withdrawalsTableBody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </details>
+        </div>
 
-        <details id="cat-ninos">
-            <summary>Niños</summary>
-            <div class="product-grid">
-                <div class="product-card">
-                    <img src="perfume-placeholder.jpg" alt="Perfume Niño 1">
-                    <div class="product-title">Colonia Suave</div>
-                    <div class="product-stock">Stock: 10 unidades</div>
+        <div id="tab-auditoria" class="tab-content">
+            <div class="card">
+                <h3>Panel de Control Visual de Accesos y Cambios</h3>
+                <p style="font-size:0.85rem; color:#666; margin-bottom:15px;">Historial absoluto e inalterable de operaciones realizadas dentro de la plataforma administrativa.</p>
+                <div style="overflow-x:auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha e Hora</th>
+                                <th>Usuario Responsable</th>
+                                <th>Acción Ejecutada</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auditTableBody"></tbody>
+                    </table>
                 </div>
             </div>
-        </details>
-
-    </section>
+        </div>
+    </div>
 
     <script>
-        // Función para abrir y cerrar el menú lateral
-        function toggleMenu() {
-            const menu = document.getElementById('sideMenu');
-            // Añade o quita la clase 'active' para mover el menú
-            menu.classList.toggle('active');
-        }
+        // --- BASE DE DATOS LOCAL (ESTADO) ---
+        let appState = {
+            perfumes: [],
+            sales: [],
+            withdrawals: [],
+            logs: [],
+            currentUser: null
+        };
 
-        // Función para abrir una categoría desde el menú
-        function openCategory(id) {
-            // Cerramos el menú lateral primero
-            toggleMenu();
-            
-            // Abrimos la categoría (el elemento <details>)
-            const category = document.getElementById(id);
-            category.open = true; // El atributo 'open' despliega la categoría
-            
-            // Hacemos scroll hacia la categoría suavemente
-            category.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
-        // Función para validar el acceso del administrador
-        function verificarAdmin() {
-            const claveIngresada = prompt("Ingrese la clave de acceso de administrador:");
-            
-            if (claveIngresada === "EP-030699") {
-                alert("Acceso concedido. Redirigiendo a la página de administrador...");
-                // Aquí simulamos la redirección a otra página llamada "admin.html"
-                // window.location.href = "admin.html";
-            } else if (claveIngresada !== null) {
-                // Si el usuario no canceló, pero la clave es incorrecta
-                alert("Clave incorrecta. Acceso denegado.");
+        // Inicialización del sistema
+        window.onload = function() {
+            loadFromLocalStorage();
+            if(appState.perfumes.length === 0) {
+                // Seed de datos iniciales si está vacío para que no se vea pelado
+                appState.perfumes = [
+                    { id: "p1", name: "Esencia Maderosa F1", category: "Caballeros", stock: 12, cost: 1.5, price: 4.0, soldQuantity: 4 },
+                    { id: "p2", name: "Floral Dulce F4", category: "Damas", stock: 20, cost: 1.5, price: 4.0, soldQuantity: 8 },
+                    { id: "p3", name: "Frescura Cítrica U2", category: "Unisex", stock: 8, cost: 1.6, price: 4.0, soldQuantity: 2 }
+                ];
+                saveToLocalStorage();
             }
+            renderAll();
+        };
+
+        function saveToLocalStorage() {
+            localStorage.setItem('perfume_shop_state', JSON.stringify(appState));
+        }
+
+        function loadFromLocalStorage() {
+            const data = localStorage.getItem('perfume_shop_state');
+            if(data) {
+                appState = JSON.parse(data);
+            }
+        }
+
+        // --- NAVEGACIÓN TIENDA ---
+        function toggleMenu() {
+            document.getElementById('sideMenu').classList.toggle('active');
+        }
+
+        function navigateToCategory(id) {
+            toggleMenu();
+            const element = document.getElementById(id);
+            if(element) {
+                element.open = true;
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // --- AUTENTICACIÓN DUAL ---
+        function solicitarAccesoAdmin() {
+            toggleMenu();
+            const password = prompt("Centro de Control - Ingrese su clave de acceso:");
+            if (!password) return;
+
+            if (password === "EP-030699") {
+                appState.currentUser = "Víctor";
+                registrarLog("Inicio de sesión exitoso al panel de administración.");
+                abrirPanelAdmin();
+            } else if (password === "AP-20092024") {
+                appState.currentUser = "Kika";
+                registrarLog("Inicio de sesión exitoso al panel de administración.");
+                abrirPanelAdmin();
+            } else {
+                alert("Clave de seguridad incorrecta. Acceso denegado.");
+            }
+        }
+
+        function abrirPanelAdmin() {
+            document.getElementById('publicSite').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            document.getElementById('activeUserDisplay').innerText = `Operador: ${appState.currentUser}`;
+            renderAllAdmin();
+        }
+
+        function cerrarSesionAdmin() {
+            registrarLog("Cierre de sesión del panel administrativo.");
+            appState.currentUser = null;
+            saveToLocalStorage();
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('publicSite').style.display = 'block';
+            renderAll();
+        }
+
+        // --- SISTEMA DE LOGS / AUDITORÍA ---
+        function registrarLog(accion) {
+            const now = new Date();
+            const logEntry = {
+                timestamp: now.toLocaleString(),
+                user: appState.currentUser || "Sistema",
+                action: accion
+            };
+            appState.logs.unshift(logEntry); // Insertar al inicio
+            saveToLocalStorage();
+        }
+
+        // --- CONTROL DE PESTAÑAS ADMIN ---
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+            renderAllAdmin();
+        }
+
+        // --- MOTOR DE RENDERS ---
+        function renderAll() {
+            renderPublicCatalog();
+        }
+
+        function renderAllAdmin() {
+            renderPublicCatalog(); // Sincroniza la tienda publica siempre
+            renderFinanzas();
+            renderVentasTab();
+            renderInventarioTab();
+            renderAnaliticaTab();
+            renderAuditoriaTab();
+        }
+
+        // Catálogo Público Dinámico
+        function renderPublicCatalog() {
+            const categories = ['Caballeros', 'Damas', 'Unisex', 'Niños'];
+            categories.forEach(cat => {
+                const grid = document.getElementById(`grid-${cat}`);
+                grid.innerHTML = '';
+                const filtered = appState.perfumes.filter(p => p.category === cat);
+                
+                if(filtered.length === 0) {
+                    grid.innerHTML = '<p class="no-products">No hay perfumes registrados en esta categoría.</p>';
+                    return;
+                }
+
+                filtered.forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.innerHTML = `
+                        <div class="img-placeholder">30 ml (Aceite)</div>
+                        <div class="product-title">${p.name}</div>
+                        <div class="product-stock">Disponibles: ${p.stock} unds</div>
+                    `;
+                    grid.appendChild(card);
+                });
+            });
+        }
+
+        // Pestaña 1: Finanzas Calculadas de forma agregada
+        function renderFinanzas() {
+            let totalVentas = 0;
+            let totalCostos = 0;
+            let totalRetiros = 0;
+            let totalReinversiones = 0;
+
+            // Calcular ingresos solo de ventas Pagadas
+            appState.sales.forEach(s => {
+                if(s.status === 'Pagada') {
+                    totalVentas += (s.quantity * s.price);
+                    // El costo asociado a lo vendido para medir la rentabilidad del stock movido
+                    totalCostos += (s.quantity * s.cost);
+                }
+            });
+
+            // Egresos directos
+            appState.withdrawals.forEach(w => {
+                if(w.type === 'Retiro') totalRetiros += w.amount;
+                if(w.type === 'Reinversión') totalReinversiones += w.amount;
+            });
+
+            let gananciaNeta = totalVentas - totalCostos - totalRetiros - totalReinversiones;
+
+            document.getElementById('m-ventas').innerText = `$${totalVentas.toFixed(2)}`;
+            document.getElementById('m-costos').innerText = `$${totalCostos.toFixed(2)}`;
+            document.getElementById('m-retiros').innerText = `$${totalRetiros.toFixed(2)}`;
+            document.getElementById('m-reinversiones').innerText = `$${totalReinversiones.toFixed(2)}`;
+            
+            const gBox = document.getElementById('m-ganancia');
+            gBox.innerText = `$${gananciaNeta.toFixed(2)}`;
+            gBox.style.color = gananciaNeta >= 0 ? '#16a34a' : '#dc2626';
+        }
+
+        // Pestaña 2: Ventas
+        function renderVentasTab() {
+            // Rellenar select de perfumes con stock > 0
+            const select = document.getElementById('salePerfumeSelect');
+            select.innerHTML = '<option value="">-- Seleccione Producto --</option>';
+            appState.perfumes.forEach(p => {
+                select.innerHTML += `<option value="${p.id}">${p.name} (Stock: ${p.stock})</option>`;
+            });
+
+            // Rellenar tabla
+            const tbody = document.getElementById('salesTableBody');
+            tbody.innerHTML = '';
+            appState.sales.forEach(s => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${s.date}</td>
+                    <td><strong>${s.client}</strong></td>
+                    <td>${s.perfumeName}</td>
+                    <td>${s.quantity}</td>
+                    <td>
+                        <span class="status-badge ${s.status.toLowerCase()}">${s.status}</span>
+                        <button class="btn-status" onclick="toggleStatusVenta('${s.id}')">Cambiar</button>
+                    </td>
+                    <td>${s.user}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Pestaña 3: Inventario
+        function renderInventarioTab() {
+            const tbody = document.getElementById('inventoryTableBody');
+            tbody.innerHTML = '';
+            appState.perfumes.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.category}</td>
+                    <td>${p.stock} unds</td>
+                    <td>$${p.cost.toFixed(2)}</td>
+                    <td>$${p.price.toFixed(2)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Pestaña 4: Analítica (Top 10 y Egresos)
+        function renderAnaliticaTab() {
+            // Top 10 mas vendidos
+            const topList = document.getElementById('topPerfumesList');
+            topList.innerHTML = '';
+            
+            // Clonamos y ordenamos de mayor a menor por cantidad vendida
+            let sorted = [...appState.perfumes].sort((a,b) => b.soldQuantity - a.soldQuantity).slice(0, 10);
+            
+            sorted.forEach((p, index) => {
+                topList.innerHTML += `<li><span>${index+1}. <strong>${p.name}</strong> (${p.category})</span> <span>${p.soldQuantity} unidades vendidas</span></li>`;
+            });
+
+            // Tabla egresos
+            const tbody = document.getElementById('withdrawalsTableBody');
+            tbody.innerHTML = '';
+            appState.withdrawals.forEach(w => {
+                tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${w.date}</td>
+                    <td><span class="status-badge" style="background-color:#f1f5f9; color:#334155;">${w.type}</span></td>
+                    <td style="color:#dc2626; font-weight:500;">-$${w.amount.toFixed(2)}</td>
+                    <td>${w.reason}</td>
+                    <td>${w.user}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Pestaña 5: Auditoría Visual
+        function renderAuditoriaTab() {
+            const tbody = document.getElementById('auditTableBody');
+            tbody.innerHTML = '';
+            appState.logs.forEach(l => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="color:#777; font-size:0.8rem;">${l.timestamp}</td>
+                    <td><span style="font-weight:600;">${l.user}</span></td>
+                    <td style="color:#444;">${l.action}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- ACCIONES FORMULARIOS ---
+
+        // Inventario: Guardar/Actualizar Perfume
+        function registrarPerfume(e) {
+            e.preventDefault();
+            const name = document.getElementById('perfumeName').value.trim();
+            const category = document.getElementById('perfumeCategory').value;
+            const stockToAdd = parseInt(document.getElementById('perfumeStock').value);
+            const cost = parseFloat(document.getElementById('perfumeCost').value);
+            const price = parseFloat(document.getElementById('perfumePrice').value);
+
+            // Buscar si ya existe por nombre
+            let itemExistente = appState.perfumes.find(p => p.name.toLowerCase() === name.toLowerCase());
+
+            if(itemExistente) {
+                // Si existe, se le suma directamente la cantidad deseada y se actualizan costos/precios si cambiaron
+                itemExistente.stock += stockToAdd;
+                itemExistente.cost = cost;
+                itemExistente.price = price;
+                registrarLog(`Actualizó inventario de '${name}'. Añadió ${stockToAdd} unds. Nuevo stock total: ${itemExistente.stock}`);
+            } else {
+                // Si es nuevo, se registra de cero
+                const newPerfume = {
+                    id: 'p_' + Date.now(),
+                    name: name,
+                    category: category,
+                    stock: stockToAdd,
+                    cost: cost,
+                    price: price,
+                    soldQuantity: 0
+                };
+                appState.perfumes.push(newPerfume);
+                registrarLog(`Ingresó un nuevo perfume al catálogo: '${name}' con ${stockToAdd} unds.`);
+            }
+
+            saveToLocalStorage();
+            document.getElementById('perfumeForm').reset();
+            renderAllAdmin();
+            alert("Inventario actualizado correctamente.");
+        }
+
+        // Ventas: Registrar Venta Manual
+        function registrarVenta(e) {
+            e.preventDefault();
+            const client = document.getElementById('saleClient').value.trim();
+            const perfumeId = document.getElementById('salePerfumeSelect').value;
+            const qty = parseInt(document.getElementById('saleQty').value);
+            const status = document.getElementById('saleStatus').value;
+
+            if(!perfumeId) { alert("Debe seleccionar un perfume."); return; }
+
+            const perfume = appState.perfumes.find(p => p.id === perfumeId);
+            
+            // Validación rigurosa de Stock disponible
+            if(qty > perfume.stock) {
+                alert(`Error: Stock insuficiente. Solo quedan ${perfume.stock} unidades de este perfume.`);
+                return;
+            }
+
+            // Deducir del stock e incrementar contador histórico de ventas
+            perfume.stock -= qty;
+            perfume.soldQuantity += qty;
+
+            const newSale = {
+                id: 's_' + Date.now(),
+                date: new Date().toLocaleDateString(),
+                client: client,
+                perfumeId: perfumeId,
+                perfumeName: perfume.name,
+                quantity: qty,
+                cost: perfume.cost,   // guardamos el costo al momento de venta
+                price: perfume.price, // guardamos el pvp al momento de venta
+                status: status,
+                user: appState.currentUser
+            };
+
+            appState.sales.unshift(newSale);
+            registrarLog(`Registró venta a '${client}' de ${qty} unds de '${perfume.name}' [Estatus: ${status}].`);
+            
+            saveToLocalStorage();
+            document.getElementById('saleForm').reset();
+            renderAllAdmin();
+            alert("Venta registrada y procesada con éxito.");
+        }
+
+        // Ventas: Alternar estado de Pago
+        function toggleStatusVenta(saleId) {
+            const sale = appState.sales.find(s => s.id === saleId);
+            if(sale) {
+                const viejoStatus = sale.status;
+                sale.status = sale.status === 'Pagada' ? 'Pendiente' : 'Pagada';
+                registrarLog(`Cambió el estatus de la venta del cliente '${sale.client}' de ${viejoStatus} a ${sale.status}.`);
+                saveToLocalStorage();
+                renderAllAdmin();
+            }
+        }
+
+        // Analítica: Registrar Egreso / Salidas de dinero
+        function registrarEgreso(e) {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('wAmount').value);
+            const type = document.getElementById('wType').value;
+            const reason = document.getElementById('wReason').value.trim();
+
+            const newWithdrawal = {
+                id: 'w_' + Date.now(),
+                date: new Date().toLocaleDateString(),
+                type: type,
+                amount: amount,
+                reason: reason,
+                user: appState.currentUser
+            };
+
+            appState.withdrawals.unshift(newWithdrawal);
+            registrarLog(`Declaró salida de caja por ${type}: -$${amount} debido a: "${reason}"`);
+            
+            saveToLocalStorage();
+            document.getElementById('withdrawalForm').reset();
+            renderAllAdmin();
+            alert("Egreso asentado en los libros contables.");
         }
     </script>
 </body>
