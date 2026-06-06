@@ -56,23 +56,113 @@
         .header-logo { max-width: 40px; height: auto; object-fit: contain; }
         .header-title h1 { font-size: 18px; letter-spacing: 1px; color: var(--oro); font-weight: 700; }
 
-        /* --- SHEADER SECCIÓN DERECHA --- */
+        /* --- HEADER SECCIÓN DERECHA --- */
         .header-right { display: flex; align-items: center; gap: 10px; }
-        .btn-carrito-top { background: var(--oro-suave); color: var(--oro); padding: 8px 12px; border-radius: 8px; font-size: 14px; border: 1px solid rgba(197,160,89,0.2); font-weight: 600; }
+        .btn-carrito-top { background: var(--oro-suave); color: var(--oro); padding: 8px 12px; border-radius: 8px; font-size: 14px; border: 1px solid rgba(197,160,89,0.2); font-weight: 600; text-decoration: none; }
 
         /* --- PÁGINA DE INICIO PÚBLICA --- */
         #inicio-publico { display: block; max-width: 1000px; margin: 0 auto; padding-bottom: 60px; }
-        .hero-publico { text-align: center; padding: 30px 20px; background: var(--bg-tarjetas); border-radius: 12px; border: 1px solid var(--borde); margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
-        .hero-publico img { max-width: 100px; height: auto; margin-bottom: 10px; }
-        .hero-publico h1 { color: var(--oro); letter-spacing: 2px; font-size: 26px; margin-bottom: 5px; }
-        .hero-publico p { color: var(--texto-mutado); font-size: 14px; }
-
-        .categoria-publica { background: var(--bg-tarjetas); padding: 25px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); border: 1px solid var(--borde); }
-        .categoria-publica h3 { font-size: 16px; color: var(--texto-oscuro); border-left: 4px solid var(--oro); padding-left: 10px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
         
+        /* BANNER DE PROMOCIÓN LLAMATIVO */
+        .promo-banner {
+            background: var(--bg-tarjetas);
+            border-radius: 16px;
+            border: 1px solid var(--borde);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+            overflow: hidden;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+        @media (min-width: 768px) {
+            .promo-banner { grid-template-columns: 1fr 1fr; }
+        }
+        .promo-imagen-side {
+            background-color: var(--oro-suave);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+        }
+        .promo-imagen-side img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .promo-info-side {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .promo-logo {
+            max-width: 80px;
+            height: auto;
+            margin-bottom: 15px;
+        }
+        .promo-badge-oferta {
+            background: linear-gradient(135deg, var(--oro), var(--oro-hover));
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 18px;
+            margin: 15px 0;
+            box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3);
+            letter-spacing: 0.5px;
+        }
+        .promo-condiciones {
+            font-size: 13px;
+            color: var(--texto-mutado);
+            font-weight: 500;
+        }
+
+        /* ACORDEÓN DE CATEGORÍAS */
+        .categoria-publica { background: var(--bg-tarjetas); padding: 0; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); border: 1px solid var(--borde); overflow: hidden; }
+        
+        .categoria-header {
+            width: 100%;
+            background: none;
+            border: none;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.2s;
+        }
+        .categoria-header:hover { background-color: var(--oro-suave); }
+        .categoria-header h3 { font-size: 16px; color: var(--texto-oscuro); border-left: 4px solid var(--oro); padding-left: 10px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0; }
+        .categoria-icon-flecha { font-size: 16px; color: var(--oro); transition: transform 0.3s ease; }
+        
+        .categoria-content {
+            padding: 0 20px 20px 20px;
+            display: block; /* Desplegado por defecto */
+        }
+        .categoria-publica.collapsed .categoria-content { display: none; }
+        .categoria-publica.collapsed .categoria-icon-flecha { transform: rotate(-90deg); }
+        
+        /* PRODUCTO CARD MEJORADO CON IMAGEN */
         .grid-productos { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
-        .producto-card { background: var(--bg-principal); border: 1px solid var(--borde); border-radius: 8px; padding: 15px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; min-height: 160px; }
-        .producto-card h4 { font-size: 15px; margin-bottom: 8px; color: var(--texto-oscuro); }
+        .producto-card { background: var(--bg-principal); border: 1px solid var(--borde); border-radius: 8px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; min-height: 280px; }
+        .producto-imagen-contenedor {
+            width: 100%;
+            height: 140px;
+            border-radius: 6px;
+            overflow: hidden;
+            background-color: #fff;
+            margin-bottom: 10px;
+            border: 1px solid var(--borde);
+        }
+        .producto-imagen-contenedor img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .producto-card h4 { font-size: 14px; margin-bottom: 6px; color: var(--texto-oscuro); min-height: 38px; display: flex; align-items: center; justify-content: center; }
         
         .acciones-compra { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
         .cant-selector { display: flex; justify-content: center; align-items: center; gap: 5px; }
@@ -85,7 +175,7 @@
         .stock-bajo { background: rgba(239, 68, 68, 0.1); color: var(--peligro); }
 
         /* --- PANEL DE COMPRAS / CARRITO --- */
-        .seccion-carrito { background: var(--bg-tarjetas); padding: 20px; border-radius: 12px; border: 1px solid var(--borde); margin-bottom: 25px; }
+        .seccion-carrito { background: var(--bg-tarjetas); padding: 20px; border-radius: 12px; border: 1px solid var(--borde); margin-bottom: 25px; margin-top: 30px; }
         .item-carrito { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--borde); font-size: 14px; }
 
         /* --- VENTANA MODAL RECIBO --- */
@@ -199,27 +289,65 @@
 </div>
 
 <div id="inicio-publico">
-    <div class="hero-publico">
-        <img src="IMAGENES/LOGO.png" alt="EP Perfume" onerror="this.style.display='none'">
-        <h1>EP PERFUME</h1>
-        <p>Selecciona tus fragancias preferidas y genera tu orden para WhatsApp</p>
+    
+    <div class="promo-banner">
+        <div class="promo-imagen-side">
+            <img src="IMAGENES/PROMO_PERFUMES.jpg" alt="Fragancias EP" onerror="this.src='IMAGENES/LOGO.png'">
+        </div>
+        <div class="promo-info-side">
+            <img src="IMAGENES/LOGO.png" alt="EP Perfumes Logo" class="promo-logo" onerror="this.style.display='none'">
+            <h2 style="border:none; margin-bottom:5px; font-size:24px; color:var(--texto-oscuro);">EP PERFUME</h2>
+            <p style="color: var(--texto-mutado); font-size: 14px;">Fragancias Exclusivas & Alta Durabilidad</p>
+            
+            <div class="promo-badge-oferta">
+                🔥 PROMO DIVISAS: 2 por $5
+            </div>
+            
+            <p style="font-size: 15px; font-weight: 600; color: var(--texto-oscuro); margin-bottom: 4px;">
+                Lleva 1 perfume por solo <span style="color:var(--oro); font-size:18px;">$4</span>
+            </p>
+            <p class="promo-condiciones">Arma tu combo con tus aromas favoritos y haz tu pedido por WhatsApp</p>
+        </div>
     </div>
 
-    <div class="categoria-publica">
-        <h3>Gentleman / Caballeros 🤵‍♂️</h3>
-        <div class="grid-productos" id="lista-caballeros"><p class="loading">Cargando...</p></div>
+    <div class="categoria-publica" id="cat-sec-caballeros">
+        <button class="categoria-header" onclick="toggleSeccionAcordeon('cat-sec-caballeros')">
+            <h3>Gentleman / Caballeros 🤵‍♂️</h3>
+            <span class="categoria-icon-flecha">▼</span>
+        </button>
+        <div class="categoria-content">
+            <div class="grid-productos" id="lista-caballeros"><p class="loading">Cargando...</p></div>
+        </div>
     </div>
-    <div class="categoria-publica">
-        <h3>Ladies / Damas 👩‍💼</h3>
-        <div class="grid-productos" id="lista-damas"><p class="loading">Cargando...</p></div>
+    
+    <div class="categoria-publica" id="cat-sec-damas">
+        <button class="categoria-header" onclick="toggleSeccionAcordeon('cat-sec-damas')">
+            <h3>Ladies / Damas 👩‍💼</h3>
+            <span class="categoria-icon-flecha">▼</span>
+        </button>
+        <div class="categoria-content">
+            <div class="grid-productos" id="lista-damas"><p class="loading">Cargando...</p></div>
+        </div>
     </div>
-    <div class="categoria-publica">
-        <h3>Unisex 🌟</h3>
-        <div class="grid-productos" id="lista-unisex"><p class="loading">Cargando...</p></div>
+    
+    <div class="categoria-publica" id="cat-sec-unisex">
+        <button class="categoria-header" onclick="toggleSeccionAcordeon('cat-sec-unisex')">
+            <h3>Unisex 🌟</h3>
+            <span class="categoria-icon-flecha">▼</span>
+        </button>
+        <div class="categoria-content">
+            <div class="grid-productos" id="lista-unisex"><p class="loading">Cargando...</p></div>
+        </div>
     </div>
-    <div class="categoria-publica">
-        <h3>Kids / Niños 👶👧</h3>
-        <div class="grid-productos" id="lista-ninos"><p class="loading">Cargando...</p></div>
+    
+    <div class="categoria-publica" id="cat-sec-ninos">
+        <button class="categoria-header" onclick="toggleSeccionAcordeon('cat-sec-ninos')">
+            <h3>Kids / Niños 👶👧</h3>
+            <span class="categoria-icon-flecha">▼</span>
+        </button>
+        <div class="categoria-content">
+            <div class="grid-productos" id="lista-ninos"><p class="loading">Cargando...</p></div>
+        </div>
     </div>
 
     <div id="modulo-carrito" class="seccion-carrito">
@@ -367,6 +495,14 @@
     let carrito = {}; 
     const CLAVE_ACCESO = "EP-030699";
     const NUMERO_WHATSAPP = "584121234567"; // CAMBIA ESTO por tu número real de WhatsApp con código de país
+
+    // --- INTERFAZ EXTENSIBLE ACORDEÓN ---
+    window.toggleSeccionAcordeon = function(idSeccion) {
+        const elemento = document.getElementById(idSeccion);
+        if (elemento) {
+            elemento.classList.toggle('collapsed');
+        }
+    };
 
     // --- MANEJO DE VISTAS Y ROLES ---
     window.toggleSidebar = function(abrir) {
@@ -588,7 +724,7 @@
     };
 
 
-    // --- MANEJO OPERATIVO FINANZAS / RETIROS / VENTAS (IGUAL A TU RESPALDO) ---
+    // --- MANEJO OPERATIVO FINANZAS / RETIROS / VENTAS ---
     window.registrarRetiro = function() {
         const monto = parseFloat(document.getElementById('retiro-monto').value) || 0;
         const nota = document.getElementById('retiro-nota').value.trim();
@@ -682,8 +818,8 @@
             const cat = p.categoria || 'Caballero';
 
             const badgeStock = stockVal > 0 
-                ? `<span class="stock-badge stock-disponible">Disponible en Almacén</span>`
-                : `<span class="stock-badge stock-bajo">Agotado Temporalmente</span>`;
+                ? `<span class="stock-badge stock-disponible">Disponible</span>`
+                : `<span class="stock-badge stock-bajo">Agotado</span>`;
 
             const btnAccion = stockVal > 0
                 ? `<div class="acciones-compra">
@@ -695,8 +831,17 @@
                    </div>`
                 : `<button class="btn-secondary" style="font-size:11px; padding:6px; cursor:not-allowed;" disabled>No Disponible</button>`;
 
+            // Identificar ruta de la imagen correspondiente por categoría
+            let rutaImagen = 'IMAGENES/CAT_CABALLERO.jpg';
+            if(cat === 'Dama') rutaImagen = 'IMAGENES/CAT_DAMA.jpg';
+            else if(cat === 'Unisex') rutaImagen = 'IMAGENES/CAT_UNISEX.jpg';
+            else if(cat === 'Nino') rutaImagen = 'IMAGENES/CAT_NINO.jpg';
+
             const cardHtml = `
                 <div class="producto-card">
+                    <div class="producto-imagen-contenedor">
+                        <img src="${rutaImagen}" alt="${p.nombre}" onerror="this.src='IMAGENES/LOGO.png'">
+                    </div>
                     <div>
                         <h4>${p.nombre}</h4>
                         ${badgeStock}
@@ -711,10 +856,10 @@
             else if (cat === 'Nino') htmlNin += cardHtml;
         });
 
-        catCab.innerHTML = htmlCab || '<p style="color:var(--texto-mutado); font-size:12px;">Sin fragancias en stock</p>';
-        catDam.innerHTML = htmlDam || '<p style="color:var(--texto-mutado); font-size:12px;">Sin fragancias en stock</p>';
-        catUni.innerHTML = htmlUni || '<p style="color:var(--texto-mutado); font-size:12px;">Sin fragancias en stock</p>';
-        catNin.innerHTML = htmlNin || '<p style="color:var(--texto-mutado); font-size:12px;">Sin fragancias en stock</p>';
+        catCab.innerHTML = htmlCab || '<p style="color:var(--texto-mutado); font-size:12px; text-align:center; padding:10px;">Sin fragancias en stock</p>';
+        catDam.innerHTML = htmlDam || '<p style="color:var(--texto-mutado); font-size:12px; text-align:center; padding:10px;">Sin fragancias en stock</p>';
+        catUni.innerHTML = htmlUni || '<p style="color:var(--texto-mutado); font-size:12px; text-align:center; padding:10px;">Sin fragancias en stock</p>';
+        catNin.innerHTML = htmlNin || '<p style="color:var(--texto-mutado); font-size:12px; text-align:center; padding:10px;">Sin fragancias en stock</p>';
     }
 
     function actualizarTablaInventario() {
