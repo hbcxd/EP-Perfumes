@@ -5,110 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfumería Premium & Panel de Control</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
+
     <style>
         /* === ESTILOS GLOBALES MINIMALISTAS === */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-        body {
-            background-color: #ffffff;
-            color: #222222;
-        }
-        button, input, select, textarea {
-            font-family: inherit;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #ffffff; color: #222222; }
+        button, input, select, textarea { font-family: inherit; }
 
         /* === TIENDA PÚBLICA === */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 5%;
-            background-color: #ffffff;
-            border-bottom: 1px solid #eeeeee;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background-color: #ffffff; border-bottom: 1px solid #eeeeee; position: sticky; top: 0; z-index: 100; }
         .logo img { height: 40px; }
-        .menu-btn {
-            font-size: 24px;
-            cursor: pointer;
-            background: none;
-            border: none;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        .menu-btn span {
-            display: block;
-            width: 25px;
-            height: 2px;
-            background-color: #222222;
-        }
-        .side-menu {
-            position: fixed;
-            top: 0;
-            right: -300px;
-            width: 300px;
-            height: 100vh;
-            background-color: #ffffff;
-            box-shadow: -5px 0 15px rgba(0,0,0,0.05);
-            transition: right 0.3s ease;
-            z-index: 200;
-            padding: 60px 20px 20px;
-            display: flex;
-            flex-direction: column;
-        }
+        .menu-btn { font-size: 24px; cursor: pointer; background: none; border: none; display: flex; flex-direction: column; gap: 5px; }
+        .menu-btn span { display: block; width: 25px; height: 2px; background-color: #222222; }
+        .side-menu { position: fixed; top: 0; right: -300px; width: 300px; height: 100vh; background-color: #ffffff; box-shadow: -5px 0 15px rgba(0,0,0,0.05); transition: right 0.3s ease; z-index: 200; padding: 60px 20px 20px; display: flex; flex-direction: column; }
         .side-menu.active { right: 0; }
-        .close-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 30px;
-            cursor: pointer;
-            border: none;
-            background: none;
-        }
-        .side-menu a {
-            text-decoration: none;
-            color: #222222;
-            font-size: 1.1rem;
-            margin: 12px 0;
-            cursor: pointer;
-        }
-        .admin-link {
-            margin-top: auto;
-            background-color: #222222;
-            color: #ffffff !important;
-            padding: 12px;
-            text-align: center;
-            border-radius: 5px;
-            font-weight: 500;
-        }
+        .close-btn { position: absolute; top: 20px; right: 20px; font-size: 30px; cursor: pointer; border: none; background: none; }
+        .side-menu a { text-decoration: none; color: #222222; font-size: 1.1rem; margin: 12px 0; cursor: pointer; }
+        .admin-link { margin-top: auto; background-color: #222222; color: #ffffff !important; padding: 12px; text-align: center; border-radius: 5px; font-weight: 500; }
 
-        .banner {
-            background-color: #fcfcfc;
-            padding: 50px 20px;
-            text-align: center;
-            border-bottom: 1px solid #f5f5f5;
-        }
+        .banner { background-color: #fcfcfc; padding: 50px 20px; text-align: center; border-bottom: 1px solid #f5f5f5; }
         .banner h1 { font-size: 2.2rem; font-weight: 600; margin-bottom: 8px; }
         .banner p { color: #666666; max-width: 600px; margin: 0 auto 15px; font-size: 1rem; }
         .price-tag { font-size: 1.2rem; font-weight: 600; }
-        .promo-tag {
-            display: inline-block;
-            background-color: #222222;
-            color: #ffffff;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            margin-top: 10px;
-            font-weight: 500;
-        }
+        .promo-tag { display: inline-block; background-color: #222222; color: #ffffff; padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; margin-top: 10px; font-weight: 500; }
 
         .catalogo { padding: 40px 5%; max-width: 1200px; margin: 0 auto; }
         details { margin-bottom: 25px; border-bottom: 1px solid #f0f0f0; padding-bottom: 15px; }
@@ -124,62 +46,25 @@
         .no-products { color: #999999; font-style: italic; font-size: 0.9rem; }
 
         /* === PANEL ADMINISTRATIVO === */
-        #adminPanel {
-            display: none; /* Oculto por defecto */
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: #ffffff;
-            z-index: 500;
-            overflow-y: auto;
-            padding: 30px 5%;
-        }
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #222222;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-        }
-        .admin-nav {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-            border-bottom: 1px solid #eeeeee;
-            padding-bottom: 10px;
-            overflow-x: auto;
-        }
-        .tab-btn {
-            background: none;
-            border: 1px solid #dddddd;
-            padding: 8px 16px;
-            cursor: pointer;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            white-space: nowrap;
-        }
-        .tab-btn.active {
-            background-color: #222222;
-            color: #ffffff;
-            border-color: #222222;
-        }
+        #adminPanel { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #ffffff; z-index: 500; overflow-y: auto; padding: 30px 5%; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #222222; padding-bottom: 15px; margin-bottom: 25px; }
+        .admin-nav { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid #eeeeee; padding-bottom: 10px; overflow-x: auto; }
+        .tab-btn { background: none; border: 1px solid #dddddd; padding: 8px 16px; cursor: pointer; border-radius: 4px; font-size: 0.9rem; white-space: nowrap; }
+        .tab-btn.active { background-color: #222222; color: #ffffff; border-color: #222222; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Formularios y Tablas Admin */
         .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
         .card { background: #fafafa; padding: 20px; border-radius: 6px; border: 1px solid #eeeeee; margin-bottom: 20px; }
         .card h3 { margin-bottom: 15px; font-weight: 600; font-size: 1.1rem; border-left: 3px solid #222222; padding-left: 8px; }
         
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 0.85rem; margin-bottom: 5px; color: #555555; }
-        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #cccccc; border-radius: 4px; font-size: 0.9rem; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #cccccc; border-radius: 4px; font-size: 0.9rem; }
         
         .btn-submit { background-color: #222222; color: #ffffff; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; width: 100%; font-weight: 500; }
         .btn-submit:hover { background-color: #444444; }
+        .btn-delete { background-color: #dc2626; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
         
         table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
         table th, table td { padding: 10px; border: 1px solid #eeeeee; text-align: left; }
@@ -188,10 +73,8 @@
         .status-badge { padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; display: inline-block; }
         .status-badge.pagada { background-color: #e2f5ea; color: #15803d; }
         .status-badge.pendiente { background-color: #fef3c7; color: #b45309; }
-        
         .btn-status { background: none; border: 1px solid #cccccc; padding: 2px 6px; border-radius: 3px; cursor: pointer; font-size: 0.8rem; margin-left: 5px; }
 
-        /* Métricas Financieras */
         .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 25px; }
         .metric-box { background: #ffffff; border: 1px solid #eeeeee; padding: 15px; border-radius: 6px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
         .metric-box p { font-size: 0.8rem; color: #666666; margin-bottom: 5px; }
@@ -199,7 +82,6 @@
 
         .top-list { list-style: none; }
         .top-list li { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #eeeeee; }
-        
         .logout-btn { background-color: #dc2626; color: #ffffff; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; }
     </style>
 </head>
@@ -207,12 +89,8 @@
 
     <div id="publicSite">
         <header>
-            <div class="logo">
-                <img src="LOGO.png" alt="LOGO">
-            </div>
-            <button class="menu-btn" onclick="toggleMenu()">
-                <span></span><span></span><span></span>
-            </button>
+            <div class="logo"><img src="LOGO.png" alt="LOGO"></div>
+            <button class="menu-btn" onclick="toggleMenu()"><span></span><span></span><span></span></button>
         </header>
 
         <nav class="side-menu" id="sideMenu">
@@ -232,25 +110,12 @@
         </section>
 
         <section class="catalogo">
-            <details id="cat-caballeros">
-                <summary>Caballeros</summary>
-                <div class="product-grid" id="grid-Caballeros"></div>
-            </details>
-            <details id="cat-damas">
-                <summary>Damas</summary>
-                <div class="product-grid" id="grid-Damas"></div>
-            </details>
-            <details id="cat-unisex">
-                <summary>Unisex</summary>
-                <div class="product-grid" id="grid-Unisex"></div>
-            </details>
-            <details id="cat-ninos">
-                <summary>Niños</summary>
-                <div class="product-grid" id="grid-Niños"></div>
-            </details>
+            <details id="cat-caballeros"><summary>Caballeros</summary><div class="product-grid" id="grid-Caballeros"></div></details>
+            <details id="cat-damas"><summary>Damas</summary><div class="product-grid" id="grid-Damas"></div></details>
+            <details id="cat-unisex"><summary>Unisex</summary><div class="product-grid" id="grid-Unisex"></div></details>
+            <details id="cat-ninos"><summary>Niños</summary><div class="product-grid" id="grid-Niños"></div></details>
         </section>
     </div>
-
 
     <div id="adminPanel">
         <div class="admin-header">
@@ -288,18 +153,9 @@
                 <div class="card">
                     <h3>Registrar Nueva Venta</h3>
                     <form id="saleForm" onsubmit="registrarVenta(event)">
-                        <div class="form-group">
-                            <label>Nombre del Cliente</label>
-                            <input type="text" id="saleClient" required placeholder="Ej. Juan Pérez">
-                        </div>
-                        <div class="form-group">
-                            <label>Seleccionar Perfume</label>
-                            <select id="salePerfumeSelect" required></select>
-                        </div>
-                        <div class="form-group">
-                            <label>Cantidad</label>
-                            <input type="number" id="saleQty" min="1" required placeholder="0">
-                        </div>
+                        <div class="form-group"><label>Nombre del Cliente</label><input type="text" id="saleClient" required></div>
+                        <div class="form-group"><label>Seleccionar Perfume</label><select id="salePerfumeSelect" required></select></div>
+                        <div class="form-group"><label>Cantidad</label><input type="number" id="saleQty" min="1" required></div>
                         <div class="form-group">
                             <label>Estatus de Pago</label>
                             <select id="saleStatus">
@@ -314,17 +170,7 @@
                     <h3>Historial y Libro de Ventas</h3>
                     <div style="overflow-x:auto;">
                         <table>
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Cliente</th>
-                                    <th>Perfume</th>
-                                    <th>Cant.</th>
-                                    <th>Estatus</th>
-                                    <th>Registrado Por</th>
-                                    <th>Acción</th>
-                                </tr>
-                            </thead>
+                            <thead><tr><th>Fecha</th><th>Cliente</th><th>Perfume</th><th>Cant.</th><th>Estatus</th><th>Usuario</th><th>Acción</th></tr></thead>
                             <tbody id="salesTableBody"></tbody>
                         </table>
                     </div>
@@ -336,11 +182,9 @@
             <div class="grid-2">
                 <div class="card">
                     <h3>Ingresar / Actualizar Perfume</h3>
+                    <p style="font-size: 0.8rem; margin-bottom: 10px; color: #666;">Si escribes un nombre que ya existe, se sumará el stock a ese perfume y se actualizará su precio/costo.</p>
                     <form id="perfumeForm" onsubmit="registrarPerfume(event)">
-                        <div class="form-group">
-                            <label>Nombre del Perfume</label>
-                            <input type="text" id="perfumeName" required placeholder="Ej. Amaderado Intenso">
-                        </div>
+                        <div class="form-group"><label>Nombre del Perfume</label><input type="text" id="perfumeName" required></div>
                         <div class="form-group">
                             <label>Categoría</label>
                             <select id="perfumeCategory">
@@ -350,34 +194,17 @@
                                 <option value="Niños">Niños</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>Cantidad (Stock Inicial / Añadir)</label>
-                            <input type="number" id="perfumeStock" min="0" required placeholder="0">
-                        </div>
-                        <div class="form-group">
-                            <label>Costo Interno ($)</label>
-                            <input type="number" id="perfumeCost" step="0.01" min="0" required placeholder="0.00">
-                        </div>
-                        <div class="form-group">
-                            <label>Precio Venta Público ($)</label>
-                            <input type="number" id="perfumePrice" step="0.01" min="0" required placeholder="4.00">
-                        </div>
+                        <div class="form-group"><label>Cantidad (Añadir Stock)</label><input type="number" id="perfumeStock" min="0" required placeholder="0"></div>
+                        <div class="form-group"><label>Costo Interno ($)</label><input type="number" id="perfumeCost" step="0.01" min="0" required></div>
+                        <div class="form-group"><label>Precio Venta Público ($)</label><input type="number" id="perfumePrice" step="0.01" min="0" required></div>
                         <button type="submit" class="btn-submit">Guardar en Inventario</button>
                     </form>
                 </div>
-                <div class="card">
-                    <h3>Existencias en Almacén</h3>
+                <div class="card" style="grid-column: span 2;">
+                    <h3>Existencias en Almacén (Conexión Firebase)</h3>
                     <div style="overflow-x:auto;">
                         <table>
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Categoría</th>
-                                    <th>Stock</th>
-                                    <th>Costo Int.</th>
-                                    <th>PVP</th>
-                                </tr>
-                            </thead>
+                            <thead><tr><th>Nombre</th><th>Categoría</th><th>Stock</th><th>Costo Int.</th><th>PVP</th><th>Gestión</th></tr></thead>
                             <tbody id="inventoryTableBody"></tbody>
                         </table>
                     </div>
@@ -394,10 +221,7 @@
                 <div class="card">
                     <h3>Registrar Salida de Dinero (Egresos)</h3>
                     <form id="withdrawalForm" onsubmit="registrarEgreso(event)">
-                        <div class="form-group">
-                            <label>Monto ($)</label>
-                            <input type="number" id="wAmount" step="0.01" min="0.01" required placeholder="0.00">
-                        </div>
+                        <div class="form-group"><label>Monto ($)</label><input type="number" id="wAmount" step="0.01" min="0.01" required></div>
                         <div class="form-group">
                             <label>Tipo de Flujo</label>
                             <select id="wType">
@@ -405,10 +229,7 @@
                                 <option value="Reinversión">Reinversión en Materia Prima / Insumos</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>Anotación / Justificación</label>
-                            <textarea id="wReason" rows="3" required placeholder="Explica detalladamente la razón de la salida de dinero..." style="width:100%; padding:8px; border:1px solid #cccccc; border-radius:4px; font-size:0.9rem;"></textarea>
-                        </div>
+                        <div class="form-group"><label>Justificación</label><textarea id="wReason" rows="3" required></textarea></div>
                         <button type="submit" class="btn-submit">Registrar Salida</button>
                     </form>
                 </div>
@@ -416,15 +237,7 @@
                     <h3>Libro de Egresos Declarados</h3>
                     <div style="overflow-x:auto;">
                         <table>
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Tipo</th>
-                                    <th>Monto</th>
-                                    <th>Motivo / Justificación</th>
-                                    <th>Autorizado Por</th>
-                                </tr>
-                            </thead>
+                            <thead><tr><th>Fecha</th><th>Tipo</th><th>Monto</th><th>Motivo / Justificación</th><th>Autorizado Por</th></tr></thead>
                             <tbody id="withdrawalsTableBody"></tbody>
                         </table>
                     </div>
@@ -435,16 +248,9 @@
         <div id="tab-auditoria" class="tab-content">
             <div class="card">
                 <h3>Panel de Control Visual de Accesos y Cambios</h3>
-                <p style="font-size:0.85rem; color:#666; margin-bottom:15px;">Historial absoluto e inalterable de operaciones realizadas dentro de la plataforma administrativa.</p>
                 <div style="overflow-x:auto;">
                     <table>
-                        <thead>
-                            <tr>
-                                <th>Fecha e Hora</th>
-                                <th>Usuario Responsable</th>
-                                <th>Acción Ejecutada</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Fecha e Hora</th><th>Usuario Responsable</th><th>Acción Ejecutada</th></tr></thead>
                         <tbody id="auditTableBody"></tbody>
                     </table>
                 </div>
@@ -453,279 +259,186 @@
     </div>
 
     <script>
-        // --- BASE DE DATOS LOCAL (ESTADO) ---
-        let appState = {
-            perfumes: [],
-            sales: [],
-            withdrawals: [],
-            logs: [],
-            currentUser: null
+        // 1. CONFIGURACIÓN DE FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyArphq3sSjhWWXr8w6I6f7UVGRMwaDp7i0",
+            authDomain: "ep-perfumes-92b9c.firebaseapp.com",
+            databaseURL: "https://ep-perfumes-92b9c-default-rtdb.firebaseio.com",
+            projectId: "ep-perfumes-92b9c",
+            storageBucket: "ep-perfumes-92b9c.firebasestorage.app",
+            messagingSenderId: "914809541616",
+            appId: "1:914809541616:web:d99ba79fa586355de24335",
+            measurementId: "G-3HL9NDKXKZ"
         };
 
-        // Inicialización del sistema
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Estado local temporal que se sincroniza con la nube
+        let appState = { perfumes: [], sales: [], withdrawals: [], logs: [] };
+        let currentUser = null; // Guardamos la sesión actual del usuario
+
         window.onload = function() {
-            loadFromLocalStorage();
-            if(appState.perfumes.length === 0) {
-                // Seed de datos iniciales si está vacío para que no se vea pelado
-                appState.perfumes = [
-                    { id: "p1", name: "Esencia Maderosa F1", category: "Caballeros", stock: 12, cost: 1.5, price: 4.0, soldQuantity: 4 },
-                    { id: "p2", name: "Floral Dulce F4", category: "Damas", stock: 20, cost: 1.5, price: 4.0, soldQuantity: 8 },
-                    { id: "p3", name: "Frescura Cítrica U2", category: "Unisex", stock: 8, cost: 1.6, price: 4.0, soldQuantity: 2 }
-                ];
-                saveToLocalStorage();
-            }
-            renderAll();
+            // 2. ESCUCHAR CAMBIOS EN TIEMPO REAL DESDE FIREBASE
+            db.ref('tienda').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if(data) {
+                    // Firebase convierte arrays a objetos a veces, usamos Object.values para estar seguros
+                    appState.perfumes = data.perfumes ? Object.values(data.perfumes) : [];
+                    appState.sales = data.sales ? Object.values(data.sales) : [];
+                    appState.withdrawals = data.withdrawals ? Object.values(data.withdrawals) : [];
+                    appState.logs = data.logs ? Object.values(data.logs) : [];
+                } else {
+                    // Si la base de datos está totalmente vacía (primera vez)
+                    saveToFirebase();
+                }
+                
+                // Refrescar la interfaz visual automáticamente cuando lleguen datos
+                renderAll();
+                if(document.getElementById('adminPanel').style.display === 'block') {
+                    renderAllAdmin();
+                }
+            });
         };
 
-        function saveToLocalStorage() {
-            localStorage.setItem('perfume_shop_state', JSON.stringify(appState));
-        }
-
-        function loadFromLocalStorage() {
-            const data = localStorage.getItem('perfume_shop_state');
-            if(data) {
-                appState = JSON.parse(data);
-            }
+        // 3. FUNCIÓN PARA SUBIR CAMBIOS A LA NUBE
+        function saveToFirebase() {
+            db.ref('tienda').set({
+                perfumes: appState.perfumes,
+                sales: appState.sales,
+                withdrawals: appState.withdrawals,
+                logs: appState.logs
+            });
         }
 
         // --- NAVEGACIÓN TIENDA ---
-        function toggleMenu() {
-            document.getElementById('sideMenu').classList.toggle('active');
-        }
-
+        function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); }
         function navigateToCategory(id) {
             toggleMenu();
-            const element = document.getElementById(id);
-            if(element) {
-                element.open = true;
-                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
+            const el = document.getElementById(id);
+            if(el) { el.open = true; el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
         }
 
-        // --- AUTENTICACIÓN DUAL ---
+        // --- AUTENTICACIÓN ---
         function solicitarAccesoAdmin() {
             toggleMenu();
             const password = prompt("Centro de Control - Ingrese su clave de acceso:");
             if (!password) return;
 
-            if (password === "EP-030699") {
-                appState.currentUser = "Víctor";
-                registrarLog("Inicio de sesión exitoso al panel de administración.");
-                abrirPanelAdmin();
-            } else if (password === "AP-20092024") {
-                appState.currentUser = "Kika";
-                registrarLog("Inicio de sesión exitoso al panel de administración.");
-                abrirPanelAdmin();
-            } else {
-                alert("Clave de seguridad incorrecta. Acceso denegado.");
-            }
+            if (password === "EP-030699") { currentUser = "Víctor"; abrirPanelAdmin(); } 
+            else if (password === "AP-20092024") { currentUser = "Kika"; abrirPanelAdmin(); } 
+            else { alert("Clave incorrecta."); }
         }
 
         function abrirPanelAdmin() {
             document.getElementById('publicSite').style.display = 'none';
             document.getElementById('adminPanel').style.display = 'block';
-            document.getElementById('activeUserDisplay').innerText = `Operador: ${appState.currentUser}`;
+            document.getElementById('activeUserDisplay').innerText = `Operador: ${currentUser}`;
+            registrarLog("Inicio de sesión exitoso al panel de administración.");
             renderAllAdmin();
         }
 
         function cerrarSesionAdmin() {
             registrarLog("Cierre de sesión del panel administrativo.");
-            appState.currentUser = null;
-            saveToLocalStorage();
+            currentUser = null;
             document.getElementById('adminPanel').style.display = 'none';
             document.getElementById('publicSite').style.display = 'block';
-            renderAll();
         }
 
-        // --- SISTEMA DE LOGS / AUDITORÍA ---
+        // --- AUDITORÍA Y LOGS ---
         function registrarLog(accion) {
+            if(!currentUser) return; // Si no hay usuario logueado, no registra el cambio (evita errores)
             const now = new Date();
-            const logEntry = {
-                timestamp: now.toLocaleString(),
-                user: appState.currentUser || "Sistema",
-                action: accion
-            };
-            appState.logs.unshift(logEntry); // Insertar al inicio
-            saveToLocalStorage();
+            appState.logs.unshift({ timestamp: now.toLocaleString(), user: currentUser, action: accion });
+            saveToFirebase(); // Guardar de inmediato en la nube
         }
 
-        // --- CONTROL DE PESTAÑAS ADMIN ---
         function switchTab(tabId, btn) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            
             document.getElementById(tabId).classList.add('active');
             btn.classList.add('active');
-            renderAllAdmin();
         }
 
-        // --- MOTOR DE RENDERS ---
-        function renderAll() {
-            renderPublicCatalog();
-        }
+        // --- MOTORES DE RENDERIZADO VISUAL ---
+        function renderAll() { renderPublicCatalog(); }
 
         function renderAllAdmin() {
-            renderPublicCatalog(); // Sincroniza la tienda publica siempre
-            renderFinanzas();
-            renderVentasTab();
-            renderInventarioTab();
-            renderAnaliticaTab();
-            renderAuditoriaTab();
+            renderFinanzas(); renderVentasTab(); renderInventarioTab(); renderAnaliticaTab(); renderAuditoriaTab();
         }
 
-        // Catálogo Público Dinámico
         function renderPublicCatalog() {
-            const categories = ['Caballeros', 'Damas', 'Unisex', 'Niños'];
-            categories.forEach(cat => {
+            ['Caballeros', 'Damas', 'Unisex', 'Niños'].forEach(cat => {
                 const grid = document.getElementById(`grid-${cat}`);
                 grid.innerHTML = '';
                 const filtered = appState.perfumes.filter(p => p.category === cat);
-                
-                if(filtered.length === 0) {
-                    grid.innerHTML = '<p class="no-products">No hay perfumes registrados en esta categoría.</p>';
-                    return;
-                }
-
+                if(filtered.length === 0) { grid.innerHTML = '<p class="no-products">No hay perfumes registrados.</p>'; return; }
                 filtered.forEach(p => {
-                    const card = document.createElement('div');
-                    card.className = 'product-card';
-                    card.innerHTML = `
-                        <div class="img-placeholder">30 ml (Aceite)</div>
-                        <div class="product-title">${p.name}</div>
-                        <div class="product-stock">Disponibles: ${p.stock} unds</div>
-                    `;
-                    grid.appendChild(card);
+                    grid.innerHTML += `<div class="product-card"><div class="img-placeholder">30 ml (Aceite)</div><div class="product-title">${p.name}</div><div class="product-stock">Disponibles: ${p.stock} unds</div></div>`;
                 });
             });
         }
 
-        // Pestaña 1: Finanzas Calculadas de forma agregada
         function renderFinanzas() {
-            let totalVentas = 0;
-            let totalCostos = 0;
-            let totalRetiros = 0;
-            let totalReinversiones = 0;
+            let tVentas = 0, tCostos = 0, tRetiros = 0, tReinversiones = 0;
+            appState.sales.forEach(s => { if(s.status === 'Pagada') { tVentas += (s.quantity * s.price); tCostos += (s.quantity * s.cost); } });
+            appState.withdrawals.forEach(w => { if(w.type === 'Retiro') tRetiros += w.amount; if(w.type === 'Reinversión') tReinversiones += w.amount; });
+            let gNeta = tVentas - tCostos - tRetiros - tReinversiones;
 
-            // Calcular ingresos solo de ventas Pagadas
-            appState.sales.forEach(s => {
-                if(s.status === 'Pagada') {
-                    totalVentas += (s.quantity * s.price);
-                    // El costo asociado a lo vendido para medir la rentabilidad del stock movido
-                    totalCostos += (s.quantity * s.cost);
-                }
-            });
-
-            // Egresos directos
-            appState.withdrawals.forEach(w => {
-                if(w.type === 'Retiro') totalRetiros += w.amount;
-                if(w.type === 'Reinversión') totalReinversiones += w.amount;
-            });
-
-            let gananciaNeta = totalVentas - totalCostos - totalRetiros - totalReinversiones;
-
-            document.getElementById('m-ventas').innerText = `$${totalVentas.toFixed(2)}`;
-            document.getElementById('m-costos').innerText = `$${totalCostos.toFixed(2)}`;
-            document.getElementById('m-retiros').innerText = `$${totalRetiros.toFixed(2)}`;
-            document.getElementById('m-reinversiones').innerText = `$${totalReinversiones.toFixed(2)}`;
-            
-            const gBox = document.getElementById('m-ganancia');
-            gBox.innerText = `$${gananciaNeta.toFixed(2)}`;
-            gBox.style.color = gananciaNeta >= 0 ? '#16a34a' : '#dc2626';
+            document.getElementById('m-ventas').innerText = `$${tVentas.toFixed(2)}`;
+            document.getElementById('m-costos').innerText = `$${tCostos.toFixed(2)}`;
+            document.getElementById('m-retiros').innerText = `$${tRetiros.toFixed(2)}`;
+            document.getElementById('m-reinversiones').innerText = `$${tReinversiones.toFixed(2)}`;
+            document.getElementById('m-ganancia').innerText = `$${gNeta.toFixed(2)}`;
+            document.getElementById('m-ganancia').style.color = gNeta >= 0 ? '#16a34a' : '#dc2626';
         }
 
-        // Pestaña 2: Ventas
         function renderVentasTab() {
-            // Rellenar select de perfumes con stock > 0
             const select = document.getElementById('salePerfumeSelect');
             select.innerHTML = '<option value="">-- Seleccione Producto --</option>';
-            appState.perfumes.forEach(p => {
-                select.innerHTML += `<option value="${p.id}">${p.name} (Stock: ${p.stock})</option>`;
-            });
+            appState.perfumes.forEach(p => { if(p.stock > 0) select.innerHTML += `<option value="${p.id}">${p.name} (Stock: ${p.stock})</option>`; });
 
-            // Rellenar tabla
             const tbody = document.getElementById('salesTableBody');
             tbody.innerHTML = '';
             appState.sales.forEach(s => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${s.date}</td>
-                    <td><strong>${s.client}</strong></td>
-                    <td>${s.perfumeName}</td>
-                    <td>${s.quantity}</td>
-                    <td>
-                        <span class="status-badge ${s.status.toLowerCase()}">${s.status}</span>
-                        <button class="btn-status" onclick="toggleStatusVenta('${s.id}')">Cambiar</button>
-                    </td>
-                    <td>${s.user}</td>
-                `;
-                tbody.appendChild(tr);
+                tbody.innerHTML += `<tr><td>${s.date}</td><td><strong>${s.client}</strong></td><td>${s.perfumeName}</td><td>${s.quantity}</td><td><span class="status-badge ${s.status.toLowerCase()}">${s.status}</span><button class="btn-status" onclick="toggleStatusVenta('${s.id}')">Cambiar</button></td><td>${s.user}</td></tr>`;
             });
         }
 
-        // Pestaña 3: Inventario
         function renderInventarioTab() {
             const tbody = document.getElementById('inventoryTableBody');
             tbody.innerHTML = '';
             appState.perfumes.forEach(p => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong>${p.name}</strong></td>
-                    <td>${p.category}</td>
-                    <td>${p.stock} unds</td>
-                    <td>$${p.cost.toFixed(2)}</td>
-                    <td>$${p.price.toFixed(2)}</td>
-                `;
-                tbody.appendChild(tr);
+                tbody.innerHTML += `<tr>
+                    <td><strong>${p.name}</strong></td><td>${p.category}</td><td>${p.stock} unds</td><td>$${p.cost.toFixed(2)}</td><td>$${p.price.toFixed(2)}</td>
+                    <td><button class="btn-delete" onclick="eliminarPerfume('${p.id}')">Eliminar</button></td>
+                </tr>`;
             });
         }
 
-        // Pestaña 4: Analítica (Top 10 y Egresos)
         function renderAnaliticaTab() {
-            // Top 10 mas vendidos
             const topList = document.getElementById('topPerfumesList');
             topList.innerHTML = '';
-            
-            // Clonamos y ordenamos de mayor a menor por cantidad vendida
             let sorted = [...appState.perfumes].sort((a,b) => b.soldQuantity - a.soldQuantity).slice(0, 10);
-            
-            sorted.forEach((p, index) => {
-                topList.innerHTML += `<li><span>${index+1}. <strong>${p.name}</strong> (${p.category})</span> <span>${p.soldQuantity} unidades vendidas</span></li>`;
-            });
+            sorted.forEach((p, i) => { topList.innerHTML += `<li><span>${i+1}. <strong>${p.name}</strong></span> <span>${p.soldQuantity} vendidas</span></li>`; });
 
-            // Tabla egresos
             const tbody = document.getElementById('withdrawalsTableBody');
             tbody.innerHTML = '';
             appState.withdrawals.forEach(w => {
-                tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${w.date}</td>
-                    <td><span class="status-badge" style="background-color:#f1f5f9; color:#334155;">${w.type}</span></td>
-                    <td style="color:#dc2626; font-weight:500;">-$${w.amount.toFixed(2)}</td>
-                    <td>${w.reason}</td>
-                    <td>${w.user}</td>
-                `;
-                tbody.appendChild(tr);
+                tbody.innerHTML += `<tr><td>${w.date}</td><td><span class="status-badge" style="background-color:#f1f5f9; color:#334155;">${w.type}</span></td><td style="color:#dc2626; font-weight:500;">-$${w.amount.toFixed(2)}</td><td>${w.reason}</td><td>${w.user}</td></tr>`;
             });
         }
 
-        // Pestaña 5: Auditoría Visual
         function renderAuditoriaTab() {
             const tbody = document.getElementById('auditTableBody');
             tbody.innerHTML = '';
             appState.logs.forEach(l => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td style="color:#777; font-size:0.8rem;">${l.timestamp}</td>
-                    <td><span style="font-weight:600;">${l.user}</span></td>
-                    <td style="color:#444;">${l.action}</td>
-                `;
-                tbody.appendChild(tr);
+                tbody.innerHTML += `<tr><td style="color:#777; font-size:0.8rem;">${l.timestamp}</td><td><strong>${l.user}</strong></td><td>${l.action}</td></tr>`;
             });
         }
 
-        // --- ACCIONES FORMULARIOS ---
-
-        // Inventario: Guardar/Actualizar Perfume
+        // --- ACCIONES A LA BASE DE DATOS (FIREBASE) ---
         function registrarPerfume(e) {
             e.preventDefault();
             const name = document.getElementById('perfumeName').value.trim();
@@ -734,37 +447,31 @@
             const cost = parseFloat(document.getElementById('perfumeCost').value);
             const price = parseFloat(document.getElementById('perfumePrice').value);
 
-            // Buscar si ya existe por nombre
-            let itemExistente = appState.perfumes.find(p => p.name.toLowerCase() === name.toLowerCase());
+            let item = appState.perfumes.find(p => p.name.toLowerCase() === name.toLowerCase());
 
-            if(itemExistente) {
-                // Si existe, se le suma directamente la cantidad deseada y se actualizan costos/precios si cambiaron
-                itemExistente.stock += stockToAdd;
-                itemExistente.cost = cost;
-                itemExistente.price = price;
-                registrarLog(`Actualizó inventario de '${name}'. Añadió ${stockToAdd} unds. Nuevo stock total: ${itemExistente.stock}`);
+            if(item) {
+                item.stock += stockToAdd;
+                item.cost = cost;
+                item.price = price;
+                registrarLog(`Actualizó '${name}': Añadió ${stockToAdd} unds. Nuevo stock: ${item.stock}`);
             } else {
-                // Si es nuevo, se registra de cero
-                const newPerfume = {
-                    id: 'p_' + Date.now(),
-                    name: name,
-                    category: category,
-                    stock: stockToAdd,
-                    cost: cost,
-                    price: price,
-                    soldQuantity: 0
-                };
-                appState.perfumes.push(newPerfume);
-                registrarLog(`Ingresó un nuevo perfume al catálogo: '${name}' con ${stockToAdd} unds.`);
+                appState.perfumes.push({ id: 'p_' + Date.now(), name, category, stock: stockToAdd, cost, price, soldQuantity: 0 });
+                registrarLog(`Ingresó nuevo perfume: '${name}' con ${stockToAdd} unds.`);
             }
-
-            saveToLocalStorage();
+            saveToFirebase();
             document.getElementById('perfumeForm').reset();
-            renderAllAdmin();
-            alert("Inventario actualizado correctamente.");
+            alert("Inventario guardado en la nube.");
         }
 
-        // Ventas: Registrar Venta Manual
+        function eliminarPerfume(id) {
+            if(confirm("¿Estás seguro de que deseas ELIMINAR este perfume de tu base de datos permanentemente?")) {
+                const perfume = appState.perfumes.find(p => p.id === id);
+                appState.perfumes = appState.perfumes.filter(p => p.id !== id);
+                registrarLog(`Eliminó por completo el perfume '${perfume.name}' del inventario.`);
+                saveToFirebase();
+            }
+        }
+
         function registrarVenta(e) {
             e.preventDefault();
             const client = document.getElementById('saleClient').value.trim();
@@ -772,77 +479,41 @@
             const qty = parseInt(document.getElementById('saleQty').value);
             const status = document.getElementById('saleStatus').value;
 
-            if(!perfumeId) { alert("Debe seleccionar un perfume."); return; }
-
             const perfume = appState.perfumes.find(p => p.id === perfumeId);
-            
-            // Validación rigurosa de Stock disponible
-            if(qty > perfume.stock) {
-                alert(`Error: Stock insuficiente. Solo quedan ${perfume.stock} unidades de este perfume.`);
-                return;
-            }
+            if(qty > perfume.stock) { alert("Stock insuficiente."); return; }
 
-            // Deducir del stock e incrementar contador histórico de ventas
             perfume.stock -= qty;
             perfume.soldQuantity += qty;
-
-            const newSale = {
-                id: 's_' + Date.now(),
-                date: new Date().toLocaleDateString(),
-                client: client,
-                perfumeId: perfumeId,
-                perfumeName: perfume.name,
-                quantity: qty,
-                cost: perfume.cost,   // guardamos el costo al momento de venta
-                price: perfume.price, // guardamos el pvp al momento de venta
-                status: status,
-                user: appState.currentUser
-            };
-
-            appState.sales.unshift(newSale);
-            registrarLog(`Registró venta a '${client}' de ${qty} unds de '${perfume.name}' [Estatus: ${status}].`);
             
-            saveToLocalStorage();
+            appState.sales.unshift({ id: 's_' + Date.now(), date: new Date().toLocaleDateString(), client, perfumeId, perfumeName: perfume.name, quantity: qty, cost: perfume.cost, price: perfume.price, status, user: currentUser });
+            
+            registrarLog(`Vendió a '${client}' ${qty} unds de '${perfume.name}' [${status}].`);
+            saveToFirebase();
             document.getElementById('saleForm').reset();
-            renderAllAdmin();
-            alert("Venta registrada y procesada con éxito.");
+            alert("Venta registrada en Firebase.");
         }
 
-        // Ventas: Alternar estado de Pago
-        function toggleStatusVenta(saleId) {
-            const sale = appState.sales.find(s => s.id === saleId);
+        function toggleStatusVenta(id) {
+            const sale = appState.sales.find(s => s.id === id);
             if(sale) {
                 const viejoStatus = sale.status;
                 sale.status = sale.status === 'Pagada' ? 'Pendiente' : 'Pagada';
-                registrarLog(`Cambió el estatus de la venta del cliente '${sale.client}' de ${viejoStatus} a ${sale.status}.`);
-                saveToLocalStorage();
-                renderAllAdmin();
+                registrarLog(`Cambió estatus de venta de '${sale.client}' de ${viejoStatus} a ${sale.status}.`);
+                saveToFirebase();
             }
         }
 
-        // Analítica: Registrar Egreso / Salidas de dinero
         function registrarEgreso(e) {
             e.preventDefault();
             const amount = parseFloat(document.getElementById('wAmount').value);
             const type = document.getElementById('wType').value;
             const reason = document.getElementById('wReason').value.trim();
 
-            const newWithdrawal = {
-                id: 'w_' + Date.now(),
-                date: new Date().toLocaleDateString(),
-                type: type,
-                amount: amount,
-                reason: reason,
-                user: appState.currentUser
-            };
-
-            appState.withdrawals.unshift(newWithdrawal);
-            registrarLog(`Declaró salida de caja por ${type}: -$${amount} debido a: "${reason}"`);
-            
-            saveToLocalStorage();
+            appState.withdrawals.unshift({ id: 'w_' + Date.now(), date: new Date().toLocaleDateString(), type, amount, reason, user: currentUser });
+            registrarLog(`Declaró ${type}: -$${amount}. Razón: "${reason}"`);
+            saveToFirebase();
             document.getElementById('withdrawalForm').reset();
-            renderAllAdmin();
-            alert("Egreso asentado en los libros contables.");
+            alert("Egreso subido a la base de datos.");
         }
     </script>
 </body>
