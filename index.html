@@ -115,7 +115,7 @@
         }
         .promo-condiciones {
             font-size: 13px;
-            color: var(--texto-mutado);
+            color: var(--texto-mutated);
             font-weight: 500;
         }
 
@@ -469,7 +469,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, set, onValue, update, remove, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyArphq3sSjhWWXr8w6I6f7UVGRMwaDp7i0",
@@ -773,7 +773,7 @@
     window.eliminarVenta = function(key) { if(confirm("¿Eliminar del historial?")) remove(ref(db, `ventas/${key}`)); };
 
 
-    // --- ESCUCHA DE FIREBASE EN TIEMPO REAL (ARREGLADO GLOBALMENTE) ---
+    // --- ESCUCHA DE FIREBASE EN TIEMPO REAL ---
     onValue(ref(db, 'inventario'), (snapshot) => {
         try {
             inventario = snapshot.val() || {};
@@ -961,7 +961,50 @@
         if(document.getElementById('ganancia-disponible')) { document.getElementById('ganancia-disponible').innerText = `$${disponible.toFixed(2)}`; document.getElementById('ganancia-disponible').style.color = disponible < 0 ? 'var(--peligro)' : 'var(--texto-oscuro)'; }
     }
 
-    // --- CONTROL DE ARRANQUE ---
+    // --- CONTROL DE ARRANQUE E INYECCIÓN AUTOMÁTICA DEL JSON ---
+    async function verificarYInicializarBaseDatos() {
+        try {
+            const snapshot = await get(ref(db, 'inventario'));
+            
+            // Si no hay datos en el nodo "inventario" de Firebase, procedemos a cargarlos
+            if (!snapshot.exists() || Object.keys(snapshot.val() || {}).length === 0) {
+                console.log("La base de datos en tiempo real está vacía. Inyectando el inventario base...");
+                
+                // Aquí colocamos directamente los datos estructurados de tu JSON exportado
+                const datosBase = {
+                    "360-RUSH-30ML": { "categoria": "Caballero", "costo": 1.7, "nombre": "360 RUSH 30ML", "precio": 4, "stock": 4 },
+                    "360-TRADICIONAL-30ML": { "categoria": "Caballero", "costo": 1.7, "nombre": "360 TRADICIONAL 30ML", "precio": 4, "stock": 4 },
+                    "AMOR-AMOR-30ML": { "categoria": "Dama", "costo": 1.7, "nombre": "AMOR AMOR 30ML", "precio": 4, "stock": 4 },
+                    "BAD-BOY-30ML": { "categoria": "Caballero", "costo": 1.7, "nombre": "BAD BOY 30ML", "precio": 4, "stock": 4 },
+                    "CH-TRADICIONAL-30ML": { "categoria": "Dama", "costo": 1.7, "nombre": "CH TRADICIONAL 30ML", "precio": 4, "stock": 4 },
+                    "CREED-AVENTUS-30ML": { "categoria": "Caballero", "costo": 1.7, "nombre": "CREED AVENTUS 30ML", "precio": 4, "stock": 4 },
+                    "ECLAT-D-ARPEGE-30ML": { "categoria": "Dama", "costo": 1.7, "nombre": "ECLAT D'ARPEGE 30ML", "precio": 4, "stock": 4 },
+                    "EROS-VERSACE-30ML": { "categoria": "Caballero", "costo": 1.7, "nombre": "EROS VERSACE 30ML", "precio": 4, "stock": 4 },
+                    "FANTASY-30ML": { "categoria": "Dama", "costo": 1.7, "nombre": "FANTASY 30ML", "precio": 4, "stock": 4 },
+                    "GOOD-GIRL-30ML": { "categoria": "Dama", "costo": 1.7, "nombre": "GOOD GIRL 30ML", "precio": 4, "stock": 4 },
+                    "HUGO-BOSS-REVERSE-30ML": { "categoria": "Caballero", "costo": 1.7, "nombre": "HUGO BOSS REVERSE 30ML", "precio": 4, "stock": 4 },
+                    "INVICTUS-30ML": { "categoria": "Caballero", "costo": 1.7, "nombre": "INVICTUS 30ML", "precio": 4, "stock": 4 },
+                    "LA-VIDE-EST-BELLE-30ML": { "categoria": "Dama", "costo": 1.7, "nombre": "LA VIDE EST BELLE 30ML", "precio": 4, "stock": 4 },
+                    "MEOW-30ML": { "categoria": "Dama", "costo": 1.7, "nombre": "MEOW 30ML", "precio": 4, "stock": 4 },
+                    "ONE-MILLION-30ML": { "categoria": "Caballero", "costo": 1.7, "nombre": "ONE MILLION 30ML", "precio": 4, "stock": 4 },
+                    "PARIS-HILTON-30ML": { "categoria": "Dama", "costo": 1.7, "nombre": "PARIS HILTON 30ML", "precio": 4, "stock": 4 },
+                    "PURR-30ML": { "categoria": "Dama", "costo": 1.7, "nombre": "PURR 30ML", "precio": 4, "stock": 4 },
+                    "SAUVAGE-DIOR-30ML": { "categoria": "Caballero", "costo": 1.7, "nombre": "SAUVAGE DIOR 30ML", "precio": 4, "stock": 4 },
+                    "SUIZA-BABY-30ML": { "categoria": "Nino", "costo": 1.7, "nombre": "SUIZA BABY 30ML", "precio": 4, "stock": 4 },
+                    "TOM-FORD-30ML": { "categoria": "Unisex", "costo": 1.7, "nombre": "TOM FORD 30ML", "precio": 4, "stock": 4 }
+                };
+
+                await set(ref(db, 'inventario'), datosBase);
+                console.log("¡Inventario base importado con éxito a Firebase!");
+            }
+        } catch (err) {
+            console.error("Error verificando o inyectando los datos iniciales:", err);
+        }
+    }
+
+    // Ejecutamos la verificación
+    verificarYInicializarBaseDatos();
+
     if(localStorage.getItem('sesion_activa_perfumes') === 'true') {
         irAVistaAdmin();
     } else {
