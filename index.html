@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EP Perfumes - Panel Corporativo</title>
+    <title>EP Perfumes - Tienda y Control Interno</title>
     <style>
         /* --- PALETA DE COLORES --- */
         :root {
@@ -36,9 +36,31 @@
 
         .container { max-width: 1000px; margin: 0 auto; display: none; }
         
+        /* --- PÁGINA DE INICIO PÚBLICA --- */
+        #inicio-publico { display: block; max-width: 1000px; margin: 0 auto; padding-bottom: 60px; }
+        .hero-publico { text-align: center; padding: 40px 20px; background: var(--bg-tarjetas); border-radius: 12px; border: 1px solid var(--borde); margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+        .hero-publico img { max-width: 130px; height: auto; margin-bottom: 15px; }
+        .hero-publico h1 { color: var(--oro); letter-spacing: 2px; font-size: 28px; margin-bottom: 5px; }
+        .hero-publico p { color: var(--texto-mutado); font-size: 15px; }
+        
+        .btn-admin-acceso { background-color: transparent; color: var(--texto-mutado); border: 1px solid var(--borde); padding: 8px 16px; font-size: 13px; font-weight: 600; border-radius: 6px; cursor: pointer; float: right; margin-top: -20px; }
+        .btn-admin-acceso:hover { border-color: var(--oro); color: var(--oro); }
+
+        .categoria-publica { background: var(--bg-tarjetas); padding: 25px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); border: 1px solid var(--borde); }
+        .categoria-publica h3 { font-size: 18px; color: var(--texto-oscuro); border-left: 4px solid var(--oro); padding-left: 10px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .grid-productos { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .producto-card { background: var(--bg-principal); border: 1px solid var(--borde); border-radius: 8px; padding: 20px; text-align: center; transition: transform 0.2s; }
+        .producto-card:hover { transform: translateY(-3px); border-color: var(--oro); }
+        .producto-card h4 { font-size: 16px; margin-bottom: 8px; color: var(--texto-oscuro); }
+        .producto-card .precio { font-size: 18px; font-weight: bold; color: var(--oro); margin-bottom: 10px; }
+        .producto-card .stock-badge { font-size: 11px; padding: 3px 8px; border-radius: 12px; font-weight: 600; display: inline-block; }
+        .stock-disponible { background: rgba(16, 185, 129, 0.1); color: var(--exito); }
+        .stock-bajo { background: rgba(239, 68, 68, 0.1); color: var(--peligro); }
+
         /* --- PANTALLA DE LOGIN --- */
         #login-screen {
-            display: flex;
+            display: none;
             justify-content: center;
             align-items: center;
             position: fixed;
@@ -159,7 +181,49 @@
 
 <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar(false)"></div>
 
-<!-- PANTALLA DE ACCESO -->
+<!-- PÁGINA DE INICIO PÚBLICA -->
+<div id="inicio-publico">
+    <button class="btn-admin-acceso" onclick="mostrarLogin(true)">🔐 Panel Administrador</button>
+    <div class="hero-publico">
+        <img src="IMAGENES/LOGO.png" alt="EP Perfume" onerror="this.style.display='none'">
+        <h1>EP PERFUME</h1>
+        <p>Catálogo Oficial en Tiempo Real</p>
+    </div>
+
+    <!-- Lista de Caballeros -->
+    <div class="categoria-publica">
+        <h3>Gentleman / Caballeros 🤵‍♂️</h3>
+        <div class="grid-productos" id="lista-caballeros">
+            <p class="loading">Cargando fragancias...</p>
+        </div>
+    </div>
+
+    <!-- Lista de Damas -->
+    <div class="categoria-publica">
+        <h3>Ladies / Damas 👩‍💼</h3>
+        <div class="grid-productos" id="lista-damas">
+            <p class="loading">Cargando fragancias...</p>
+        </div>
+    </div>
+
+    <!-- Lista Unisex -->
+    <div class="categoria-publica">
+        <h3>Unisex 🌟</h3>
+        <div class="grid-productos" id="lista-unisex">
+            <p class="loading">Cargando fragancias...</p>
+        </div>
+    </div>
+
+    <!-- Lista de Niños -->
+    <div class="categoria-publica">
+        <h3>Kids / Niños 👶👧</h3>
+        <div class="grid-productos" id="lista-ninos">
+            <p class="loading">Cargando fragancias...</p>
+        </div>
+    </div>
+</div>
+
+<!-- PANTALLA DE ACCESO (LOGIN) -->
 <div id="login-screen">
     <div class="login-box">
         <img src="IMAGENES/LOGO.png" alt="EP Perfume" class="logo-login" onerror="this.style.display='none'">
@@ -170,10 +234,11 @@
             <input type="password" id="app-password" placeholder="••••••••" onkeypress="evaluarTecla(event)">
         </div>
         <button onclick="verificarAcceso()" style="width: 100%; margin-top: 10px;">Entrar al Sistema</button>
+        <button class="btn-secondary" onclick="mostrarLogin(false)" style="width: 100%; margin-top: 10px; box-shadow:none;">Volver al Catálogo</button>
     </div>
 </div>
 
-<!-- MENÚ LATERAL PLEGABLE -->
+<!-- MENÚ LATERAL PLEGABLE (SIDEBAR) -->
 <div id="my-sidebar" class="sidebar">
     <div class="sidebar-header">
         <div class="sidebar-brand">
@@ -190,10 +255,10 @@
         <button class="nav-btn" onclick="cambiarVista('vista-inventario', this)">📦 Inventario</button>
     </div>
 
-    <button class="btn-logout" onclick="cerrarSesion()">🚪 Cerrar Sesión</button>
+    <button class="btn-logout" onclick="cerrarSesion()">🚪 Volver a Inicio</button>
 </div>
 
-<!-- PANEL PRINCIPAL -->
+<!-- PANEL PRINCIPAL (SÓLO ADMIN) -->
 <div class="container" id="main-panel">
     <div class="header">
         <div class="header-left">
@@ -304,7 +369,6 @@
         <div class="section">
             <h2>📦 Control de Inventario</h2>
             
-            <!-- Resumen rápido de mercancía con explicaciones explicativas -->
             <div class="resumen" style="margin-bottom: 25px;">
                 <div class="card" style="border-top-color: var(--texto-oscuro);" title="La cantidad física de perfumes de todas las fragancias combinadas que se encuentran listas en almacén.">
                     <div class="card-title">Total Fragancias en Stock</div>
@@ -321,6 +385,15 @@
                 <input type="text" id="prod-nombre" placeholder="Ej: Sauvage 30ml">
             </div>
             <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <div class="form-group" style="flex: 1; min-width: 150px;">
+                    <label>Categoría / Público</label>
+                    <select id="prod-categoria">
+                        <option value="Caballero">Caballero 🤵‍♂️</option>
+                        <option value="Dama">Dama 👩‍💼</option>
+                        <option value="Unisex">Unisex 🌟</option>
+                        <option value="Nino">Niños 👶👧</option>
+                    </select>
+                </div>
                 <div class="form-group" style="flex: 1; min-width: 100px;">
                     <label>Stock Inicial</label>
                     <input type="number" id="prod-stock" min="1" value="1">
@@ -339,8 +412,8 @@
             <h3 style="margin-top: 25px; font-size: 13px; color: var(--texto-mutado); text-transform: uppercase;">Stock Actual</h3>
             <div class="table-responsive">
                 <table id="tabla-inventario">
-                    <thead><tr><th>Perfume</th><th>Stock</th><th>Costo</th><th>P. Venta</th><th>Ganancia</th><th>Acción</th></tr></thead>
-                    <tbody><tr><td colspan="6" class="loading">Cargando inventario...</td></tr></tbody>
+                    <thead><tr><th>Perfume</th><th>Tipo</th><th>Stock</th><th>Costo</th><th>P. Venta</th><th>Ganancia</th><th>Acción</th></tr></thead>
+                    <tbody><tr><td colspan="7" class="loading">Cargando inventario...</td></tr></tbody>
                 </table>
             </div>
         </div>
@@ -386,6 +459,10 @@
         window.toggleSidebar(false);
     };
 
+    window.mostrarLogin = function(mostrar) {
+        document.getElementById('login-screen').style.display = mostrar ? 'flex' : 'none';
+    };
+
     window.verificarAcceso = function() {
         if(document.getElementById('app-password').value === CLAVE_ACCESO) {
             localStorage.setItem('sesion_activa_perfumes', 'true');
@@ -396,16 +473,24 @@
     };
     
     window.evaluarTecla = function(e) { if(e.key === 'Enter') window.verificarAcceso(); };
-    window.cerrarSesion = function() { localStorage.removeItem('sesion_activa_perfumes'); window.location.reload(); };
+    
+    window.cerrarSesion = function() { 
+        localStorage.removeItem('sesion_activa_perfumes'); 
+        document.getElementById('main-panel').style.display = 'none';
+        document.getElementById('inicio-publico').style.display = 'block';
+        window.mostrarLogin(false);
+    };
 
     // --- ACCIÓN INVENTARIO (GUARDAR / ELIMINAR) ---
     window.agregarProducto = function() {
         const nombreInp = document.getElementById('prod-nombre');
+        const categoriaInp = document.getElementById('prod-categoria');
         const stockInp = document.getElementById('prod-stock');
         const costoInp = document.getElementById('prod-costo');
         const precioInp = document.getElementById('prod-precio');
 
         const nombre = nombreInp.value.trim();
+        const categoria = categoriaInp.value;
         const stock = parseInt(stockInp.value);
         const costo = parseFloat(costoInp.value) || 0;
         const precio = parseFloat(precioInp.value) || 0;
@@ -424,6 +509,7 @@
 
         set(ref(db, 'inventario/' + idProducto), {
             nombre: nombre,
+            categoria: categoria,
             stock: parseInt(nuevoStock),
             costo: parseFloat(costo),
             precio: parseFloat(precio)
@@ -524,22 +610,25 @@
     window.eliminarVenta = function(key) { if(confirm("¿Eliminar esta venta del historial?")) remove(ref(db, `ventas/${key}`)); };
 
 
-    // --- ARRANQUE Y RENDERIZADO DE TABLAS ---
+    // --- ARRANQUE GENERAL DEL SISTEMA ---
+    // El catálogo público carga SIEMPRE para cualquier visitante
+    onValue(ref(db, 'inventario'), (snapshot) => {
+        inventario = snapshot.val() || {};
+        actualizarCatalogoPublico();
+        if(localStorage.getItem('sesion_activa_perfumes') === 'true') {
+            actualizarTablaInventario();
+            actualizarSelectoresVenta();
+        }
+    });
+
     if(localStorage.getItem('sesion_activa_perfumes') === 'true') {
         ejecutarArranquePanel();
     }
 
     function ejecutarArranquePanel() {
+        document.getElementById('inicio-publico').style.display = 'none';
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('main-panel').style.display = 'block';
-        
-        onValue(ref(db, 'inventario'), (snapshot) => {
-            inventario = snapshot.val() || {};
-            actualizarTablaInventario();
-            actualizarSelectoresVenta();
-        }, (error) => {
-            alert("Error de conexión Firebase: " + error.message + ". Revisa las REGLAS de seguridad.");
-        });
 
         onValue(ref(db, 'ventas'), (snapshot) => {
             ventas = snapshot.val() || {};
@@ -550,8 +639,51 @@
             retiros = snapshot.val() || {};
             actualizarTotalesYRetiros();
         });
+        
+        actualizarTablaInventario();
+        actualizarSelectoresVenta();
     }
 
+    // --- RENDERIZAR CATÁLOGO PÚBLICO ---
+    function actualizarCatalogoPublico() {
+        const catCaballeros = document.getElementById('lista-caballeros');
+        const catDamas = document.getElementById('lista-damas');
+        const catUnisex = document.getElementById('lista-unisex');
+        const catNinos = document.getElementById('lista-ninos');
+
+        let htmlCaballeros = '', htmlDamas = '', htmlUnisex = '', htmlNinos = '';
+        
+        Object.keys(inventario).forEach(key => {
+            const p = inventario[key];
+            const stockVal = parseInt(p.stock) || 0;
+            const precioVal = parseFloat(p.precio) || 0;
+            const cat = p.categoria || 'Caballero'; // Por defecto si no tiene
+
+            const badgeStock = stockVal > 0 
+                ? `<span class="stock-badge stock-disponible">Disponible (${stockVal} ud)</span>`
+                : `<span class="stock-badge stock-bajo">Agotado</span>`;
+
+            const cardHtml = `
+                <div class="producto-card">
+                    <h4>${p.nombre}</h4>
+                    <div class="precio">$${precioVal.toFixed(2)}</div>
+                    ${badgeStock}
+                </div>
+            `;
+
+            if (cat === 'Caballero') htmlCaballeros += cardHtml;
+            else if (cat === 'Dama') htmlDamas += cardHtml;
+            else if (cat === 'Unisex') htmlUnisex += cardHtml;
+            else if (cat === 'Nino') htmlNinos += cardHtml;
+        });
+
+        catCaballeros.innerHTML = htmlCaballeros || '<p style="color:var(--texto-mutado); font-size:13px;">No hay fragancias disponibles</p>';
+        catDamas.innerHTML = htmlDamas || '<p style="color:var(--texto-mutado); font-size:13px;">No hay fragancias disponibles</p>';
+        catUnisex.innerHTML = htmlUnisex || '<p style="color:var(--texto-mutado); font-size:13px;">No hay fragancias disponibles</p>';
+        catNinos.innerHTML = htmlNinos || '<p style="color:var(--texto-mutado); font-size:13px;">No hay fragancias disponibles</p>';
+    }
+
+    // --- RENDERIZAR TABLA DE INVENTARIO (ADMIN) ---
     function actualizarTablaInventario() {
         const tbody = document.querySelector('#tabla-inventario tbody');
         if (!tbody) return;
@@ -562,7 +694,7 @@
         
         const keys = Object.keys(inventario);
         if(keys.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--texto-mutado);">No hay fragancias registradas</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--texto-mutado);">No hay fragancias registradas</td></tr>';
             document.getElementById('inv-total-productos').innerText = "0 ud";
             document.getElementById('inv-dinero-mercancia').innerText = "$0.00";
             return;
@@ -573,12 +705,14 @@
             const stockVal = parseInt(p.stock) || 0;
             const costoVal = parseFloat(p.costo) || 0;
             const precioVal = parseFloat(p.precio) || 0;
+            const cat = p.categoria || 'Caballero';
             
             totalUnidades += stockVal;
             dineroMercancia += (stockVal * costoVal);
             
             tbody.innerHTML += `<tr>
                 <td style="font-weight:600;">${p.nombre}</td>
+                <td style="font-size:12px; font-weight:600; color:var(--oro);">${cat.toUpperCase()}</td>
                 <td style="color:${stockVal <= 3 ? 'var(--peligro)':'var(--texto-oscuro)'}; font-weight:bold;">${stockVal} ud</td>
                 <td>$${costoVal.toFixed(2)}</td>
                 <td style="color:var(--oro); font-weight:600;">$${precioVal.toFixed(2)}</td>
@@ -587,7 +721,6 @@
             </tr>`;
         });
         
-        // Renderizar las tarjetas de inventario
         document.getElementById('inv-total-productos').innerText = `${totalUnidades} ud`;
         document.getElementById('inv-dinero-mercancia').innerText = `$${dineroMercancia.toFixed(2)}`;
     }
