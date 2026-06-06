@@ -3,645 +3,753 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión - Victorstyles</title>
-    
-    <style>
-        :root {
-            --primary-color: #1a1a1a;
-            --accent-color: #bfa15f; 
-            --bg-color: #f4f6f9;
-            --card-bg: #ffffff;
-            --text-color: #333333;
-            --border-color: #e0e0e0;
-            --danger-color: #e74c3c;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            padding-top: 80px; /* Espacio para evitar que la navbar tape el contenido */
-        }
-
-        /* NAVBAR Y MENÚ DESPLEGABLE */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 60px;
-            background-color: var(--primary-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
-        .nav-logo {
-            color: var(--accent-color);
-            font-size: 1.4rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .nav-menu-container {
-            position: relative;
-            display: inline-block;
-        }
-
-        .nav-menu-btn {
-            background-color: transparent;
-            color: white;
-            border: 1px solid var(--accent-color);
-            padding: 8px 16px;
-            font-size: 0.95rem;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .nav-menu-btn:hover {
-            background-color: var(--accent-color);
-            color: var(--primary-color);
-        }
-
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: white;
-            min-width: 200px;
-            box-shadow: 0px 8px 16px rgba(0,0,0,0.15);
-            border-radius: 4px;
-            margin-top: 5px;
-            overflow: hidden;
-            z-index: 1001;
-        }
-
-        .dropdown-content a {
-            color: var(--text-color);
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            font-size: 0.95rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .dropdown-content a:hover {
-            background-color: #f1f1f1;
-        }
-
-        .dropdown-content a.admin-link {
-            font-weight: bold;
-            color: #c0392b;
-        }
-
-        /* CLASES DE CONTROL DE VISIBILIDAD */
-        .hidden {
-            display: none !important;
-        }
-
-        .show {
-            display: block !important;
-        }
-
-        /* CONTENEDOR GENERAL */
-        .container {
-            max-width: 900px;
-            margin: 20px auto;
-            padding: 0 15px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-
-        .card h2 {
-            margin-bottom: 25px;
-            font-size: 1.5rem;
-            border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 8px;
-            color: var(--primary-color);
-        }
-
-        /* PANEL INTERNO DE ADMINISTRACIÓN */
-        .admin-header {
-            margin-bottom: 25px;
-        }
-
-        .admin-nav {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-            flex-wrap: wrap;
-        }
-
-        .btn-tab {
-            background: #e0e0e0;
-            border: none;
-            padding: 8px 16px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            border-radius: 4px;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .btn-tab.active {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .btn-tab.btn-exit {
-            background: #95a5a6;
-            color: white;
-            margin-left: auto;
-        }
-
-        /* FORMULARIOS */
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 11px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-
-        .btn-submit {
-            width: 100%;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 13px;
-            font-size: 1rem;
-            font-weight: bold;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .btn-submit:hover {
-            background-color: var(--accent-color);
-        }
-
-        /* ESTADÍSTICAS */
-        .stats-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .stat-box {
-            background: var(--bg-color);
-            padding: 15px;
-            text-align: center;
-            border-radius: 6px;
-            border-left: 4px solid var(--accent-color);
-        }
-
-        .stat-number {
-            display: block;
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-
-        .stat-label {
-            font-size: 0.85rem;
-            color: #666;
-        }
-
-        /* SECCIÓN DE FILTROS */
-        .filters-card h3 {
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-        }
-
-        .filters-container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        @media (min-width: 600px) {
-            .filters-container {
-                grid-template-columns: 1fr 1fr;
+    <title>EP Perfumes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        perfume: {
+                            gold: '#D4AF37',
+                            dark: '#111111',
+                            brown: '#4A3B32',
+                            light: '#FAFAFA'
+                        }
+                    }
+                }
             }
         }
-
-        .btn-secondary {
-            background: #7f8c8d;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
+    </script>
+    <style>
+        .gold-gradient {
+            background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 25%, #B38728 50%, #FBF5B7 75%, #AA771C 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-
-        /* TABLA DE CITAS */
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 0.95rem;
-        }
-
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        th {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        tr:hover {
-            background-color: #f9f9f9;
-        }
-
-        .btn-delete {
-            background-color: var(--danger-color);
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        
-        .btn-delete:hover {
-            background-color: #c0392b;
+        .bg-gold-gradient {
+            background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 50%, #AA771C 100%);
         }
     </style>
 </head>
-<body>
+<body class="bg-perfume-light text-perfume-dark font-sans overflow-x-hidden">
 
-    <nav class="navbar">
-        <div class="nav-logo">Victorstyles</div>
-        <div class="nav-menu-container">
-            <button class="nav-menu-btn" id="navMenuBtn">Menú ☰</button>
-            <div class="dropdown-content" id="dropdownMenu">
-                <a href="#" id="viewClientBtn">Inicio (Reservas)</a>
-                <a href="#" id="viewAdminBtn" class="admin-link">Acceso Administrativo</a>
+    <div id="splash" class="fixed inset-0 bg-perfume-dark z-50 flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="text-center transform scale-95 animate-fade-in">
+            <img src="LOGO.png" alt="EP Perfumes" class="w-32 h-32 mx-auto mb-4 object-contain">
+            <h1 class="text-2xl md:text-3xl font-light tracking-widest text-white">Bienvenido/a a <span class="gold-gradient font-normal">EP Perfumes</span></h1>
+        </div>
+    </div>
+
+    <header class="bg-perfume-dark text-white sticky top-0 z-40 px-4 py-3 flex justify-between items-center border-b border-perfume-brown/30">
+        <div class="flex items-center gap-3">
+            <button id="menu-btn" class="p-1 hover:text-perfume-gold transition-colors">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+            <img src="LOGO.png" alt="Logo" class="w-10 h-10 object-contain">
+        </div>
+        <div class="flex items-center gap-4">
+            <button id="cart-btn" class="relative p-1 hover:text-perfume-gold transition-colors">
+                <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+                <span id="cart-count" class="absolute -top-1 -right-1 bg-perfume-gold text-perfume-dark text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center hidden">0</span>
+            </button>
+            <button id="admin-access-btn" class="text-xs tracking-wider text-gray-400 hover:text-perfume-gold transition-colors">PANEL</button>
+        </div>
+    </header>
+
+    <div id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-perfume-dark text-white z-40 transform -translate-x-full transition-transform duration-300 ease-in-out shadow-2xl flex flex-col justify-between">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-8">
+                <img src="LOGO.png" alt="Logo" class="w-16 h-16 object-contain">
+                <button id="close-menu-btn" class="hover:text-perfume-gold"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <nav class="space-y-6 text-lg font-light tracking-wide">
+                <a href="#hero" class="block hover:text-perfume-gold transition-colors flex items-center gap-3"><i data-lucide="sparkles" class="w-5 h-5"></i> Promociones</a>
+                <a href="#catalog" class="block hover:text-perfume-gold transition-colors flex items-center gap-3"><i data-lucide="layers" class="w-5 h-5"></i> Catálogo</a>
+            </nav>
+        </div>
+        <div class="p-6 border-t border-perfume-brown/20 text-center text-xs text-gray-500">
+            EP Perfumes © 2026
+        </div>
+    </div>
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden transition-opacity"></div>
+
+    <section id="hero" class="relative bg-perfume-dark text-white min-h-[450px] flex items-center justify-center overflow-hidden py-12 px-4">
+        <div class="absolute inset-0 opacity-40">
+            <img src="perfumes.jpg" alt="Perfumes" class="w-full h-full object-cover filter brightness-50">
+        </div>
+        <div class="relative z-10 max-w-3xl mx-auto text-center space-y-6 bg-black/60 p-8 rounded-xl border border-perfume-gold/20 backdrop-blur-sm">
+            <img src="LOGO.png" alt="Logo Promo" class="w-20 h-20 mx-auto object-contain animate-pulse">
+            <p class="text-perfume-gold tracking-widest text-xs uppercase font-semibold">Oferta Exclusiva</p>
+            <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight bg-gold-gradient bg-clip-text text-transparent uppercase">Promo Imperdible</h2>
+            <div class="space-y-2">
+                <p class="text-3xl md:text-4xl font-light">2 Perfumes por solo <span class="font-bold text-perfume-gold">$5</span> <span class="text-sm tracking-wide text-gray-300">(Divisa)</span></p>
+                <div class="w-24 h-[1px] bg-perfume-brown mx-auto my-3"></div>
+                <p class="text-xl text-gray-300 font-light">1 Perfume por <span class="font-semibold text-white">$4</span> <span class="text-xs text-perfume-gold font-medium">(Tasa BCV)</span></p>
+            </div>
+            <a href="#catalog" class="inline-block bg-gold-gradient text-perfume-dark px-8 py-3 rounded-full text-sm font-bold tracking-widest uppercase hover:scale-105 transition-transform shadow-lg">Ver Catálogo</a>
+        </div>
+    </section>
+
+    <main id="catalog" class="max-w-7xl mx-auto px-4 py-16 space-y-16">
+        <div class="text-center space-y-2">
+            <h3 class="text-3xl font-light tracking-widest uppercase">Nuestras Colecciones</h3>
+            <div class="w-16 h-1 bg-perfume-gold mx-auto"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="bg-white rounded-xl overflow-hidden shadow-md border border-gray-100 flex flex-col justify-between group hover:shadow-xl transition-shadow">
+                <div class="relative overflow-hidden">
+                    <img src="caballeros.jpg" alt="Caballeros" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500">
+                    <span class="absolute top-3 left-3 bg-perfume-dark text-white text-xs tracking-widest px-3 py-1 uppercase rounded">Caballeros</span>
+                </div>
+                <div class="p-5 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-500">Disponibles en Stock:</span>
+                        <span id="stock-caballeros" class="font-bold text-perfume-brown text-lg">0</span>
+                    </div>
+                    <button onclick="addToCart('caballeros')" class="w-full bg-perfume-dark hover:bg-perfume-brown text-white py-2.5 rounded-lg text-sm tracking-wider uppercase transition-colors flex items-center justify-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Agregar al Pedido
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl overflow-hidden shadow-md border border-gray-100 flex flex-col justify-between group hover:shadow-xl transition-shadow">
+                <div class="relative overflow-hidden">
+                    <img src="damas.jpg" alt="Damas" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500">
+                    <span class="absolute top-3 left-3 bg-perfume-dark text-white text-xs tracking-widest px-3 py-1 uppercase rounded">Damas</span>
+                </div>
+                <div class="p-5 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-500">Disponibles en Stock:</span>
+                        <span id="stock-damas" class="font-bold text-perfume-brown text-lg">0</span>
+                    </div>
+                    <button onclick="addToCart('damas')" class="w-full bg-perfume-dark hover:bg-perfume-brown text-white py-2.5 rounded-lg text-sm tracking-wider uppercase transition-colors flex items-center justify-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Agregar al Pedido
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl overflow-hidden shadow-md border border-gray-100 flex flex-col justify-between group hover:shadow-xl transition-shadow">
+                <div class="relative overflow-hidden">
+                    <img src="unisex.jpg" alt="Unisex" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500">
+                    <span class="absolute top-3 left-3 bg-perfume-dark text-white text-xs tracking-widest px-3 py-1 uppercase rounded">Unisex</span>
+                </div>
+                <div class="p-5 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-500">Disponibles en Stock:</span>
+                        <span id="stock-unisex" class="font-bold text-perfume-brown text-lg">0</span>
+                    </div>
+                    <button onclick="addToCart('unisex')" class="w-full bg-perfume-dark hover:bg-perfume-brown text-white py-2.5 rounded-lg text-sm tracking-wider uppercase transition-colors flex items-center justify-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Agregar al Pedido
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl overflow-hidden shadow-md border border-gray-100 flex flex-col justify-between group hover:shadow-xl transition-shadow">
+                <div class="relative overflow-hidden">
+                    <img src="niños.jpg" alt="Niños" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500">
+                    <span class="absolute top-3 left-3 bg-perfume-dark text-white text-xs tracking-widest px-3 py-1 uppercase rounded">Niños</span>
+                </div>
+                <div class="p-5 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-500">Disponibles en Stock:</span>
+                        <span id="stock-niños" class="font-bold text-perfume-brown text-lg">0</span>
+                    </div>
+                    <button onclick="addToCart('niños')" class="w-full bg-perfume-dark hover:bg-perfume-brown text-white py-2.5 rounded-lg text-sm tracking-wider uppercase transition-colors flex items-center justify-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Agregar al Pedido
+                    </button>
+                </div>
             </div>
         </div>
-    </nav>
+    </main>
 
-    <div class="container">
-        
-        <section id="clientView" class="card">
-            <h2>Reservar Nueva Cita</h2>
-            <form id="appointmentForm">
-                <div class="form-group">
-                    <label for="clientName">Nombre del Cliente:</label>
-                    <input type="text" id="clientName" required placeholder="Ej. Juan Pérez">
+    <div id="cart-modal" class="fixed inset-0 z-50 flex justify-end hidden">
+        <div class="fixed inset-0 bg-black/40" onclick="toggleCart()"></div>
+        <div class="relative w-full max-w-md bg-white h-full shadow-2xl p-6 flex flex-col justify-between z-10">
+            <div>
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h4 class="text-xl font-bold tracking-wide flex items-center gap-2"><i data-lucide="shopping-bag" class="text-perfume-gold"></i> Tu Pedido</h4>
+                    <button onclick="toggleCart()" class="text-gray-400 hover:text-black"><i data-lucide="x" class="w-6 h-6"></i></button>
                 </div>
-                <div class="form-group">
-                    <label for="appointmentDate">Fecha:</label>
-                    <input type="date" id="appointmentDate" required>
+                <div id="cart-items" class="space-y-4 overflow-y-auto max-h-[60vh]">
+                    </div>
+            </div>
+            <div class="border-t pt-4 space-y-4">
+                <div class="flex justify-between text-lg font-bold">
+                    <span>Total Estimado:</span>
+                    <span id="cart-total">$0.00</span>
                 </div>
-                <div class="form-group">
-                    <label for="appointmentTime">Hora:</label>
-                    <input type="time" id="appointmentTime" required>
+                <div class="space-y-2">
+                    <input type="text" id="client-name" placeholder="Tu Nombre Completo" class="w-full border p-2.5 rounded-lg text-sm focus:outline-perfume-gold">
                 </div>
-                <div class="form-group">
-                    <label for="barberService">Servicio:</label>
-                    <select id="barberService" required>
-                        <option value="">Seleccione un servicio</option>
-                        <option value="Corte de Cabello">Corte de Cabello</option>
-                        <option value="Barba y Perfilado">Barba y Perfilado</option>
-                        <option value="Corte + Barba">Corte + Barba (Combo)</option>
-                        <option value="Diseño / Líneas">Diseño / Líneas</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn-submit">Agendar Cita</button>
-            </form>
-        </section>
+                <button onclick="checkout()" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-bold tracking-wide flex items-center justify-center gap-2 transition-colors">
+                    <i data-lucide="message-square"></i> Confirmar por WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
 
-        <section id="adminView" class="card hidden">
-            <div class="admin-header">
-                <h2>Panel de Administración</h2>
-                <div class="admin-nav">
-                    <button id="adminTabDashboard" class="btn-tab active">Dashboard</button>
-                    <button id="adminTabFilters" class="btn-tab">Filtros de Búsqueda</button>
-                    <button id="exitAdminBtn" class="btn-tab btn-exit">Salir del Panel</button>
+    <div id="admin-modal" class="fixed inset-0 bg-perfume-light z-50 hidden overflow-y-auto">
+        <header class="bg-perfume-dark text-white px-6 py-4 flex justify-between items-center sticky top-0 shadow-md">
+            <div class="flex items-center gap-4">
+                <img src="LOGO.png" alt="Logo" class="w-10 h-10 object-contain">
+                <h2 class="text-xl font-light tracking-widest text-perfume-gold">PANEL ADMINISTRATIVO EP</h2>
+            </div>
+            <button onclick="closeAdmin()" class="bg-perfume-brown px-4 py-1.5 rounded-lg text-sm hover:bg-red-800 transition-colors">Salir del Panel</button>
+        </header>
+
+        <div class="bg-perfume-brown text-white flex justify-center gap-2 md:gap-6 py-2.5 text-xs md:text-sm tracking-wider uppercase font-light">
+            <button onclick="switchAdminTab('finanzas')" id="tab-finanzas" class="px-3 py-1 rounded text-perfume-gold font-normal border-b-2 border-perfume-gold">Finanzas</button>
+            <button onclick="switchAdminTab('pedidos')" id="tab-pedidos" class="px-3 py-1 rounded hover:text-perfume-gold">Pedidos</button>
+            <button onclick="switchAdminTab('ventas')" id="tab-ventas" class="px-3 py-1 rounded hover:text-perfume-gold">Ventas globales</button>
+            <button onclick="switchAdminTab('inventario')" id="tab-inventario" class="px-3 py-1 rounded hover:text-perfume-gold">Inventario</button>
+        </div>
+
+        <div class="max-w-7xl mx-auto p-4 md:p-8">
+            <div id="panel-finanzas" class="admin-tab space-y-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-xl border shadow-sm">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Ventas Totales</p>
+                        <h5 id="fin-ventas" class="text-2xl font-bold text-perfume-dark">$0.00</h5>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border shadow-sm">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Ganancias Acumuladas</p>
+                        <h5 id="fin-ganancias" class="text-2xl font-bold text-green-600">$0.00</h5>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border shadow-sm">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Costos de Inversión</p>
+                        <h5 id="fin-costos" class="text-2xl font-bold text-red-600">$0.00</h5>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border shadow-sm">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Stock Global</p>
+                        <h5 id="fin-stock" class="text-2xl font-bold text-perfume-brown">0 Uds.</h5>
+                    </div>
                 </div>
             </div>
-            
-            <div id="adminDashboardContent">
-                <div class="stats-container">
-                    <div class="stat-box">
-                        <span class="stat-number" id="totalAppointments">0</span>
-                        <span class="stat-label">Citas Totales</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-number" id="todayAppointments">0</span>
-                        <span class="stat-label">Citas para Hoy</span>
-                    </div>
-                </div>
 
-                <div class="table-responsive">
-                    <table id="appointmentsTable">
+            <div id="panel-pedidos" class="admin-tab hidden space-y-6">
+                <h3 class="text-xl font-bold border-b pb-2">Control de Pedidos de Clientes</h3>
+                <div class="overflow-x-auto bg-white rounded-xl border">
+                    <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr>
-                                <th>Cliente</th>
-                                <th>Fecha</th>
-                                <th>Hora</th>
-                                <th>Servicio</th>
-                                <th>Acciones</th>
+                            <tr class="bg-gray-50 border-b text-xs uppercase tracking-wider text-gray-600">
+                                <th class="p-4">Cliente</th>
+                                <th class="p-4">Pedido</th>
+                                <th class="p-4">Total</th>
+                                <th class="p-4">Entrega</th>
+                                <th class="p-4">Pago</th>
                             </tr>
                         </thead>
-                        <tbody id="appointmentsTableBody">
+                        <tbody id="table-pedidos" class="divide-y text-sm">
                             </tbody>
                     </table>
                 </div>
             </div>
 
-            <div id="adminFiltersContent" class="hidden">
-                <div class="filters-card">
-                    <h3>Filtrar y Buscar Citas</h3>
-                    <div class="filters-container">
-                        <div class="filter-group">
-                            <label>Buscar por Texto:</label>
-                            <input type="text" id="searchFilter" placeholder="Nombre o servicio...">
-                        </div>
-                        <div class="filter-group">
-                            <label>Filtrar por Fecha:</label>
-                            <input type="date" id="dateFilter">
-                        </div>
+            <div id="panel-ventas" class="admin-tab hidden space-y-8">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 bg-white p-4 rounded-xl border">
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-medium">Filtrar por Fecha:</label>
+                        <input type="date" id="filter-date" onchange="loadVentasGlobales()" class="border p-2 rounded-lg text-sm">
                     </div>
-                    <button id="clearFilters" class="btn-secondary">Limpiar Filtros</button>
+                    <button onclick="openManualSaleModal()" class="bg-perfume-dark text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-perfume-brown transition-colors">+ Registrar Venta Manual</button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 overflow-x-auto bg-white rounded-xl border">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 border-b text-xs uppercase tracking-wider text-gray-600">
+                                    <th class="p-4">Cliente</th>
+                                    <th class="p-4">Fecha</th>
+                                    <th class="p-4">Costo</th>
+                                    <th class="p-4">Ganancia</th>
+                                    <th class="p-4">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-ventas-globales" class="divide-y text-sm"></tbody>
+                        </table>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border shadow-sm space-y-4">
+                        <h4 class="font-bold border-b pb-2 tracking-wide text-perfume-brown uppercase text-sm">Top 10 Más Vendidos</h4>
+                        <ol id="top-perfumes-list" class="space-y-2 text-sm list-decimal list-inside text-gray-700">
+                            </ol>
+                    </div>
                 </div>
             </div>
 
-        </section>
+            <div id="panel-inventario" class="admin-tab hidden space-y-6">
+                <div class="bg-white p-6 rounded-xl border max-w-xl mx-auto space-y-4 shadow-sm">
+                    <h3 class="text-lg font-bold text-perfume-dark border-b pb-2">Actualizar Stock de Mercancía</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs uppercase text-gray-500 mb-1">Sección</label>
+                            <select id="inv-section" class="w-full border p-2.5 rounded-lg text-sm">
+                                <option value="caballeros">Caballeros</option>
+                                <option value="damas">Damas</option>
+                                <option value="unisex">Unisex</option>
+                                <option value="niños">Niños</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase text-gray-500 mb-1">Acción</label>
+                            <select id="inv-action" class="w-full border p-2.5 rounded-lg text-sm">
+                                <option value="add">Ingresar Nueva Mercancía</option>
+                                <option value="remove">Sacar de Inventario</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="col-span-1">
+                            <label class="block text-xs uppercase text-gray-500 mb-1">Cantidad</label>
+                            <input type="number" id="inv-qty" min="1" value="1" class="w-full border p-2.5 rounded-lg text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase text-gray-500 mb-1">Costo Unitario ($)</label>
+                            <input type="number" id="inv-cost" min="0" step="0.1" value="2.0" class="w-full border p-2.5 rounded-lg text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase text-gray-500 mb-1">Precio Venta ($)</label>
+                            <input type="number" id="inv-price" min="0" step="0.1" value="4.0" class="w-full border p-2.5 rounded-lg text-sm">
+                        </div>
+                    </div>
+                    <button onclick="updateStockSubmit()" class="w-full bg-perfume-dark hover:bg-perfume-brown text-white py-3 rounded-lg font-bold tracking-wider uppercase text-xs transition-colors">Ejecutar Movimiento</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    
-    <script>
-        // Configuración de tu base de datos de Firebase activa
+    <div id="manual-sale-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full space-y-4">
+            <h3 class="text-lg font-bold border-b pb-2">Registrar Nueva Venta Manual</h3>
+            <input type="text" id="manual-client" placeholder="Nombre del Cliente" class="w-full border p-2.5 rounded-lg text-sm">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs text-gray-500">Categoría</label>
+                    <select id="manual-cat" class="w-full border p-2 rounded-lg text-sm">
+                        <option value="caballeros">Caballeros</option>
+                        <option value="damas">Damas</option>
+                        <option value="unisex">Unisex</option>
+                        <option value="niños">Niños</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500">Cantidad</label>
+                    <input type="number" id="manual-qty" value="1" min="1" class="w-full border p-2 rounded-lg text-sm">
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 pt-2">
+                <button onclick="closeManualSaleModal()" class="px-4 py-2 border rounded-lg text-sm">Cancelar</button>
+                <button onclick="submitManualSale()" class="px-4 py-2 bg-perfume-dark text-white rounded-lg text-sm hover:bg-perfume-brown">Guardar Venta</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set, update, push, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+        // CONFIGURACIÓN DE TU FIREBASE (Reemplaza con las credenciales de tu consola Firebase)
         const firebaseConfig = {
-            databaseURL: "https://ep-perfumes-3c4f7-default-rtdb.firebaseio.com/"
+            databaseURL: "https://ep-perfumes-3c4f7-default-rtdb.firebaseio.com"
         };
 
-        // Inicializar Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        const appointmentsRef = database.ref('citas');
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-        // --- ELEMENTOS DEL DOM ---
-        const navMenuBtn = document.getElementById('navMenuBtn');
-        const dropdownMenu = document.getElementById('dropdownMenu');
-        const viewClientBtn = document.getElementById('viewClientBtn');
-        const viewAdminBtn = document.getElementById('viewAdminBtn');
+        // Variables Globales de la App
+        let cart = {};
+        let inventory = { caballeros: 0, damas: 0, unisex: 0, niños: 0 };
+        let prices = { caballeros: 4, damas: 4, unisex: 4, niños: 4 };
+        let costs = { caballeros: 2, damas: 2, unisex: 2, niños: 2 };
 
-        const clientView = document.getElementById('clientView');
-        const adminView = document.getElementById('adminView');
-
-        const adminTabDashboard = document.getElementById('adminTabDashboard');
-        const adminTabFilters = document.getElementById('adminTabFilters');
-        const exitAdminBtn = document.getElementById('exitAdminBtn');
-
-        const adminDashboardContent = document.getElementById('adminDashboardContent');
-        const adminFiltersContent = document.getElementById('adminFiltersContent');
-
-        const appointmentForm = document.getElementById('appointmentForm');
-        const appointmentsTableBody = document.getElementById('appointmentsTableBody');
-        const totalAppointmentsEl = document.getElementById('totalAppointments');
-        const todayAppointmentsEl = document.getElementById('todayAppointments');
-
-        const searchFilter = document.getElementById('searchFilter');
-        const dateFilter = document.getElementById('dateFilter');
-        const clearFiltersBtn = document.getElementById('clearFilters');
-
-        let allAppointments = []; // Resguardo local para filtrado en tiempo real
-
-        // --- MANEJO DEL MENÚ DESPLEGABLE (NAVBAR) ---
-        navMenuBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdownMenu.classList.toggle('show');
+        // Inicialización y Transición Rápida (Splash Screen)
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            setTimeout(() => {
+                const splash = document.getElementById('splash');
+                splash.classList.add('opacity-0');
+                setTimeout(() => splash.remove(), 500);
+            }, 1800);
+            initRealtimeInventory();
         });
 
-        document.addEventListener('click', () => {
-            dropdownMenu.classList.remove('show');
-        });
-
-        // Alternar a la interfaz del Cliente
-        viewClientBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            clientView.classList.remove('hidden');
-            adminView.classList.add('hidden');
-            dropdownMenu.classList.remove('show');
-        });
-
-        // Alternar al Panel de Administración completo
-        viewAdminBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            clientView.classList.add('hidden');
-            adminView.classList.remove('hidden');
-            dropdownMenu.classList.remove('show');
-            showAdminTab('dashboard'); // Entra mostrando el Dashboard por defecto
-        });
-
-        // --- NAVEGACIÓN INTERNA DEL PANEL DE ADMINISTRACIÓN ---
-        function showAdminTab(tabName) {
-            if (tabName === 'dashboard') {
-                adminTabDashboard.classList.add('active');
-                adminTabFilters.classList.remove('active');
-                adminDashboardContent.classList.remove('hidden');
-                adminFiltersContent.classList.add('hidden');
-                renderTable(allAppointments); 
-            } else if (tabName === 'filters') {
-                adminTabFilters.classList.add('active');
-                adminTabDashboard.classList.remove('active');
-                adminDashboardContent.classList.add('hidden');
-                adminFiltersContent.classList.remove('hidden');
-            }
+        // Sincronización en tiempo real del inventario
+        function initRealtimeInventory() {
+            onValue(ref(db, 'inventario'), (snapshot) => {
+                const data = snapshot.val();
+                if(data) {
+                    ['caballeros', 'damas', 'unisex', 'niños'].forEach(cat => {
+                        inventory[cat] = data[cat]?.stock || 0;
+                        prices[cat] = data[cat]?.precio || 4;
+                        costs[cat] = data[cat]?.costo || 2;
+                        document.getElementById(`stock-${cat}`).innerText = inventory[cat];
+                    });
+                    calculateFinances();
+                }
+            });
         }
 
-        adminTabDashboard.addEventListener('click', () => showAdminTab('dashboard'));
-        adminTabFilters.addEventListener('click', () => showAdminTab('filters'));
-
-        exitAdminBtn.addEventListener('click', () => {
-            adminView.classList.add('hidden');
-            clientView.classList.remove('hidden');
-        });
-
-        // --- REGISTRAR NUEVA CITA (ACCIONADO POR EL CLIENTE) ---
-        appointmentForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            const name = document.getElementById('clientName').value.trim();
-            const date = document.getElementById('appointmentDate').value;
-            const time = document.getElementById('appointmentTime').value;
-            const service = document.getElementById('barberService').value;
-
-            if (name && date && time && service) {
-                const newAppointment = {
-                    cliente: name,
-                    fecha: date,
-                    hora: time,
-                    servicio: service,
-                    timestamp: Date.now()
-                };
-
-                // Guardar en el nodo 'citas' de Firebase
-                appointmentsRef.push().set(newAppointment)
-                    .then(() => {
-                        alert('¡Cita registrada con éxito!');
-                        appointmentForm.reset();
-                    })
-                    .catch((error) => {
-                        console.error("Error al registrar: ", error);
-                        alert('Error al procesar la reserva.');
-                    });
-            }
-        });
-
-        // --- ESCUCHA DE DATOS EN TIEMPO REAL ---
-        appointmentsRef.on('value', (snapshot) => {
-            allAppointments = [];
-            const data = snapshot.val();
-
-            if (data) {
-                Object.keys(data).forEach(key => {
-                    allAppointments.push({
-                        id: key,
-                        ...data[key]
-                    });
-                });
-                
-                // Ordenar las citas cronológicamente por fecha y luego por hora
-                allAppointments.sort((a, b) => {
-                    return a.fecha.localeCompare(b.fecha) || a.hora.localeCompare(b.hora);
-                });
-            }
-
-            // Actualizar indicadores numéricos siempre
-            updateCounters(allAppointments);
-
-            // Refrescar la tabla dependiendo de la sección visible
-            if (adminFiltersContent.classList.contains('hidden')) {
-                renderTable(allAppointments);
-            } else {
-                applyFilters(); 
-            }
-        });
-
-        // --- CONSTRUCCIÓN DINÁMICA DE LA TABLA ---
-        function renderTable(appointmentsList) {
-            appointmentsTableBody.innerHTML = '';
-
-            if (appointmentsList.length === 0) {
-                appointmentsTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No hay registros disponibles.</td></tr>`;
+        // Sistema de Carrito de Compras Elegante
+        window.addToCart = function(category) {
+            if (inventory[category] <= (cart[category] || 0)) {
+                alert('Lo sentimos, no hay más stock disponible de este catálogo en tiempo real.');
                 return;
             }
+            cart[category] = (cart[category] || 0) + 1;
+            updateCartUI();
+        };
 
-            appointmentsList.forEach(appointment => {
-                const row = document.createElement('tr');
-                const [year, month, day] = appointment.fecha.split('-');
+        function updateCartUI() {
+            const container = document.getElementById('cart-items');
+            const countBadge = document.getElementById('cart-count');
+            container.innerHTML = '';
+            
+            let totalQty = 0;
+            let totalPrice = 0;
 
-                row.innerHTML = `
-                    <td><strong>${appointment.cliente}</strong></td>
-                    <td>${day}/${month}/${year}</td>
-                    <td>${appointment.hora}</td>
-                    <td>${appointment.servicio}</td>
-                    <td>
-                        <button class="btn-delete" onclick="deleteAppointment('${appointment.id}')">Eliminar</button>
-                    </td>
-                `;
-                appointmentsTableBody.appendChild(row);
-            });
-        }
-
-        // --- CONTROLADORES DE CONTADORES ---
-        function getLocalDateString() {
-            const today = new Date();
-            const offset = today.getTimezoneOffset();
-            const localToday = new Date(today.getTime() - (offset * 60 * 1000));
-            return localToday.toISOString().split('T')[0];
-        }
-
-        function updateCounters(appointmentsList) {
-            const todayStr = getLocalDateString();
-            const total = appointmentsList.length;
-            const todayCount = appointmentsList.filter(app => app.fecha === todayStr).length;
-
-            totalAppointmentsEl.textContent = total;
-            todayAppointmentsEl.textContent = todayCount;
-        }
-
-        // --- LÓGICA DE FILTRADO INTERNO ---
-        function applyFilters() {
-            const textQuery = searchFilter.value.toLowerCase();
-            const dateQuery = dateFilter.value;
-
-            const filtered = allAppointments.filter(appointment => {
-                const matchesText = appointment.cliente.toLowerCase().includes(textQuery) || 
-                                    appointment.servicio.toLowerCase().includes(textQuery);
-                const matchesDate = dateQuery ? appointment.fecha === dateQuery : true;
-
-                return matchesText && matchesDate;
+            Object.keys(cart).forEach(cat => {
+                if(cart[cat] > 0) {
+                    totalQty += cart[cat];
+                    container.innerHTML += `
+                        <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg border">
+                            <div>
+                                <h5 class="font-bold text-sm uppercase">${cat}</h5>
+                                <p class="text-xs text-gray-500">Cantidad: ${cart[cat]}</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="modifyCart('${cat}', -1)" class="p-1 bg-gray-200 rounded text-xs font-bold">-</button>
+                                <button onclick="modifyCart('${cat}', 1)" class="p-1 bg-gray-200 rounded text-xs font-bold">+</button>
+                            </div>
+                        </div>
+                    `;
+                }
             });
 
-            renderTable(filtered);
+            // Lógica de cálculo de promociones (2 por 5$, individual 4$)
+            let pairs = Math.floor(totalQty / 2);
+            let singles = totalQty % 2;
+            totalPrice = (pairs * 5) + (singles * 4);
+
+            document.getElementById('cart-total').innerText = `$${totalPrice.toFixed(2)}`;
+            if(totalQty > 0) {
+                countBadge.innerText = totalQty;
+                countBadge.classList.remove('hidden');
+            } else {
+                countBadge.classList.add('hidden');
+            }
         }
 
-        searchFilter.addEventListener('input', applyFilters);
-        dateFilter.addEventListener('change', applyFilters);
+        window.modifyCart = function(cat, val) {
+            if(val === 1 && inventory[cat] <= cart[cat]) {
+                alert('Límite de inventario alcanzado.');
+                return;
+            }
+            cart[cat] += val;
+            if(cart[cat] <= 0) delete cart[cat];
+            updateCartUI();
+        };
 
-        clearFiltersBtn.addEventListener('click', () => {
-            searchFilter.value = '';
-            dateFilter.value = '';
-            applyFilters();
+        // Redirección Automatizada a WhatsApp y guardado en Firebase
+        window.checkout = function() {
+            const clientName = document.getElementById('client-name').value.trim();
+            if(!clientName) { alert('Por favor ingresa tu nombre.'); return; }
+            if(Object.keys(cart).length === 0) { alert('El carrito está vacío.'); return; }
+
+            let orderText = `*NUEVO PEDIDO - EP PERFUMES*\n\n`;
+            orderText += `*Cliente:* ${clientName}\n`;
+            orderText += `---------------------------\n`;
+            
+            let totalQty = 0;
+            Object.keys(cart).forEach(cat => {
+                orderText += `• Catálogo ${cat.toUpperCase()}: ${cart[cat]} unidad(es)\n`;
+                totalQty += cart[cat];
+            });
+
+            let pairs = Math.floor(totalQty / 2);
+            let singles = totalQty % 2;
+            let totalPrice = (pairs * 5) + (singles * 4);
+
+            orderText += `---------------------------\n`;
+            orderText += `*Total a pagar:* $${totalPrice} (Promo Aplicada)\n`;
+
+            // Guardar en la base de datos como pedido pendiente
+            const newOrderRef = push(ref(db, 'pedidos'));
+            set(newOrderRef, {
+                cliente: clientName,
+                items: cart,
+                total: totalPrice,
+                entregado: false,
+                pagado: false,
+                fecha: new Date().toISOString().split('T')[0]
+            }).then(() => {
+                cart = {};
+                updateCartUI();
+                toggleCart();
+                document.getElementById('client-name').value = '';
+                
+                // Abrir WhatsApp en pestaña nueva
+                const wpUrl = `https://wa.me/584244416044?text=${encodeURIComponent(orderText)}`;
+                window.open(wpUrl, '_blank');
+            });
+        };
+
+        // --- SISTEMA ADMINISTRATIVO ---
+        const ADMIN_KEY = "EP-030699";
+
+        document.getElementById('admin-access-btn').addEventListener('click', () => {
+            const entry = prompt("Introduce la clave de acceso de administrador:");
+            if (entry === ADMIN_KEY) {
+                document.getElementById('admin-modal').classList.remove('hidden');
+                switchAdminTab('finanzas');
+            } else {
+                alert("Clave incorrecta.");
+            }
         });
 
-        // --- ACCIÓN ELIMINAR REGISTRO ---
-        window.deleteAppointment = function(id) {
-            if (confirm('¿Deseas eliminar permanentemente esta cita?')) {
-                appointmentsRef.child(id).remove()
-                    .then(() => {
-                        alert('Cita removida del sistema.');
-                    })
-                    .catch((error) => {
-                        console.error("Error al remover: ", error);
-                    });
+        window.closeAdmin = function() {
+            document.getElementById('admin-modal').classList.add('hidden');
+        };
+
+        window.switchAdminTab = function(tabId) {
+            document.querySelectorAll('.admin-tab').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`panel-${tabId}`).classList.remove('hidden');
+            
+            document.querySelectorAll('[id^="tab-"]').forEach(el => el.className = "px-3 py-1 rounded hover:text-perfume-gold");
+            document.getElementById(`tab-${tabId}`).className = "px-3 py-1 rounded text-perfume-gold font-normal border-b-2 border-perfume-gold";
+
+            if (tabId === 'pedidos') loadPedidos();
+            if (tabId === 'ventas') loadVentasGlobales();
+        };
+
+        // Pestaña Pedidos - Administración
+        function loadPedidos() {
+            onValue(ref(db, 'pedidos'), (snapshot) => {
+                const container = document.getElementById('table-pedidos');
+                container.innerHTML = '';
+                const data = snapshot.val();
+                if(!data) return;
+
+                Object.keys(data).forEach(id => {
+                    const o = data[id];
+                    let itemsStr = Object.keys(o.items).map(k => `${k}(${o.items[k]})`).join(', ');
+                    
+                    container.innerHTML += `
+                        <tr class="hover:bg-gray-50">
+                            <td class="p-4 font-bold">${o.cliente}</td>
+                            <td class="p-4">${itemsStr}</td>
+                            <td class="p-4 font-bold">$${o.total}</td>
+                            <td class="p-4">
+                                <button onclick="toggleEntrega('${id}', ${o.entregado})" class="px-3 py-1 rounded text-xs ${o.entregado ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                                    ${o.entregado ? 'Entregado ✓' : 'Pendiente ⏳'}
+                                </button>
+                            </td>
+                            <td class="p-4">
+                                <button onclick="togglePago('${id}', ${o.pagado})" class="px-3 py-1 rounded text-xs ${o.pagado ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800'}">
+                                    ${o.pagado ? 'Pagado ✓' : 'Por Cobrar ✕'}
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            });
+        }
+
+        window.toggleEntrega = async function(id, currentStatus) {
+            if(currentStatus) return; // Ya despachado
+            if(confirm("¿Confirmar entrega? Esto restará las unidades del stock físico actual.")) {
+                const snap = await get(ref(db, `pedidos/${id}`));
+                const pedido = snap.val();
+                
+                // Restar de inventario
+                for (let cat in pedido.items) {
+                    let currentStock = inventory[cat] || 0;
+                    let nextStock = Math.max(0, currentStock - pedido.items[cat]);
+                    await update(ref(db, `inventario/${cat}`), { stock: nextStock });
+                }
+                await update(ref(db, `pedidos/${id}`), { entregado: true });
+                loadPedidos();
             }
         };
+
+        window.togglePago = async function(id, currentStatus) {
+            if(currentStatus) return;
+            if(confirm("¿Registrar cobro de este pedido? Se sumará a finanzas globales.")) {
+                const snap = await get(ref(db, `pedidos/${id}`));
+                const pedido = snap.val();
+
+                // Calcular costos basados en los acumulados del lote
+                let totalCosto = 0;
+                for (let cat in pedido.items) {
+                    totalCosto += (costs[cat] || 2) * pedido.items[cat];
+                }
+                let ganancia = pedido.total - totalCosto;
+
+                // Enviar a la tabla de Ventas Consolidadas
+                const newVentaRef = push(ref(db, 'ventas'));
+                await set(newVentaRef, {
+                    cliente: pedido.cliente,
+                    fecha: pedido.fecha || new Date().toISOString().split('T')[0],
+                    total: pedido.total,
+                    costo: totalCosto,
+                    ganancia: ganancia,
+                    items: pedido.items
+                });
+
+                await update(ref(db, `pedidos/${id}`), { pagado: true });
+                loadPedidos();
+            }
+        };
+
+        // Pestaña: Ventas Globales e Historial + Top 10
+        window.loadVentasGlobales = function() {
+            onValue(ref(db, 'ventas'), (snapshot) => {
+                const data = snapshot.val();
+                const table = document.getElementById('table-ventas-globales');
+                const filterDate = document.getElementById('filter-date').value;
+                table.innerHTML = '';
+                
+                if(!data) return;
+
+                let topCounter = {};
+
+                Object.keys(data).forEach(id => {
+                    const v = data[id];
+                    
+                    // Conteo para Top 10
+                    if (v.items) {
+                        Object.keys(v.items).forEach(cat => {
+                            topCounter[cat] = (topCounter[cat] || 0) + v.items[cat];
+                        });
+                    }
+
+                    // Filtro de fecha
+                    if(filterDate && v.fecha !== filterDate) return;
+
+                    table.innerHTML += `
+                        <tr class="hover:bg-gray-50">
+                            <td class="p-4 font-medium">${v.cliente}</td>
+                            <td class="p-4 text-xs text-gray-500">${v.fecha}</td>
+                            <td class="p-4 text-red-600">$${v.costo.toFixed(2)}</td>
+                            <td class="p-4 text-green-600">$${v.ganancia.toFixed(2)}</td>
+                            <td class="p-4 font-bold">$${v.total.toFixed(2)}</td>
+                        </tr>
+                    `;
+                });
+
+                renderTopTen(topCounter);
+            });
+        };
+
+        function renderTopTen(counter) {
+            const list = document.getElementById('top-perfumes-list');
+            list.innerHTML = '';
+            let sorted = Object.keys(counter).sort((a,b) => counter[b] - counter[a]);
+            sorted.slice(0, 10).forEach(cat => {
+                list.innerHTML += `<li class="capitalize font-medium text-gray-800">${cat} <span class="text-xs text-perfume-gold font-bold">(${counter[cat]} vendidos)</span></li>`;
+            });
+        }
+
+        // Pestaña: Inventario - Ajustes manuales directos
+        window.updateStockSubmit = function() {
+            const cat = document.getElementById('inv-section').value;
+            const action = document.getElementById('inv-action').value;
+            const qty = parseInt(document.getElementById('inv-qty').value);
+            const cost = parseFloat(document.getElementById('inv-cost').value);
+            const price = parseFloat(document.getElementById('inv-price').value);
+
+            if(isNaN(qty) || qty <= 0) return;
+
+            let currentStock = inventory[cat] || 0;
+            let nextStock = action === 'add' ? currentStock + qty : Math.max(0, currentStock - qty);
+
+            update(ref(db, `inventario/${cat}`), {
+                stock: nextStock,
+                costo: cost,
+                precio: price
+            }).then(() => {
+                alert("Movimiento de inventario sincronizado con éxito.");
+            });
+        };
+
+        // Registro de Ventas Manuales directas por mostrador
+        window.openManualSaleModal = () => document.getElementById('manual-sale-modal').classList.remove('hidden');
+        window.closeManualSaleModal = () => document.getElementById('manual-sale-modal').classList.add('hidden');
+        
+        window.submitManualSale = async function() {
+            const cliente = document.getElementById('manual-client').value.trim();
+            const cat = document.getElementById('manual-cat').value;
+            const qty = parseInt(document.getElementById('manual-qty').value);
+
+            if(!cliente || isNaN(qty) || qty <= 0) return;
+
+            let totalVenta = qty * (prices[cat] || 4);
+            let totalCosto = qty * (costs[cat] || 2);
+            let ganancia = totalVenta - totalCosto;
+
+            // Restar de inventario inmediatamente
+            let nextStock = Math.max(0, (inventory[cat] || 0) - qty);
+            await update(ref(db, `inventario/${cat}`), { stock: nextStock });
+
+            // Registrar Venta
+            const newRef = push(ref(db, 'ventas'));
+            await set(newRef, {
+                cliente: cliente,
+                fecha: new Date().toISOString().split('T')[0],
+                total: totalVenta,
+                costo: totalCosto,
+                ganancia: ganancia,
+                items: { [cat]: qty }
+            });
+
+            closeManualSaleModal();
+            document.getElementById('manual-client').value = '';
+            alert("Venta manual registrada.");
+        };
+
+        // Cálculos Globales para la pestaña de Finanzas
+        function calculateFinances() {
+            get(ref(db, 'ventas')).then((snapshot) => {
+                let totalVentas = 0, totalGanancias = 0, totalCostos = 0;
+                const data = snapshot.val();
+                
+                if(data) {
+                    Object.values(data).forEach(v => {
+                        totalVentas += v.total || 0;
+                        totalGanancias += v.ganancia || 0;
+                        totalCostos += v.costo || 0;
+                    });
+                }
+
+                let totalStock = Object.values(inventory).reduce((a, b) => a + b, 0);
+
+                document.getElementById('fin-ventas').innerText = `$${totalVentas.toFixed(2)}`;
+                document.getElementById('fin-ganancias').innerText = `$${totalGanancias.toFixed(2)}`;
+                document.getElementById('fin-costos').innerText = `$${totalCostos.toFixed(2)}`;
+                document.getElementById('fin-stock').innerText = `${totalStock} Uds.`;
+            });
+        }
+
+        // Lógica de interfaz (Menú y Carrito lateral)
+        const menuBtn = document.getElementById('menu-btn');
+        const closeMenuBtn = document.getElementById('close-menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+
+        function toggleMenu() {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+        menuBtn.addEventListener('click', toggleMenu);
+        closeMenuBtn.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+
+        window.toggleCart = function() {
+            document.getElementById('cart-modal').classList.toggle('hidden');
+        };
+        document.getElementById('cart-btn').addEventListener('click', toggleCart);
     </script>
 </body>
 </html>
