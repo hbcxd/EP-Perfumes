@@ -292,10 +292,10 @@
     
     <div class="promo-banner">
         <div class="promo-imagen-side">
-            <img src="IMAGENES/PROMO_PERFUMES.jpg" alt="Fragancias EP" onerror="this.src='IMAGENES/LOGO.png'">
+            <img src="PROMO_PERFUMES.jpg" alt="Fragancias EP" onerror="this.src='LOGO.png'">
         </div>
         <div class="promo-info-side">
-            <img src="IMAGENES/LOGO.png" alt="EP Perfumes Logo" class="promo-logo" onerror="this.style.display='none'">
+            <img src="LOGO.png" alt="EP Perfumes Logo" class="promo-logo" onerror="this.style.display='none'">
             <h2 style="border:none; margin-bottom:5px; font-size:24px; color:var(--texto-oscuro);">EP PERFUME</h2>
             <p style="color: var(--texto-mutado); font-size: 14px;">Fragancias Exclusivas & Alta Durabilidad</p>
             
@@ -381,7 +381,7 @@
 
 <div id="login-screen">
     <div class="login-box">
-        <img src="IMAGENES/LOGO.png" alt="EP Perfume" class="logo-login" style="max-width:80px; margin-bottom:10px;" onerror="this.style.display='none'">
+        <img src="LOGO.png" alt="EP Perfume" class="logo-login" style="max-width:80px; margin-bottom:10px;" onerror="this.style.display='none'">
         <h2>ÁREA PRIVADA</h2>
         <p style="font-size: 13px; color: var(--texto-mutado); margin-bottom: 20px;">Control Interno Comercial</p>
         <div class="form-group" style="text-align: left;">
@@ -832,10 +832,10 @@
                 : `<button class="btn-secondary" style="font-size:11px; padding:6px; cursor:not-allowed;" disabled>No Disponible</button>`;
 
             // Identificar ruta de la imagen correspondiente por categoría
-            let rutaImagen = 'IMAGENES/CAT_CABALLERO.jpg';
-            if(cat === 'Dama') rutaImagen = 'IMAGENES/CAT_DAMA.jpg';
-            else if(cat === 'Unisex') rutaImagen = 'IMAGENES/CAT_UNISEX.jpg';
-            else if(cat === 'Nino') rutaImagen = 'IMAGENES/CAT_NINO.jpg';
+            let rutaImagen = 'CAT_CABALLERO.jpg';
+            if(cat === 'Dama') rutaImagen = 'CAT_DAMA.jpg';
+            else if(cat === 'Unisex') rutaImagen = 'CAT_UNISEX.jpg';
+            else if(cat === 'Nino') rutaImagen = 'CAT_NINO.jpg';
 
             const cardHtml = `
                 <div class="producto-card">
