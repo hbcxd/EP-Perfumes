@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EP Perfumes - Panel Corporativo</title>
+    <title>EP Perfumes - Aromas de Alta Gama</title>
     <style>
-        /* --- PALETA DE COLORES --- */
+        /* --- PALETA DE COLORES Y VARIABLES --- */
         :root {
             --bg-principal: #f8f9fa; 
             --bg-tarjetas: #ffffff;  
@@ -25,25 +25,112 @@
         body { 
             background-color: var(--bg-principal); 
             color: var(--texto-oscuro); 
-            padding: 15px; 
             min-height: 100vh; 
             position: relative; 
             overflow-x: hidden;
         }
         
         h1, h2, h3 { color: var(--texto-oscuro); font-weight: 600; }
-        h2 { font-size: 18px; margin-bottom: 20px; border-bottom: 2px solid var(--oro); padding-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-
-        .container { max-width: 1000px; margin: 0 auto; display: none; }
         
-        /* --- PANTALLA DE LOGIN --- */
-        #login-screen {
+        /* --- VISTAS PRINCIPALES (CONTROL DE DESPLIEGUE) --- */
+        .vista-sistema { display: none; padding: 15px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+
+        /* --- SECCIÓN PÚBLICA (LANDING PAGE) --- */
+        #vista-publica { display: block; background-color: #ffffff; }
+        
+        /* Navegación Pública */
+        .pub-nav {
             display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            border-bottom: 1px solid var(--borde);
+            background: #ffffff;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .pub-logo-box { display: flex; align-items: center; gap: 10px; }
+        .pub-logo { max-width: 40px; height: auto; }
+        .pub-brand { font-size: 20px; font-weight: 700; color: var(--oro); letter-spacing: 1px; }
+        .btn-acceso-admin {
+            background-color: transparent;
+            color: var(--texto-mutado);
+            border: 1px solid var(--borde);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: none;
+        }
+        .btn-acceso-admin:hover {
+            border-color: var(--oro);
+            color: var(--oro);
+            background: transparent;
+            transform: none;
+        }
+
+        /* Hero / Presentación */
+        .pub-hero {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(rgba(255,255,255,0.9), rgba(252,249,242,0.9)), url('IMAGENES/LOGO.png');
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: contain;
+        }
+        .pub-hero h1 { font-size: 42px; color: var(--texto-oscuro); margin-bottom: 15px; letter-spacing: 1px; }
+        .pub-hero p { font-size: 18px; color: var(--texto-mutado); max-width: 600px; margin: 0 auto 30px auto; line-height: 1.6; }
+        .btn-cta {
+            background-color: var(--oro);
+            color: #ffffff;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-size: 16px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3);
+        }
+        .btn-cta:hover { background-color: var(--oro-hover); transform: translateY(-2px); }
+
+        /* Catálogo Público */
+        .pub-catalogo { max-width: 1100px; margin: 0 auto; padding: 60px 20px; }
+        .pub-catalogo h2 { text-align: center; font-size: 28px; margin-bottom: 40px; border: none; position: relative; padding-bottom: 15px; }
+        .pub-catalogo h2::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 60px; height: 3px; background-color: var(--oro); }
+        
+        .grid-productos { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+        .producto-card {
+            background: #ffffff;
+            border: 1px solid var(--borde);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .producto-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: var(--oro); }
+        .producto-icon { font-size: 40px; color: var(--oro); margin-bottom: 15px; }
+        .producto-card h3 { font-size: 20px; margin-bottom: 10px; color: var(--texto-oscuro); }
+        .producto-precio { font-size: 22px; font-weight: 700; color: var(--oro); margin-bottom: 15px; }
+        .badge-stock { display: inline-block; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 600; background-color: #f1f5f9; color: var(--texto-mutado); }
+        
+        /* Footer */
+        .pub-footer { background-color: var(--texto-oscuro); color: #ffffff; text-align: center; padding: 40px 20px; font-size: 14px; margin-top: 60px; }
+        .pub-footer p { color: #94a3b8; margin-bottom: 10px; }
+        .pub-footer span { color: var(--oro); font-weight: bold; }
+
+        /* --- PANTALLA DE ACCESO (LOGIN) --- */
+        #login-screen {
+            display: none;
             justify-content: center;
             align-items: center;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--bg-principal);
+            background-color: rgba(248, 249, 250, 0.95);
             z-index: 9999;
             padding: 20px;
         }
@@ -56,12 +143,18 @@
             width: 100%;
             text-align: center;
             border: 1px solid var(--borde);
+            position: relative;
         }
-        .login-box .logo-login { max-width: 120px; height: auto; margin-bottom: 15px; }
-        .login-box h2 { justify-content: center; border: none; color: var(--oro); font-size: 24px; margin-bottom: 8px; letter-spacing: 1px; }
+        .login-box .logo-login { max-width: 100px; height: auto; margin-bottom: 15px; }
+        .login-box h2 { justify-content: center; border: none; color: var(--oro); font-size: 24px; margin-bottom: 8px; letter-spacing: 1px; padding-bottom: 0; }
         .login-box p { color: var(--texto-mutado); font-size: 14px; margin-bottom: 25px; }
+        .btn-cerrar-login { position: absolute; top: 15px; right: 20px; background: none; border: none; box-shadow: none; color: var(--texto-mutado); font-size: 20px; cursor: pointer; }
+        .btn-cerrar-login:hover { color: var(--peligro); background: none; transform: none; }
 
-        /* --- CABECERA SUPERIOR --- */
+        /* --- ARREGLOS Y ELEMENTOS DEL PANEL ADMINISTRATIVO --- */
+        h2 { font-size: 18px; margin-bottom: 20px; border-bottom: 2px solid var(--oro); padding-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+
+        /* Cabecera Superior */
         .header {
             display: flex;
             justify-content: space-between;
@@ -82,13 +175,13 @@
         .header-logo { max-width: 40px; height: auto; object-fit: contain; }
         .header-title h1 { font-size: 18px; letter-spacing: 1px; color: var(--oro); font-weight: 700; }
 
-        /* --- MENÚ LATERAL PLEGABLE (SIDEBAR) --- */
+        /* Menú Lateral */
         .sidebar {
             position: fixed;
             top: 0; left: -280px; width: 280px; height: 100%;
             background-color: var(--bg-tarjetas);
             box-shadow: 4px 0 25px rgba(0, 0, 0, 0.15);
-            z-index: 1000;
+            z-index: 10000;
             transition: left 0.3s ease;
             padding: 25px 20px;
             display: flex;
@@ -109,15 +202,15 @@
         .nav-btn:hover { background-color: #f1f5f9; color: var(--texto-oscuro); transform: none; }
         .nav-btn.active { background-color: var(--oro); color: #ffffff; box-shadow: 0 4px 10px rgba(197, 160, 89, 0.25); }
 
-        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); z-index: 999; display: none; }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); z-index: 9998; display: none; }
         .sidebar-overlay.show { display: block; }
 
-        /* --- VISTAS / SECCIONES --- */
+        /* Vistas internas del Panel */
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .section { background: var(--bg-tarjetas); padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid var(--borde); }
         
-        /* --- FORMULARIOS Y TABLAS --- */
+        /* Formularios y Tablas */
         .form-group { margin-bottom: 16px; }
         label { display: block; margin-bottom: 6px; font-size: 12px; color: var(--texto-mutado); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
         input, select, textarea { 
@@ -152,16 +245,58 @@
         .card-value { font-size: 20px; font-weight: bold; color: var(--texto-oscuro); }
         .loading { text-align: center; color: var(--texto-mutado); font-style: italic; padding: 20px; }
 
-        @media (max-width: 600px) { .resumen { flex-direction: column; } .perfume-row { flex-direction: column; gap: 5px; background: var(--bg-principal); padding: 10px; border-radius: 6px; } .perfume-row div { width: 100%; } }
+        @media (max-width: 600px) { 
+            .pub-nav { padding: 15px 20px; }
+            .pub-hero h1 { font-size: 30px; }
+            .resumen { flex-direction: column; } 
+            .perfume-row { flex-direction: column; gap: 5px; background: var(--bg-principal); padding: 10px; border-radius: 6px; } 
+            .perfume-row div { width: 100%; } 
+        }
     </style>
 </head>
 <body>
 
 <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar(false)"></div>
 
-<!-- PANTALLA DE ACCESO -->
+<!-- ========================================== -->
+<!-- 1. BLOQUE DE LA PÁGINA DE INICIO PÚBLICA    -->
+<!-- ========================================== -->
+<div id="vista-publica">
+    <nav class="pub-nav">
+        <div class="pub-logo-box">
+            <img src="IMAGENES/LOGO.png" alt="EP Perfume" class="pub-logo" onerror="this.style.display='none'">
+            <span class="pub-brand">EP PERFUME</span>
+        </div>
+        <button class="btn-acceso-admin" onclick="mostrarLogin(true)">🔑 Panel Administrativo</button>
+    </nav>
+
+    <header class="pub-hero">
+        <h1>Esencias que Definen tu Presencia</h1>
+        <p>Explora nuestra exclusiva colección de fragancias de alta gama inspiradas en las tendencias internacionales más sofisticadas.</p>
+        <a href="#catalogo" class="btn-cta">Ver Fragancias Disponibles</a>
+    </header>
+
+    <main class="pub-catalogo" id="catalogo">
+        <h2>Nuestro Stock en Tiempo Real</h2>
+        <!-- Las tarjetas se generan dinámicamente con la info de tu Firebase -->
+        <div class="grid-productos" id="grid-publico-productos">
+            <p class="loading" style="grid-column: 1/-1;">Sincronizando fragancias disponibles...</p>
+        </div>
+    </main>
+
+    <footer class="pub-footer">
+        <p>&copy; 2026 <span>EP Perfume</span>. Todos los derechos reservados.</p>
+        <p style="font-size: 11px; opacity: 0.6;">Control de Calidad e Importación Directa.</p>
+    </footer>
+</div>
+
+
+<!-- ========================================== -->
+<!-- 2. PANTALLA DE ACCESO (LOGIN MODAL)        -->
+<!-- ========================================== -->
 <div id="login-screen">
     <div class="login-box">
+        <button class="btn-cerrar-login" onclick="mostrarLogin(false)">✕</button>
         <img src="IMAGENES/LOGO.png" alt="EP Perfume" class="logo-login" onerror="this.style.display='none'">
         <h2>EP PERFUME</h2>
         <p>Control Interno Comercial</p>
@@ -173,7 +308,10 @@
     </div>
 </div>
 
-<!-- MENÚ LATERAL PLEGABLE -->
+
+<!-- ========================================== -->
+<!-- 3. MENÚ LATERAL PLEGABLE (SIDEBAR)         -->
+<!-- ========================================== -->
 <div id="my-sidebar" class="sidebar">
     <div class="sidebar-header">
         <div class="sidebar-brand">
@@ -193,8 +331,11 @@
     <button class="btn-logout" onclick="cerrarSesion()">🚪 Cerrar Sesión</button>
 </div>
 
-<!-- PANEL PRINCIPAL -->
-<div class="container" id="main-panel">
+
+<!-- ========================================== -->
+<!-- 4. PANEL DE CONTROL INTERNO (SISTEMA)      -->
+<!-- ========================================== -->
+<div class="container vista-sistema" id="main-panel">
     <div class="header">
         <div class="header-left">
             <button class="menu-toggle" onclick="toggleSidebar(true)">
@@ -304,7 +445,6 @@
         <div class="section">
             <h2>📦 Control de Inventario</h2>
             
-            <!-- Resumen rápido de mercancía con explicaciones explicativas -->
             <div class="resumen" style="margin-bottom: 25px;">
                 <div class="card" style="border-top-color: var(--texto-oscuro);" title="La cantidad física de perfumes de todas las fragancias combinadas que se encuentran listas en almacén.">
                     <div class="card-title">Total Fragancias en Stock</div>
@@ -371,7 +511,15 @@
     let retiros = {};
     const CLAVE_ACCESO = "EP-030699";
 
-    // --- ENLAZAR FUNCIONES AL CONTEXTO GLOBAL WINDOW ---
+    // --- MANEJO DE VISTAS (PÚBLICA / LOGIN / PANEL) ---
+    window.mostrarLogin = function(ver) {
+        document.getElementById('login-screen').style.display = ver ? 'flex' : 'none';
+        if(ver) {
+            document.getElementById('app-password').value = '';
+            document.getElementById('app-password').focus();
+        }
+    };
+
     window.toggleSidebar = function(abrir) {
         document.getElementById('my-sidebar').classList.toggle('open', abrir);
         document.getElementById('sidebar-overlay').classList.toggle('show', abrir);
@@ -397,6 +545,7 @@
     
     window.evaluarTecla = function(e) { if(e.key === 'Enter') window.verificarAcceso(); };
     window.cerrarSesion = function() { localStorage.removeItem('sesion_activa_perfumes'); window.location.reload(); };
+
 
     // --- ACCIÓN INVENTARIO (GUARDAR / ELIMINAR) ---
     window.agregarProducto = function() {
@@ -442,6 +591,7 @@
         }
     };
 
+
     // --- ACCIÓN REGISTRAR RETIRO ---
     window.registrarRetiro = function() {
         const monto = parseFloat(document.getElementById('retiro-monto').value) || 0;
@@ -458,6 +608,7 @@
     };
 
     window.eliminarRetiro = function(key) { if(confirm("¿Remover este gasto?")) remove(ref(db, `retiros/${key}`)); };
+
 
     // --- ACCIÓN VENTAS ---
     window.agregarFilaPerfume = function() {
@@ -495,7 +646,7 @@
 
             productosVendidos.push({ idProd, nombre: producto.nombre, cantidad, precio: producto.precio, costo: producto.costo || 0, totalProductoCosto: (producto.costo || 0) * cantidad });
             totalVenta += (producto.precio * cantidad);
-            totalCosto += ((producto.costo || 0) * cantidad);
+            totalCosto += ((producto.costo || 0) * quantity);
             actualizaciones[`inventario/${idProd}/stock`] = producto.stock - cantidad;
         }
 
@@ -524,23 +675,28 @@
     window.eliminarVenta = function(key) { if(confirm("¿Eliminar esta venta del historial?")) remove(ref(db, `ventas/${key}`)); };
 
 
-    // --- ARRANQUE Y RENDERIZADO DE TABLAS ---
+    // --- ARRANQUE Y RENDERIZADO DE CONTENIDOS ---
+    
+    // El sistema arranca leyendo el inventario para la sección pública de inmediato
+    onValue(ref(db, 'inventario'), (snapshot) => {
+        inventario = snapshot.val() || {};
+        actualizarTablaInventario();
+        actualizarSelectoresVenta();
+        renderizarCatalogoPublico(); // <--- Muestra las fragancias a tus clientes
+    }, (error) => {
+        alert("Error de conexión Firebase: " + error.message);
+    });
+
     if(localStorage.getItem('sesion_activa_perfumes') === 'true') {
         ejecutarArranquePanel();
     }
 
     function ejecutarArranquePanel() {
+        // Intercambiar las pantallas principales
+        document.getElementById('vista-publica').style.display = 'none';
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('main-panel').style.display = 'block';
         
-        onValue(ref(db, 'inventario'), (snapshot) => {
-            inventario = snapshot.val() || {};
-            actualizarTablaInventario();
-            actualizarSelectoresVenta();
-        }, (error) => {
-            alert("Error de conexión Firebase: " + error.message + ". Revisa las REGLAS de seguridad.");
-        });
-
         onValue(ref(db, 'ventas'), (snapshot) => {
             ventas = snapshot.val() || {};
             actualizarTotalesYVentas();
@@ -550,6 +706,41 @@
             retiros = snapshot.val() || {};
             actualizarTotalesYRetiros();
         });
+    }
+
+    // Nueva función para armar la vitrina de productos que ve la gente
+    function renderizarCatalogoPublico() {
+        const gridPublico = document.getElementById('grid-publico-productos');
+        if(!gridPublico) return;
+        gridPublico.innerHTML = '';
+
+        const keys = Object.keys(inventario);
+        if(keys.length === 0) {
+            gridPublico.innerHTML = '<p class="loading" style="grid-column: 1/-1;">Por los momentos no tenemos fragancias en stock. ¡Vuelve pronto!</p>';
+            return;
+        }
+
+        keys.forEach(key => {
+            const p = inventario[key];
+            const stockVal = parseInt(p.stock) || 0;
+            const precioVal = parseFloat(p.precio) || 0;
+
+            // Solo mostramos productos que tengan stock real disponible para la venta
+            if (stockVal > 0) {
+                gridPublico.innerHTML += `
+                    <div class="producto-card">
+                        <div class="producto-icon">✨</div>
+                        <h3>${p.nombre}</h3>
+                        <div class="producto-precio">$${precioVal.toFixed(2)}</div>
+                        <span class="badge-stock">Disponible: ${stockVal} ud</span>
+                    </div>
+                `;
+            }
+        });
+
+        if(gridPublico.innerHTML === '') {
+            gridPublico.innerHTML = '<p class="loading" style="grid-column: 1/-1;">Por los momentos no tenemos fragancias en stock. ¡Vuelve pronto!</p>';
+        }
     }
 
     function actualizarTablaInventario() {
@@ -587,7 +778,6 @@
             </tr>`;
         });
         
-        // Renderizar las tarjetas de inventario
         document.getElementById('inv-total-productos').innerText = `${totalUnidades} ud`;
         document.getElementById('inv-dinero-mercancia').innerText = `$${dineroMercancia.toFixed(2)}`;
     }
