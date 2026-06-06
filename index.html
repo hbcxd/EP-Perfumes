@@ -238,7 +238,7 @@
         th, td { padding: 14px; border-bottom: 1px solid var(--borde); }
         th { background-color: #f8fafc; color: var(--texto-mutado); font-weight: 600; text-transform: uppercase; font-size: 11px; }
 
-        .badge { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; display: inline-block; }
+        .badge { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; display: inline-block; cursor: pointer; }
         .badge-pagado { background-color: rgba(16, 185, 129, 0.1); color: var(--exito); border: 1px solid var(--exito); }
         .badge-pendiente { background-color: rgba(245, 158, 11, 0.1); color: var(--alerta); border: 1px solid var(--alerta); }
         
@@ -280,7 +280,7 @@
     </div>
     
     <div class="nav-menu" id="menu-navegacion-items">
-        </div>
+    </div>
     <button class="btn-logout" id="btn-cerrar-sesion-sidebar" style="display:none;" onclick="cerrarSesion()">🚪 Cerrar Sesión Admin</button>
 </div>
 
@@ -558,7 +558,6 @@
             localStorage.setItem('sesion_activa_perfumes', 'true');
             document.getElementById('app-password').value = '';
             document.getElementById('login-screen').style.display = 'none';
-            ejecutarArranquePanel();
             window.irAVistaAdmin();
         } else {
             alert("Acceso denegado.");
@@ -774,31 +773,36 @@
     window.eliminarVenta = function(key) { if(confirm("¿Eliminar del historial?")) remove(ref(db, `ventas/${key}`)); };
 
 
-    // --- ESCUCHA DE FIREBASE EN TIEMPO REAL (ARREGLADO) ---
-    // Esta escucha de inventario siempre se ejecuta para alimentar la tienda pública
+    // --- ESCUCHA DE FIREBASE EN TIEMPO REAL (ARREGLADO GLOBALMENTE) ---
     onValue(ref(db, 'inventario'), (snapshot) => {
         try {
             inventario = snapshot.val() || {};
             actualizarCatalogoPublico();
-            
-            // Solo actualiza las tablas del panel interno si el panel está inicializado o si eres admin
-            if(localStorage.getItem('sesion_activa_perfumes') === 'true') {
-                actualizarTablaInventario();
-                actualizarSelectoresVenta();
-            }
+            actualizarTablaInventario();
+            actualizarSelectoresVenta();
         } catch (error) {
             console.error("Error cargando inventario en tiempo real:", error);
         }
     });
 
-    function ejecutarArranquePanel() {
-        onValue(ref(db, 'ventas'), (snapshot) => { ventas = snapshot.val() || {}; actualizarTotalesYVentas(); });
-        onValue(ref(db, 'retiros'), (snapshot) => { retiros = snapshot.val() || {}; actualizarTotalesYRetiros(); });
-        
-        // Forzar actualización al arrancar sesión
-        actualizarTablaInventario();
-        actualizarSelectoresVenta();
-    }
+    onValue(ref(db, 'ventas'), (snapshot) => { 
+        try {
+            ventas = snapshot.val() || {}; 
+            actualizarTotalesYVentas(); 
+        } catch (error) {
+            console.error("Error cargando ventas en tiempo real:", error);
+        }
+    });
+
+    onValue(ref(db, 'retiros'), (snapshot) => { 
+        try {
+            retiros = snapshot.val() || {}; 
+            actualizarTotalesYRetiros(); 
+        } catch (error) {
+            console.error("Error cargando retiros en tiempo real:", error);
+        }
+    });
+
 
     // --- RENDERIZADORES DE TABLAS E INTERFACES ---
     function actualizarCatalogoPublico() {
@@ -833,7 +837,7 @@
             let rutaImagen = 'CAT_CABALLERO.jpg';
             if(cat === 'Dama') rutaImagen = 'CAT_DAMA.jpg';
             else if(cat === 'Unisex') rutaImagen = 'CAT_UNISEX.jpg';
-            else if(cat === 'Nino') rutaImagen = 'CAT_NINO.jpg';
+            else if(cat === 'Nino' || cat === 'Niños') rutaImagen = 'CAT_NINO.jpg';
 
             const cardHtml = `
                 <div class="producto-card">
@@ -848,10 +852,10 @@
                 </div>
             `;
 
-            if (cat === 'Caballero' || cat === 'Caballero 🤵‍♂️') htmlCab += cardHtml;
+            if (cat === 'Caballero' || cat.includes('Caballero')) htmlCab += cardHtml;
             else if (cat === 'Dama') htmlDam += cardHtml;
             else if (cat === 'Unisex') htmlUni += cardHtml;
-            else if (cat === 'Nino') htmlNin += cardHtml;
+            else if (cat === 'Nino' || cat === 'Niños') htmlNin += cardHtml;
         });
 
         catCab.innerHTML = htmlCab || '<p style="color:var(--texto-mutado); font-size:12px; text-align:center; padding:10px;">Sin fragancias en stock</p>';
@@ -894,7 +898,7 @@
                         <option value="Caballero" ${cat==='Caballero'?'selected':''}>Caballero</option>
                         <option value="Dama" ${cat==='Dama'?'selected':''}>Dama</option>
                         <option value="Unisex" ${cat==='Unisex'?'selected':''}>Unisex</option>
-                        <option value="Nino" ${cat==='Nino'?'selected':''}>Niños</option>
+                        <option value="Nino" ${(cat==='Nino'||cat==='Niños')?'selected':''}>Niños</option>
                     </select>
                 </td>
                 <td style="color:${stockVal <= 3 ? 'var(--peligro)':'var(--texto-oscuro)'}; font-weight:bold;">${stockVal} ud</td>
@@ -958,11 +962,10 @@
     }
 
     // --- CONTROL DE ARRANQUE ---
-    irAVistaPublica();
-
     if(localStorage.getItem('sesion_activa_perfumes') === 'true') {
-        ejecutarArranquePanel();
         irAVistaAdmin();
+    } else {
+        irAVistaPublica();
     }
 
     setTimeout(() => { if(Object.keys(inventario).length > 0 && document.querySelectorAll('.perfume-row').length === 0) window.agregarFilaPerfume(); }, 1200);
