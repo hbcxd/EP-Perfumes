@@ -783,11 +783,15 @@
 
     // --- ESCUCHA DE FIREBASE EN TIEMPO REAL ---
     onValue(ref(db, 'inventario'), (snapshot) => {
-        inventario = snapshot.val() || {};
-        actualizarCatalogoPublico();
-        if(localStorage.getItem('sesion_activa_perfumes') === 'true') {
-            actualizarTablaInventario();
-            actualizarSelectoresVenta();
+        try {
+            inventario = snapshot.val() || {};
+            actualizarCatalogoPublico();
+            if(localStorage.getItem('sesion_activa_perfumes') === 'true') {
+                actualizarTablaInventario();
+                actualizarSelectoresVenta();
+            }
+        } catch (error) {
+            console.error("Error cargando inventario en tiempo real:", error);
         }
     });
 
@@ -802,6 +806,8 @@
         const catDam = document.getElementById('lista-damas');
         const catUni = document.getElementById('lista-unisex');
         const catNin = document.getElementById('lista-ninos');
+
+        if(!catCab || !catDam || !catUni || !catNin) return;
 
         let htmlCab = '', htmlDam = '', htmlUni = '', htmlNin = '';
         
@@ -824,7 +830,6 @@
                    </div>`
                 : `<button class="btn-secondary" style="font-size:11px; padding:6px; cursor:not-allowed;" disabled>No Disponible</button>`;
 
-            // Identificar ruta de la imagen correspondiente por categoría
             let rutaImagen = 'CAT_CABALLERO.jpg';
             if(cat === 'Dama') rutaImagen = 'CAT_DAMA.jpg';
             else if(cat === 'Unisex') rutaImagen = 'CAT_UNISEX.jpg';
@@ -856,17 +861,32 @@
     }
 
     function actualizarTablaInventario() {
-        const tbody = document.querySelector('#tabla-inventario tbody'); if (!tbody) return;
-        tbody.innerHTML = ''; let totalUnidades = 0; let dineroMercancia = 0;
+        const tbody = document.querySelector('#tabla-inventario tbody'); 
+        if (!tbody) return;
         
-        Object.keys(inventario).forEach(key => {
+        // Limpiamos por completo la tabla antes de renderizar los elementos nuevos o modificados
+        tbody.innerHTML = ''; 
+        
+        let totalUnidades = 0; 
+        let dineroMercancia = 0;
+        const keys = Object.keys(inventario);
+
+        if (keys.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--texto-mutado);">No hay perfumes registrados en la base de datos.</td></tr>`;
+            document.getElementById('inv-total-productos').innerText = `0 ud`;
+            document.getElementById('inv-dinero-mercancia').innerText = `$0.00`;
+            return;
+        }
+        
+        keys.forEach(key => {
             const p = inventario[key];
             const stockVal = parseInt(p.stock) || 0;
             const costoVal = parseFloat(p.costo) || 0;
             const precioVal = parseFloat(p.precio) || 0;
             const cat = p.categoria || 'Caballero';
             
-            totalUnidades += stockVal; dineroMercancia += (stockVal * costoVal);
+            totalUnidades += stockVal; 
+            dineroMercancia += (stockVal * costoVal);
             
             tbody.innerHTML += `<tr>
                 <td style="font-weight:600;">${p.nombre}</td>
@@ -885,6 +905,7 @@
                 <td><button class="btn-danger" onclick="window.eliminarProductoInventario('${key}')">X</button></td>
             </tr>`;
         });
+        
         document.getElementById('inv-total-productos').innerText = `${totalUnidades} ud`;
         document.getElementById('inv-dinero-mercancia').innerText = `$${dineroMercancia.toFixed(2)}`;
     }
@@ -937,11 +958,9 @@
         if(document.getElementById('ganancia-disponible')) { document.getElementById('ganancia-disponible').innerText = `$${disponible.toFixed(2)}`; document.getElementById('ganancia-disponible').style.color = disponible < 0 ? 'var(--peligro)' : 'var(--texto-oscuro)'; }
     }
 
-    // --- CONTROL DE ARRANQUE CORREGIDO ---
-    // 1. Primero garantizamos que se renderice la interfaz pública por defecto al cargar.
+    // --- CONTROL DE ARRANQUE ---
     irAVistaPublica();
 
-    // 2. Evaluamos la sesión e inicializamos las escuchas correspondientes según el rol sin pisar el inventario público.
     if(localStorage.getItem('sesion_activa_perfumes') === 'true') {
         ejecutarArranquePanel();
         irAVistaAdmin();
