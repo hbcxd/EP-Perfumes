@@ -140,7 +140,7 @@
         
         .categoria-content {
             padding: 0 20px 20px 20px;
-            display: block; /* Desplegado por defecto */
+            display: block;
         }
         .categoria-publica.collapsed .categoria-content { display: none; }
         .categoria-publica.collapsed .categoria-icon-flecha { transform: rotate(-90deg); }
@@ -280,11 +280,7 @@
     </div>
     
     <div class="nav-menu" id="menu-navegacion-items">
-        <button class="nav-btn active" onclick="irAVistaPublica()">🛍️ Ver Catálogo</button>
-        <div style="margin-top: auto; border-top: 1px solid var(--borde); padding-top: 15px;">
-            <button class="nav-btn" style="color: var(--oro);" onclick="mostrarLogin(true)">🔐 Acceso Administrador</button>
         </div>
-    </div>
     <button class="btn-logout" id="btn-cerrar-sesion-sidebar" style="display:none;" onclick="cerrarSesion()">🚪 Cerrar Sesión Admin</button>
 </div>
 
@@ -494,7 +490,7 @@
     let retiros = {};
     let carrito = {}; 
     const CLAVE_ACCESO = "EP-030699";
-    const NUMERO_WHATSAPP = "584121234567"; // CAMBIA ESTO por tu número real de WhatsApp con código de país
+    const NUMERO_WHATSAPP = "584121234567"; 
 
     // --- INTERFAZ EXTENSIBLE ACORDEÓN ---
     window.toggleSeccionAcordeon = function(idSeccion) {
@@ -521,7 +517,6 @@
         document.getElementById('txt-seccion-actual').style.display = 'none';
         document.getElementById('inicio-publico').style.display = 'block';
         
-        // Cargar menú público en sidebar
         document.getElementById('menu-navegacion-items').innerHTML = `
             <button class="nav-btn active" onclick="irAVistaPublica()">🛍️ Ver Catálogo</button>
             <div style="margin-top: auto; border-top: 1px solid var(--borde); padding-top: 15px;">
@@ -538,7 +533,6 @@
         document.getElementById('txt-seccion-actual').style.display = 'block';
         document.getElementById('main-panel').style.display = 'block';
         
-        // Re-estructurar el sidebar con las opciones internas del administrador
         document.getElementById('menu-navegacion-items').innerHTML = `
             <button class="nav-btn active" onclick="window.cambiarVista('vista-finanzas', this)">📊 Finanzas</button>
             <button class="nav-btn" onclick="window.cambiarVista('vista-ventas', this)">💼 Ventas</button>
@@ -663,7 +657,6 @@
         const url = `https://api.whatsapp.com/send?phone=${NUMERO_WHATSAPP}&text=${encodeURIComponent(textoReciboGlobal)}`;
         window.open(url, '_blank');
         
-        // Vaciar carrito tras checkout exitoso
         carrito = {};
         document.getElementById('client-car-name').value = '';
         actualizarInterfazCarrito();
@@ -781,11 +774,14 @@
     window.eliminarVenta = function(key) { if(confirm("¿Eliminar del historial?")) remove(ref(db, `ventas/${key}`)); };
 
 
-    // --- ESCUCHA DE FIREBASE EN TIEMPO REAL ---
+    // --- ESCUCHA DE FIREBASE EN TIEMPO REAL (ARREGLADO) ---
+    // Esta escucha de inventario siempre se ejecuta para alimentar la tienda pública
     onValue(ref(db, 'inventario'), (snapshot) => {
         try {
             inventario = snapshot.val() || {};
             actualizarCatalogoPublico();
+            
+            // Solo actualiza las tablas del panel interno si el panel está inicializado o si eres admin
             if(localStorage.getItem('sesion_activa_perfumes') === 'true') {
                 actualizarTablaInventario();
                 actualizarSelectoresVenta();
@@ -798,6 +794,10 @@
     function ejecutarArranquePanel() {
         onValue(ref(db, 'ventas'), (snapshot) => { ventas = snapshot.val() || {}; actualizarTotalesYVentas(); });
         onValue(ref(db, 'retiros'), (snapshot) => { retiros = snapshot.val() || {}; actualizarTotalesYRetiros(); });
+        
+        // Forzar actualización al arrancar sesión
+        actualizarTablaInventario();
+        actualizarSelectoresVenta();
     }
 
     // --- RENDERIZADORES DE TABLAS E INTERFACES ---
@@ -848,7 +848,7 @@
                 </div>
             `;
 
-            if (cat === 'Caballero') htmlCab += cardHtml;
+            if (cat === 'Caballero' || cat === 'Caballero 🤵‍♂️') htmlCab += cardHtml;
             else if (cat === 'Dama') htmlDam += cardHtml;
             else if (cat === 'Unisex') htmlUni += cardHtml;
             else if (cat === 'Nino') htmlNin += cardHtml;
@@ -864,7 +864,6 @@
         const tbody = document.querySelector('#tabla-inventario tbody'); 
         if (!tbody) return;
         
-        // Limpiamos por completo la tabla antes de renderizar los elementos nuevos o modificados
         tbody.innerHTML = ''; 
         
         let totalUnidades = 0; 
