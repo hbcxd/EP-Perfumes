@@ -145,16 +145,15 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* === MEDIA QUERIES PARA ADAPTABILIDAD MÓVIL TOTAL === */
+        /* === MEDIA QUERIES === */
         @media (max-width: 768px) {
-            .side-menu { width: 100%; right: -100%; } /* Menú ocupa toda la pantalla en móvil */
+            .side-menu { width: 100%; right: -100%; } 
             .banner { padding: 40px 5%; flex-direction: column; text-align: center; }
             .banner-content h1 { font-size: 2rem; }
             .admin-container { padding: 20px 5%; }
             .grid-2 { grid-template-columns: 1fr; }
             .card { padding: 15px; }
             .metrics-grid { grid-template-columns: repeat(2, 1fr); }
-            /* Ajuste especial para fila de ventas en móvil */
             .sale-item-row { grid-template-columns: 1fr; padding: 15px; }
             .sale-item-row .btn-remove-row { width: 100%; margin-top: 5px; }
             .btn-action { padding: 6px 10px; font-size: 0.75rem; margin-bottom: 5px; width: 100%; display: block; text-align: center; }
@@ -163,7 +162,6 @@
 </head>
 <body>
 
-    <!-- ==================== TIENDA PÚBLICA ==================== -->
     <div id="publicSite">
         <header>
             <div class="logo"><img src="LOGO.png" alt="LOGO" onerror="this.style.display='none'"></div>
@@ -203,7 +201,6 @@
         </section>
     </div>
 
-    <!-- ==================== PANEL ADMINISTRATIVO ==================== -->
     <div id="adminPanel">
         <div class="admin-header-bar">
             <h2>
@@ -227,16 +224,13 @@
         </nav>
 
         <div class="admin-container">
-            <!-- Pestaña Finanzas Potenciada -->
             <div id="tab-finanzas" class="tab-content active">
                 <h3 style="margin-bottom: 15px; color: var(--accent);">Resumen Financiero Global</h3>
                 <div class="metrics-grid">
-                    <!-- Dinero Real en Caja -->
                     <div class="metric-box" style="background:#f0fdf4; border-color: #bbf7d0; grid-column: span 2;">
                         <p style="color: #166534;">Dinero en Caja (Efectivo Neto)</p>
                         <h4 id="m-caja" style="color:#15803d; font-size: 2.2rem;">$0.00</h4>
                     </div>
-                    <!-- Pagos Pendientes -->
                     <div class="metric-box" style="background:#fef2f2; border-color: #fecaca; grid-column: span 2;">
                         <p style="color: #991b1b;">Pagos Pendientes por Cobrar</p>
                         <h4 id="m-pendientes" style="color:#dc2626; font-size: 2.2rem;">$0.00</h4>
@@ -246,7 +240,6 @@
                     <div class="metric-box"><p>Ventas Totales (Cobradas)</p><h4 id="m-ventas">$0.00</h4></div>
                     <div class="metric-box"><p>Costo de lo Vendido</p><h4 id="m-costos">$0.00</h4></div>
                     <div class="metric-box"><p>Egresos (Retiros/Inv)</p><h4 id="m-egresos">$0.00</h4></div>
-                    <!-- Dinero estancado en productos -->
                     <div class="metric-box" style="background:#f8fafc; border-color: #cbd5e1; grid-column: span 2;">
                         <p>Dinero Invertido en Inventario (Costo)</p>
                         <h4 id="m-inventario" style="color: #475569;">$0.00</h4>
@@ -254,73 +247,37 @@
                 </div>
             </div>
 
-            <!-- Pestaña Ventas con Filtros -->
             <div id="tab-ventas" class="tab-content">
                 <div class="grid-2">
                     <div class="card">
                         <h3>Registrar Nueva Venta</h3>
                         <form id="saleForm" onsubmit="registrarVenta(event)">
-                            <div class="form-group">
-                                <label>Fecha</label>
-                                <input type="date" id="saleDate">
-                            </div>
-                            <div class="form-group">
-                                <label>Nombre del Cliente</label>
-                                <input type="text" id="saleClient" required placeholder="Ej. Juan Pérez">
-                            </div>
-                            
+                            <div class="form-group"><label>Fecha</label><input type="date" id="saleDate"></div>
+                            <div class="form-group"><label>Nombre del Cliente</label><input type="text" id="saleClient" required placeholder="Ej. Juan Pérez"></div>
                             <label style="display:block; font-size:0.9rem; margin-bottom:6px; color:var(--text-muted); font-weight:500;">Perfumes a Vender</label>
                             <div id="saleItemsContainer"></div>
                             <button type="button" class="btn-add-row" onclick="addSaleItemRow('saleItemsContainer')">+ Añadir otro perfume</button>
-
-                            <div class="form-group" style="margin-top: 15px;">
-                                <label>Estatus de Pago</label>
-                                <select id="saleStatus">
-                                    <option value="Pagada">Pagada</option>
-                                    <option value="Pendiente">Pendiente por Pagar</option>
-                                </select>
-                            </div>
+                            <div class="form-group" style="margin-top: 15px;"><label>Estatus de Pago</label><select id="saleStatus"><option value="Pagada">Pagada</option><option value="Pendiente">Pendiente por Pagar</option></select></div>
                             <button type="submit" class="btn-submit">Procesar Venta</button>
                         </form>
                     </div>
                     <div class="card" style="grid-column: 1 / -1;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
                             <h3>Historial de Ventas</h3>
-                            <div class="filter-controls">
-                                <label style="font-size:0.85rem; font-weight:600;">Ordenar por:</label>
-                                <select id="sortSales" onchange="renderAllAdmin()">
-                                    <option value="date">Fecha (Más recientes)</option>
-                                    <option value="name">Nombre Cliente (A-Z)</option>
-                                    <option value="qty">Cantidad Vendida</option>
-                                </select>
-                            </div>
+                            <div class="filter-controls"><label style="font-size:0.85rem; font-weight:600;">Ordenar por:</label><select id="sortSales" onchange="renderAllAdmin()"><option value="date">Fecha (Más recientes)</option><option value="name">Nombre Cliente (A-Z)</option><option value="qty">Cantidad Vendida</option></select></div>
                         </div>
-                        <div class="table-responsive">
-                            <table>
-                                <thead><tr><th>Fecha</th><th>Cliente</th><th>Artículos</th><th>Total</th><th>Estatus</th><th>Acciones</th></tr></thead>
-                                <tbody id="salesTableBody"></tbody>
-                            </table>
-                        </div>
+                        <div class="table-responsive"><table><thead><tr><th>Fecha</th><th>Cliente</th><th>Artículos</th><th>Total</th><th>Estatus</th><th>Acciones</th></tr></thead><tbody id="salesTableBody"></tbody></table></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Pestaña Inventario con Filtros -->
             <div id="tab-inventario" class="tab-content">
                 <div class="grid-2">
                     <div class="card">
                         <h3>Ingresar Perfume</h3>
                         <form id="perfumeForm" onsubmit="registrarPerfume(event)">
                             <div class="form-group"><label>Nombre del Perfume</label><input type="text" id="perfumeName" required></div>
-                            <div class="form-group">
-                                <label>Categoría</label>
-                                <select id="perfumeCategory">
-                                    <option value="Caballeros">Caballeros</option>
-                                    <option value="Damas">Damas</option>
-                                    <option value="Unisex">Unisex</option>
-                                    <option value="Niños">Niños</option>
-                                </select>
-                            </div>
+                            <div class="form-group"><label>Categoría</label><select id="perfumeCategory"><option value="Caballeros">Caballeros</option><option value="Damas">Damas</option><option value="Unisex">Unisex</option><option value="Niños">Niños</option></select></div>
                             <div class="form-group"><label>Cantidad a Añadir</label><input type="number" id="perfumeStock" min="0" required></div>
                             <div class="form-group"><label>Costo Interno ($)</label><input type="number" id="perfumeCost" step="0.01" min="0" required></div>
                             <div class="form-group"><label>Precio Venta ($)</label><input type="number" id="perfumePrice" step="0.01" min="0" required></div>
@@ -330,26 +287,13 @@
                     <div class="card" style="grid-column: 1 / -1;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
                             <h3>Existencias en Almacén</h3>
-                            <div class="filter-controls">
-                                <label style="font-size:0.85rem; font-weight:600;">Ordenar por:</label>
-                                <select id="sortInv" onchange="renderAllAdmin()">
-                                    <option value="name">Orden Alfabético (A-Z)</option>
-                                    <option value="stock">Cantidad (Mayor a menor)</option>
-                                    <option value="date">Fecha de Ingreso</option>
-                                </select>
-                            </div>
+                            <div class="filter-controls"><label style="font-size:0.85rem; font-weight:600;">Ordenar por:</label><select id="sortInv" onchange="renderAllAdmin()"><option value="name">Orden Alfabético (A-Z)</option><option value="stock">Cantidad (Mayor a menor)</option><option value="date">Fecha de Ingreso</option></select></div>
                         </div>
-                        <div class="table-responsive">
-                            <table>
-                                <thead><tr><th>Nombre</th><th>Categoría</th><th>Stock</th><th>PVP</th><th>Gestión</th></tr></thead>
-                                <tbody id="inventoryTableBody"></tbody>
-                            </table>
-                        </div>
+                        <div class="table-responsive"><table><thead><tr><th>Nombre</th><th>Categoría</th><th>Stock</th><th>PVP</th><th>Gestión</th></tr></thead><tbody id="inventoryTableBody"></tbody></table></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Analítica y Egresos -->
             <div id="tab-analitica" class="tab-content">
                 <div class="grid-2">
                     <div class="card">
@@ -358,7 +302,11 @@
                             <div class="form-group"><label>Monto ($)</label><input type="number" id="wAmount" step="0.01" min="0.01" required></div>
                             <div class="form-group">
                                 <label>Tipo de Flujo</label>
-                                <select id="wType"><option value="Retiro">Retiro Personal</option><option value="Reinversión">Reinversión</option></select>
+                                <select id="wType">
+                                    <option value="Retiro Ganancia">Retiro de Ganancias</option>
+                                    <option value="Retiro Costo">Retiro de Costos (Capital)</option>
+                                    <option value="Reinversión">Reinversión</option>
+                                </select>
                             </div>
                             <div class="form-group"><label>Justificación</label><textarea id="wReason" rows="3" required></textarea></div>
                             <button type="submit" class="btn-submit">Registrar Salida</button>
@@ -366,66 +314,37 @@
                     </div>
                     <div class="card" style="grid-column: 1 / -1;">
                         <h3>Libro de Egresos</h3>
-                        <div class="table-responsive">
-                            <table>
-                                <thead><tr><th>Fecha</th><th>Tipo</th><th>Monto</th><th>Justificación</th><th>Usuario</th></tr></thead>
-                                <tbody id="withdrawalsTableBody"></tbody>
-                            </table>
-                        </div>
+                        <div class="table-responsive"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Monto</th><th>Justificación</th><th>Usuario</th></tr></thead><tbody id="withdrawalsTableBody"></tbody></table></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Auditoría -->
             <div id="tab-auditoria" class="tab-content">
                 <div class="card">
                     <h3>Registro de Movimientos</h3>
-                    <div class="table-responsive">
-                        <table>
-                            <thead><tr><th>Fecha y Hora</th><th>Usuario</th><th>Acción Ejecutada</th></tr></thead>
-                            <tbody id="auditTableBody"></tbody>
-                        </table>
-                    </div>
+                    <div class="table-responsive"><table><thead><tr><th>Fecha y Hora</th><th>Usuario</th><th>Acción Ejecutada</th></tr></thead><tbody id="auditTableBody"></tbody></table></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL DE EDICIÓN DE VENTA -->
     <div id="editSaleModal" class="modal-overlay">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3 style="color:var(--accent); font-size:1.2rem;">Editar Venta</h3>
-                <button class="close-btn" style="position:static; font-size:24px;" onclick="cerrarModalEdicion()">&times;</button>
-            </div>
+            <div class="modal-header"><h3>Editar Venta</h3><button class="close-btn" style="position:static; font-size:24px;" onclick="cerrarModalEdicion()">&times;</button></div>
             <form id="editSaleForm" onsubmit="guardarEdicionVenta(event)">
                 <input type="hidden" id="editSaleId">
-                <div class="form-group">
-                    <label>Fecha</label>
-                    <input type="date" id="editSaleDate" required>
-                </div>
-                <div class="form-group">
-                    <label>Nombre del Cliente</label>
-                    <input type="text" id="editSaleClient" required>
-                </div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="editSaleDate" required></div>
+                <div class="form-group"><label>Nombre del Cliente</label><input type="text" id="editSaleClient" required></div>
                 <label style="display:block; font-size:0.9rem; margin-bottom:6px; color:var(--text-muted); font-weight:500;">Modificar Perfumes</label>
                 <div id="editSaleItemsContainer"></div>
                 <button type="button" class="btn-add-row" onclick="addSaleItemRow('editSaleItemsContainer')">+ Añadir otro perfume</button>
-                
-                <div class="form-group" style="margin-top: 15px;">
-                    <label>Estatus de Pago</label>
-                    <select id="editSaleStatus">
-                        <option value="Pagada">Pagada</option>
-                        <option value="Pendiente">Pendiente por Pagar</option>
-                    </select>
-                </div>
+                <div class="form-group" style="margin-top: 15px;"><label>Estatus de Pago</label><select id="editSaleStatus"><option value="Pagada">Pagada</option><option value="Pendiente">Pendiente por Pagar</option></select></div>
                 <button type="submit" class="btn-submit">Guardar Cambios</button>
             </form>
         </div>
     </div>
 
     <script>
-        // --- FIREBASE SETUP ---
         const firebaseConfig = {
             apiKey: "AIzaSyArphq3sSjhWWXr8w6I6f7UVGRMwaDp7i0",
             authDomain: "ep-perfumes-92b9c.firebaseapp.com",
@@ -441,28 +360,18 @@
         let appState = { perfumes: [], sales: [], withdrawals: [], logs: [] };
         let currentUser = null; 
 
-        // Generador de Opciones de Select
         function getPerfumeOptions() {
             let options = '<option value="">Seleccione Perfume...</option>';
-            // Ordenar alfabéticamente para los selects siempre
             let sortedP = [...appState.perfumes].sort((a,b) => a.name.localeCompare(b.name));
-            sortedP.forEach(p => { 
-                options += `<option value="${p.id}">${p.name} (Disp: ${p.stock})</option>`; 
-            });
+            sortedP.forEach(p => { options += `<option value="${p.id}">${p.name} (Disp: ${p.stock})</option>`; });
             return options;
         }
 
-        // Manejo Dinámico de Filas de Venta
         function addSaleItemRow(containerId, perfumeId = '', qty = 1) {
             const container = document.getElementById(containerId);
             const row = document.createElement('div');
             row.className = 'sale-item-row';
-            
-            row.innerHTML = `
-                <select class="perfume-select" required>${getPerfumeOptions()}</select>
-                <input type="number" class="qty-input" min="1" value="${qty}" required placeholder="Cant.">
-                <button type="button" class="btn-remove-row" onclick="this.parentElement.remove()">X</button>
-            `;
+            row.innerHTML = `<select class="perfume-select" required>${getPerfumeOptions()}</select><input type="number" class="qty-input" min="1" value="${qty}" required placeholder="Cant."><button type="button" class="btn-remove-row" onclick="this.parentElement.remove()">X</button>`;
             if(perfumeId) row.querySelector('.perfume-select').value = perfumeId;
             container.appendChild(row);
         }
@@ -483,20 +392,9 @@
         };
 
         function saveToFirebase() { db.ref('tienda').set(appState); }
-
         function toggleMenu(menuId) { document.getElementById(menuId).classList.toggle('active'); }
-        function navigateToCategory(id) {
-            toggleMenu('sideMenu');
-            const el = document.getElementById(id);
-            if(el) { el.open = true; el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-        }
-        function switchTab(tabId, btnElement) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('#adminSideMenu a').forEach(a => a.classList.remove('active-link'));
-            document.getElementById(tabId).classList.add('active');
-            btnElement.classList.add('active-link');
-            document.getElementById('adminSideMenu').classList.remove('active');
-        }
+        function navigateToCategory(id) { toggleMenu('sideMenu'); const el = document.getElementById(id); if(el) { el.open = true; el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }
+        function switchTab(tabId, btnElement) { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('#adminSideMenu a').forEach(a => a.classList.remove('active-link')); document.getElementById(tabId).classList.add('active'); btnElement.classList.add('active-link'); document.getElementById('adminSideMenu').classList.remove('active'); }
 
         function solicitarAccesoAdmin() {
             toggleMenu('sideMenu');
@@ -517,64 +415,43 @@
             renderAllAdmin();
         }
 
-        function cerrarSesionAdmin() {
-            registrarLog("Cierre de sesión.");
-            currentUser = null;
-            document.getElementById('adminPanel').style.display = 'none';
-            document.getElementById('publicSite').style.display = 'block';
-        }
-
-        function registrarLog(accion) {
-            if(!currentUser) return; 
-            appState.logs.unshift({ timestamp: new Date().toLocaleString('es-VE'), user: currentUser, action: accion });
-            if(appState.logs.length > 100) appState.logs.pop(); 
-        }
+        function cerrarSesionAdmin() { registrarLog("Cierre de sesión."); currentUser = null; document.getElementById('adminPanel').style.display = 'none'; document.getElementById('publicSite').style.display = 'block'; }
+        function registrarLog(accion) { if(!currentUser) return; appState.logs.unshift({ timestamp: new Date().toLocaleString('es-VE'), user: currentUser, action: accion }); if(appState.logs.length > 100) appState.logs.pop(); }
 
         function renderAll() {
-            // Catálogo Público siempre alfabético
             let catPerfumes = [...appState.perfumes].sort((a,b) => a.name.localeCompare(b.name));
-            
             ['Caballeros', 'Damas', 'Unisex', 'Niños'].forEach(cat => {
                 const grid = document.getElementById(`grid-${cat}`);
                 grid.innerHTML = '';
                 const filtered = catPerfumes.filter(p => p.category === cat);
                 if(filtered.length === 0) { grid.innerHTML = '<p style="color:#94a3b8; font-style:italic;">Sin stock registrado.</p>'; return; }
-                
                 let imgFile = cat === 'Caballeros' ? 'caballeros.png' : cat === 'Damas' ? 'damas.png' : cat === 'Unisex' ? 'unisex.png' : 'ninos.png';
-
-                filtered.forEach(p => {
-                    grid.innerHTML += `
-                    <div class="product-card">
-                        <img src="${imgFile}" onerror="this.src='https://via.placeholder.com/300?text=Perfume'" class="product-img">
-                        <div class="product-title">${p.name}</div>
-                        <div class="product-stock">Disp: ${p.stock} unds</div>
-                    </div>`;
-                });
+                filtered.forEach(p => { grid.innerHTML += `<div class="product-card"><img src="${imgFile}" onerror="this.src='https://via.placeholder.com/300?text=Perfume'" class="product-img"><div class="product-title">${p.name}</div><div class="product-stock">Disp: ${p.stock} unds</div></div>`; });
             });
         }
 
         function renderAllAdmin() {
-            // 1. CÁLCULOS FINANCIEROS
             let tVentasPagadas = 0, tCostosPagados = 0, tPendientes = 0;
             appState.sales.forEach(s => { 
                 let items = s.items || [{ quantity: s.quantity, price: s.price, cost: s.cost }];
                 items.forEach(i => {
-                    if(s.status === 'Pagada') {
-                        tVentasPagadas += (i.quantity * i.price); 
-                        tCostosPagados += (i.quantity * i.cost); 
-                    } else {
-                        tPendientes += (i.quantity * i.price);
-                    }
+                    if(s.status === 'Pagada') { tVentasPagadas += (i.quantity * i.price); tCostosPagados += (i.quantity * i.cost); } 
+                    else { tPendientes += (i.quantity * i.price); }
                 });
             });
 
-            let tRetiros = 0, tReinversiones = 0;
-            appState.withdrawals.forEach(w => { w.type === 'Retiro' ? tRetiros += w.amount : tReinversiones += w.amount; });
+            let tRetiroGanancia = 0, tRetiroCosto = 0, tReinversiones = 0;
+            appState.withdrawals.forEach(w => { 
+                if (w.type === 'Retiro Ganancia') tRetiroGanancia += w.amount;
+                else if (w.type === 'Retiro Costo') tRetiroCosto += w.amount;
+                else if (w.type === 'Reinversión') tReinversiones += w.amount;
+                else tRetiroGanancia += w.amount;
+            });
             
-            let tEgresos = tRetiros + tReinversiones;
-            let dineroEnCaja = tVentasPagadas - tEgresos; // Efectivo real
-            let gananciaNeta = tVentasPagadas - tCostosPagados - tEgresos;
-            
+            let tEgresos = tRetiroGanancia + tRetiroCosto + tReinversiones;
+            let dineroEnCaja = tVentasPagadas - tEgresos; 
+            let costosDisponibles = tCostosPagados - tRetiroCosto; 
+            let gananciaNeta = (tVentasPagadas - tCostosPagados) - tRetiroGanancia - tReinversiones;
             let dineroInventario = 0;
             appState.perfumes.forEach(p => { dineroInventario += (p.stock * p.cost); });
 
@@ -583,81 +460,26 @@
             document.getElementById('m-pendientes').innerText = `$${tPendientes.toFixed(2)}`;
             document.getElementById('m-ganancia').innerText = `$${gananciaNeta.toFixed(2)}`;
             document.getElementById('m-ventas').innerText = `$${tVentasPagadas.toFixed(2)}`;
-            document.getElementById('m-costos').innerText = `$${tCostosPagados.toFixed(2)}`;
+            document.getElementById('m-costos').innerText = `$${costosDisponibles.toFixed(2)}`;
             document.getElementById('m-egresos').innerText = `$${tEgresos.toFixed(2)}`;
             document.getElementById('m-inventario').innerText = `$${dineroInventario.toFixed(2)}`;
 
-            // Actualizar opciones de selects de ventas
-            document.querySelectorAll('.perfume-select').forEach(sel => {
-                let val = sel.value; sel.innerHTML = getPerfumeOptions(); sel.value = val;
-            });
-
-            // 2. ORDENAMIENTO VENTAS
-            let salesSort = document.getElementById('sortSales').value;
-            let sortedSales = [...appState.sales];
-            if(salesSort === 'name') {
-                sortedSales.sort((a,b) => a.client.localeCompare(b.client));
-            } else if(salesSort === 'qty') {
-                sortedSales.sort((a,b) => {
-                    let qA = (a.items || []).reduce((acc, i) => acc + i.quantity, 0);
-                    let qB = (b.items || []).reduce((acc, i) => acc + i.quantity, 0);
-                    return qB - qA;
-                });
-            } else {
-                // Por defecto Date (más recientes primero según ID)
-                sortedSales.sort((a,b) => {
-                    let idA = parseInt(a.id.split('_')[1]) || 0;
-                    let idB = parseInt(b.id.split('_')[1]) || 0;
-                    return idB - idA;
-                });
-            }
-
+            document.querySelectorAll('.perfume-select').forEach(sel => { let val = sel.value; sel.innerHTML = getPerfumeOptions(); sel.value = val; });
+            
             const salesBody = document.getElementById('salesTableBody');
             salesBody.innerHTML = '';
-            sortedSales.forEach(s => {
-                let itemsList = (s.items || [{perfumeName: s.perfumeName, quantity: s.quantity}]).map(i => `${i.quantity}x ${i.perfumeName}`).join(', ');
-                let totalAmount = (s.items || [{quantity: s.quantity, price: s.price}]).reduce((acc, i) => acc + (i.quantity * i.price), 0);
-                
-                salesBody.innerHTML += `<tr>
-                    <td>${s.date}</td><td><strong>${s.client}</strong></td>
-                    <td style="font-size:0.8rem; color:#64748b;">${itemsList}</td>
-                    <td style="font-weight:600;">$${totalAmount.toFixed(2)}</td>
-                    <td><span class="status-badge ${s.status.toLowerCase()}">${s.status}</span></td>
-                    <td>
-                        <button class="btn-action" onclick="toggleStatusVenta('${s.id}')">Estado</button>
-                        <button class="btn-action" style="background:#e0f2fe; color:#0369a1;" onclick="abrirModalEdicion('${s.id}')">Editar</button>
-                    </td>
-                </tr>`;
+            [...appState.sales].sort((a,b) => parseInt(b.id.split('_')[1]) - parseInt(a.id.split('_')[1])).forEach(s => {
+                let itemsList = (s.items || []).map(i => `${i.quantity}x ${i.perfumeName}`).join(', ');
+                let totalAmount = (s.items || []).reduce((acc, i) => acc + (i.quantity * i.price), 0);
+                salesBody.innerHTML += `<tr><td>${s.date}</td><td><strong>${s.client}</strong></td><td style="font-size:0.8rem; color:#64748b;">${itemsList}</td><td style="font-weight:600;">$${totalAmount.toFixed(2)}</td><td><span class="status-badge ${s.status.toLowerCase()}">${s.status}</span></td><td><button class="btn-action" onclick="toggleStatusVenta('${s.id}')">Estado</button><button class="btn-action" onclick="abrirModalEdicion('${s.id}')">Editar</button></td></tr>`;
             });
-
-            // 3. ORDENAMIENTO INVENTARIO
-            let invSort = document.getElementById('sortInv').value;
-            let sortedPerfumes = [...appState.perfumes];
-            if (invSort === 'name') {
-                sortedPerfumes.sort((a, b) => a.name.localeCompare(b.name));
-            } else if (invSort === 'stock') {
-                sortedPerfumes.sort((a, b) => b.stock - a.stock);
-            } else {
-                // Date (ID desc)
-                sortedPerfumes.sort((a, b) => {
-                    let idA = parseInt(a.id.split('_')[1]) || 0;
-                    let idB = parseInt(b.id.split('_')[1]) || 0;
-                    return idB - idA;
-                });
-            }
 
             const invBody = document.getElementById('inventoryTableBody');
             invBody.innerHTML = '';
-            sortedPerfumes.forEach(p => {
-                invBody.innerHTML += `<tr>
-                    <td><strong>${p.name}</strong></td><td>${p.category}</td>
-                    <td><span class="status-badge" style="background:#f1f5f9; color:#0f172a;">${p.stock}</span></td>
-                    <td>$${p.price.toFixed(2)}</td>
-                    <td><button class="btn-action" style="background:#fee2e2; color:#dc2626;" onclick="eliminarPerfume('${p.id}')">Borrar</button></td>
-                </tr>`;
+            [...appState.perfumes].sort((a,b) => a.name.localeCompare(b.name)).forEach(p => {
+                invBody.innerHTML += `<tr><td><strong>${p.name}</strong></td><td>${p.category}</td><td><span class="status-badge" style="background:#f1f5f9; color:#0f172a;">${p.stock}</span></td><td>$${p.price.toFixed(2)}</td><td><button class="btn-action" style="background:#fee2e2; color:#dc2626;" onclick="eliminarPerfume('${p.id}')">Borrar</button></td></tr>`;
             });
 
-            // EGRESOS Y AUDITORIA
             const wBody = document.getElementById('withdrawalsTableBody');
             wBody.innerHTML = '';
             appState.withdrawals.forEach(w => wBody.innerHTML += `<tr><td>${w.date}</td><td>${w.type}</td><td style="color:#dc2626; font-weight:600;">-$${w.amount.toFixed(2)}</td><td>${w.reason}</td><td>${w.user}</td></tr>`);
@@ -667,155 +489,21 @@
             appState.logs.forEach(l => audBody.innerHTML += `<tr><td style="font-size:0.75rem; color:#94a3b8;">${l.timestamp}</td><td><strong>${l.user}</strong></td><td>${l.action}</td></tr>`);
         }
 
-        // --- LÓGICA DE REGISTRO ---
-        function registrarPerfume(e) {
-            e.preventDefault();
-            const name = document.getElementById('perfumeName').value.trim();
-            const category = document.getElementById('perfumeCategory').value;
-            const stockToAdd = parseInt(document.getElementById('perfumeStock').value);
-            const cost = parseFloat(document.getElementById('perfumeCost').value);
-            const price = parseFloat(document.getElementById('perfumePrice').value);
+        function registrarPerfume(e) { e.preventDefault(); const name = document.getElementById('perfumeName').value.trim(); const category = document.getElementById('perfumeCategory').value; const stockToAdd = parseInt(document.getElementById('perfumeStock').value); const cost = parseFloat(document.getElementById('perfumeCost').value); const price = parseFloat(document.getElementById('perfumePrice').value); let item = appState.perfumes.find(p => p.name.toLowerCase() === name.toLowerCase()); if(item) { item.stock += stockToAdd; item.cost = cost; item.price = price; registrarLog(`Actualizó '${name}': +${stockToAdd} unds.`); } else { appState.perfumes.push({ id: 'p_' + Date.now(), name, category, stock: stockToAdd, cost, price, soldQuantity: 0 }); registrarLog(`Ingresó: '${name}' (${stockToAdd} unds)`); } saveToFirebase(); document.getElementById('perfumeForm').reset(); }
 
-            let item = appState.perfumes.find(p => p.name.toLowerCase() === name.toLowerCase());
-            if(item) {
-                item.stock += stockToAdd; item.cost = cost; item.price = price;
-                registrarLog(`Actualizó '${name}': +${stockToAdd} unds. Stock: ${item.stock}`);
-            } else {
-                appState.perfumes.push({ id: 'p_' + Date.now(), name, category, stock: stockToAdd, cost, price, soldQuantity: 0 });
-                registrarLog(`Ingresó: '${name}' (${stockToAdd} unds)`);
-            }
-            saveToFirebase(); document.getElementById('perfumeForm').reset();
-        }
+        function registrarVenta(e) { e.preventDefault(); const date = document.getElementById('saleDate').value ? new Date(document.getElementById('saleDate').value + "T12:00:00").toLocaleDateString('es-VE') : new Date().toLocaleDateString('es-VE'); const client = document.getElementById('saleClient').value.trim(); const status = document.getElementById('saleStatus').value; const rows = document.querySelectorAll('#saleItemsContainer .sale-item-row'); if(rows.length === 0) return alert("Añade un perfume."); let itemsToProcess = []; for(let row of rows) { let pId = row.querySelector('.perfume-select').value; let qty = parseInt(row.querySelector('.qty-input').value); let p = appState.perfumes.find(x => x.id === pId); if(p.stock < qty) return alert(`Stock insuficiente para: ${p.name}`); itemsToProcess.push({ perfumeId: p.id, perfumeName: p.name, quantity: qty, cost: p.cost, price: p.price }); } itemsToProcess.forEach(item => { let p = appState.perfumes.find(x => x.id === item.perfumeId); p.stock -= item.quantity; p.soldQuantity += item.quantity; }); appState.sales.unshift({ id: 's_' + Date.now(), date, client, items: itemsToProcess, status, user: currentUser }); registrarLog(`Venta a '${client}'.`); saveToFirebase(); document.getElementById('saleForm').reset(); document.getElementById('saleItemsContainer').innerHTML = ''; addSaleItemRow('saleItemsContainer'); }
 
-        function registrarVenta(e) {
-            e.preventDefault();
-            const rawDate = document.getElementById('saleDate').value;
-            const date = rawDate ? new Date(rawDate + "T12:00:00").toLocaleDateString('es-VE') : new Date().toLocaleDateString('es-VE');
-            const client = document.getElementById('saleClient').value.trim();
-            const status = document.getElementById('saleStatus').value;
+        function toggleStatusVenta(id) { const sale = appState.sales.find(s => s.id === id); if(sale) { sale.status = sale.status === 'Pagada' ? 'Pendiente' : 'Pagada'; saveToFirebase(); } }
 
-            const rows = document.querySelectorAll('#saleItemsContainer .sale-item-row');
-            if(rows.length === 0) return alert("Añade al menos un perfume.");
-
-            let itemsToProcess = [];
-            for(let row of rows) {
-                let pId = row.querySelector('.perfume-select').value;
-                let qty = parseInt(row.querySelector('.qty-input').value);
-                if(!pId || qty < 1) return alert("Completa los datos correctamente.");
-                
-                let p = appState.perfumes.find(x => x.id === pId);
-                if(p.stock < qty) return alert(`Stock insuficiente para: ${p.name}. (Disp: ${p.stock})`);
-                itemsToProcess.push({ perfumeId: p.id, perfumeName: p.name, quantity: qty, cost: p.cost, price: p.price });
-            }
-
-            itemsToProcess.forEach(item => {
-                let p = appState.perfumes.find(x => x.id === item.perfumeId);
-                p.stock -= item.quantity;
-                p.soldQuantity += item.quantity;
-            });
-
-            appState.sales.unshift({ id: 's_' + Date.now(), date, client, items: itemsToProcess, status, user: currentUser });
-            registrarLog(`Venta a '${client}' (${itemsToProcess.length} items). Estado: ${status}`);
-            
-            saveToFirebase(); 
-            document.getElementById('saleForm').reset();
-            document.getElementById('saleDate').valueAsDate = new Date();
-            document.getElementById('saleItemsContainer').innerHTML = '';
-            addSaleItemRow('saleItemsContainer');
-        }
-
-        function toggleStatusVenta(id) {
-            const sale = appState.sales.find(s => s.id === id);
-            if(sale) {
-                sale.status = sale.status === 'Pagada' ? 'Pendiente' : 'Pagada';
-                saveToFirebase();
-            }
-        }
-
-        function abrirModalEdicion(id) {
-            const sale = appState.sales.find(s => s.id === id);
-            if(!sale) return;
-
-            document.getElementById('editSaleId').value = sale.id;
-            let parts = sale.date.split('/');
-            if(parts.length === 3) document.getElementById('editSaleDate').value = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
-            
-            document.getElementById('editSaleClient').value = sale.client;
-            document.getElementById('editSaleStatus').value = sale.status;
-
-            const container = document.getElementById('editSaleItemsContainer');
-            container.innerHTML = '';
-            
-            let items = sale.items || [{perfumeId: sale.perfumeId, quantity: sale.quantity}];
-            items.forEach(i => addSaleItemRow('editSaleItemsContainer', i.perfumeId, i.quantity));
-
-            document.getElementById('editSaleModal').classList.add('active');
-        }
+        function abrirModalEdicion(id) { const sale = appState.sales.find(s => s.id === id); if(!sale) return; document.getElementById('editSaleId').value = sale.id; let parts = sale.date.split('/'); document.getElementById('editSaleDate').value = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`; document.getElementById('editSaleClient').value = sale.client; document.getElementById('editSaleStatus').value = sale.status; const container = document.getElementById('editSaleItemsContainer'); container.innerHTML = ''; sale.items.forEach(i => addSaleItemRow('editSaleItemsContainer', i.perfumeId, i.quantity)); document.getElementById('editSaleModal').classList.add('active'); }
 
         function cerrarModalEdicion() { document.getElementById('editSaleModal').classList.remove('active'); }
 
-        function guardarEdicionVenta(e) {
-            e.preventDefault();
-            const id = document.getElementById('editSaleId').value;
-            const saleIndex = appState.sales.findIndex(s => s.id === id);
-            if(saleIndex === -1) return;
-            let originalSale = appState.sales[saleIndex];
+        function guardarEdicionVenta(e) { e.preventDefault(); const id = document.getElementById('editSaleId').value; const saleIndex = appState.sales.findIndex(s => s.id === id); let originalSale = appState.sales[saleIndex]; originalSale.items.forEach(oldI => { let p = appState.perfumes.find(x => x.id === oldI.perfumeId); p.stock += oldI.quantity; p.soldQuantity -= oldI.quantity; }); const rows = document.querySelectorAll('#editSaleItemsContainer .sale-item-row'); let newItems = []; for(let row of rows) { let pId = row.querySelector('.perfume-select').value; let qty = parseInt(row.querySelector('.qty-input').value); let p = appState.perfumes.find(x => x.id === pId); p.stock -= qty; p.soldQuantity += qty; newItems.push({ perfumeId: p.id, perfumeName: p.name, quantity: qty, cost: p.cost, price: p.price }); } originalSale.date = new Date(document.getElementById('editSaleDate').value + "T12:00:00").toLocaleDateString('es-VE'); originalSale.client = document.getElementById('editSaleClient').value.trim(); originalSale.status = document.getElementById('editSaleStatus').value; originalSale.items = newItems; registrarLog(`Editó venta de '${originalSale.client}'.`); saveToFirebase(); cerrarModalEdicion(); }
 
-            // Devolver stock original
-            let oldItems = originalSale.items || [{perfumeId: originalSale.perfumeId, quantity: originalSale.quantity}];
-            oldItems.forEach(oldI => {
-                let p = appState.perfumes.find(x => x.id === oldI.perfumeId);
-                if(p) { p.stock += oldI.quantity; p.soldQuantity -= oldI.quantity; }
-            });
+        function eliminarPerfume(id) { if(confirm("¿Eliminar perfume?")) { appState.perfumes = appState.perfumes.filter(p => p.id !== id); saveToFirebase(); } }
 
-            // Procesar nuevos items
-            const rows = document.querySelectorAll('#editSaleItemsContainer .sale-item-row');
-            let newItemsToProcess = [];
-            
-            for(let row of rows) {
-                let pId = row.querySelector('.perfume-select').value;
-                let qty = parseInt(row.querySelector('.qty-input').value);
-                if(!pId || qty < 1) { alert("Revise los campos de perfumes."); return; } 
-                
-                let p = appState.perfumes.find(x => x.id === pId);
-                if(p.stock < qty) { alert(`Stock insuficiente para: ${p.name}`); return; }
-                newItemsToProcess.push({ perfumeId: p.id, perfumeName: p.name, quantity: qty, cost: p.cost, price: p.price });
-            }
-
-            // Aplicar nuevo stock
-            newItemsToProcess.forEach(item => {
-                let p = appState.perfumes.find(x => x.id === item.perfumeId);
-                p.stock -= item.quantity; p.soldQuantity += item.quantity;
-            });
-
-            const rawDate = document.getElementById('editSaleDate').value;
-            originalSale.date = new Date(rawDate + "T12:00:00").toLocaleDateString('es-VE');
-            originalSale.client = document.getElementById('editSaleClient').value.trim();
-            originalSale.status = document.getElementById('editSaleStatus').value;
-            originalSale.items = newItemsToProcess;
-            
-            delete originalSale.perfumeId; delete originalSale.perfumeName; delete originalSale.quantity; delete originalSale.cost; delete originalSale.price;
-
-            registrarLog(`Editó venta de '${originalSale.client}'.`);
-            saveToFirebase(); cerrarModalEdicion();
-        }
-
-        function eliminarPerfume(id) {
-            if(confirm("¿Seguro que deseas ELIMINAR este perfume?")) {
-                appState.perfumes = appState.perfumes.filter(p => p.id !== id);
-                saveToFirebase();
-            }
-        }
-
-        function registrarEgreso(e) {
-            e.preventDefault();
-            const amount = parseFloat(document.getElementById('wAmount').value);
-            const type = document.getElementById('wType').value;
-            const reason = document.getElementById('wReason').value.trim();
-            appState.withdrawals.unshift({ id: 'w_' + Date.now(), date: new Date().toLocaleDateString('es-VE'), type, amount, reason, user: currentUser });
-            registrarLog(`Egreso (${type}): -$${amount}. Razón: "${reason}"`);
-            saveToFirebase(); document.getElementById('withdrawalForm').reset();
-        }
+        function registrarEgreso(e) { e.preventDefault(); const amount = parseFloat(document.getElementById('wAmount').value); const type = document.getElementById('wType').value; const reason = document.getElementById('wReason').value.trim(); appState.withdrawals.unshift({ id: 'w_' + Date.now(), date: new Date().toLocaleDateString('es-VE'), type, amount, reason, user: currentUser }); registrarLog(`Egreso (${type}): -$${amount}.`); saveToFirebase(); document.getElementById('withdrawalForm').reset(); }
     </script>
 </body>
 </html>
