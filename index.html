@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Perfumería Premium & Panel de Control</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
@@ -10,7 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
 
     <style>
-        /* === VARIABLES & ESTILOS GLOBALES SOFISTICADOS === */
+        /* === VARIABLES & ESTILOS GLOBALES === */
         :root {
             --bg-body: #f8f9fa;
             --bg-card: #ffffff;
@@ -29,7 +29,7 @@
         body { background-color: var(--bg-body); color: var(--text-main); overflow-x: hidden; scroll-behavior: smooth; }
         button, input, select, textarea { font-family: inherit; outline: none; transition: all 0.3s ease; }
 
-        /* === HEADER GLASSMORPHISM === */
+        /* === HEADER === */
         header { 
             display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; 
             background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
@@ -39,7 +39,7 @@
         .menu-btn { font-size: 24px; cursor: pointer; background: none; border: none; display: flex; flex-direction: column; gap: 6px; padding: 5px; }
         .menu-btn span { display: block; width: 28px; height: 2px; background-color: var(--text-main); transition: 0.3s; border-radius: 2px; }
         
-        /* === MENÚ LATERAL MEJORADO === */
+        /* === MENÚ LATERAL === */
         .side-menu { 
             position: fixed; top: 0; right: -320px; width: 320px; height: 100vh; 
             background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -69,82 +69,96 @@
         .btn-add-row { background: transparent; color: var(--accent); border: 2px dashed var(--border-color); padding: 10px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: 600; margin-bottom: 15px; transition: 0.3s; }
         .btn-add-row:hover { border-color: var(--accent); background: #f8fafc; }
 
+        /* Controles de Filtro */
+        .filter-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .filter-controls select { padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.9rem; background: #fff; flex-grow: 1; }
+
         /* === BANNER === */
-        .banner { background: #ffffff; padding: 80px 5%; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 50px; border-bottom: 1px solid var(--border-color); }
-        .banner-content { flex: 1; min-width: 320px; max-width: 600px; animation: slideUp 0.8s ease-out; }
-        .banner-content h1 { font-size: 3rem; font-weight: 700; margin-bottom: 15px; line-height: 1.1; letter-spacing: -1px; background: linear-gradient(90deg, #1a1a1a, #64748b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .banner-content p { color: var(--text-muted); margin-bottom: 25px; font-size: 1.1rem; line-height: 1.6; }
-        .banner-image { flex: 1; min-width: 320px; max-width: 500px; display: flex; justify-content: center; animation: fadeIn 1s ease-out; }
+        .banner { background: #ffffff; padding: 60px 5%; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 40px; border-bottom: 1px solid var(--border-color); }
+        .banner-content { flex: 1; min-width: 300px; max-width: 600px; animation: slideUp 0.8s ease-out; }
+        .banner-content h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 15px; line-height: 1.2; letter-spacing: -1px; background: linear-gradient(90deg, #1a1a1a, #64748b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .banner-content p { color: var(--text-muted); margin-bottom: 25px; font-size: 1.05rem; line-height: 1.6; }
+        .banner-image { flex: 1; min-width: 300px; max-width: 500px; display: flex; justify-content: center; animation: fadeIn 1s ease-out; }
         .banner-image img { width: 100%; border-radius: var(--radius-lg); object-fit: cover; box-shadow: var(--shadow-md); transform: rotate(-2deg); transition: transform 0.5s; }
-        .banner-image img:hover { transform: rotate(0deg) scale(1.02); }
         
-        .price-tag { font-size: 1.5rem; font-weight: 600; color: var(--text-main); }
-        .promo-tag { display: inline-block; background-color: #ecfdf5; color: #059669; padding: 8px 20px; border-radius: 30px; font-size: 0.95rem; margin-top: 15px; font-weight: 600; border: 1px solid #a7f3d0; }
+        .price-tag { font-size: 1.4rem; font-weight: 600; color: var(--text-main); }
+        .promo-tag { display: inline-block; background-color: #ecfdf5; color: #059669; padding: 8px 20px; border-radius: 30px; font-size: 0.9rem; margin-top: 15px; font-weight: 600; border: 1px solid #a7f3d0; }
 
         /* === CATÁLOGO PÚBLICO === */
-        .catalogo { padding: 60px 5%; max-width: 1200px; margin: 0 auto; }
-        details { margin-bottom: 25px; background: var(--bg-card); border-radius: var(--radius-md); padding: 15px 25px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); }
-        summary { font-size: 1.4rem; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; color: var(--accent); }
-        summary::after { content: '+'; font-weight: 400; font-size: 1.8rem; transition: 0.3s; }
+        .catalogo { padding: 40px 5%; max-width: 1200px; margin: 0 auto; }
+        details { margin-bottom: 20px; background: var(--bg-card); border-radius: var(--radius-md); padding: 15px 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); }
+        summary { font-size: 1.2rem; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; color: var(--accent); }
+        summary::after { content: '+'; font-weight: 400; font-size: 1.6rem; transition: 0.3s; }
         details[open] summary::after { transform: rotate(45deg); }
         
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 30px; margin-top: 30px; padding-bottom: 15px; }
-        .product-card { background: var(--bg-card); border-radius: var(--radius-md); padding: 15px; transition: transform 0.3s ease, box-shadow 0.3s ease; border: 1px solid #f1f5f9; }
-        .product-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-md); }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-top: 20px; padding-bottom: 10px; }
+        .product-card { background: var(--bg-card); border-radius: var(--radius-md); padding: 15px; transition: transform 0.3s ease, box-shadow 0.3s ease; border: 1px solid #f1f5f9; text-align: center; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
         .product-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; margin-bottom: 15px; background: #f8fafc; }
-        .product-title { font-weight: 600; margin-bottom: 5px; font-size: 1.15rem; }
-        .product-stock { font-size: 0.9rem; color: var(--text-muted); display: inline-block; padding: 4px 10px; background: #f1f5f9; border-radius: 20px; font-weight: 500; }
+        .product-title { font-weight: 600; margin-bottom: 5px; font-size: 1.05rem; }
+        .product-stock { font-size: 0.85rem; color: var(--text-muted); display: inline-block; padding: 4px 10px; background: #f1f5f9; border-radius: 20px; font-weight: 500; }
 
         /* === PANEL ADMINISTRATIVO === */
         #adminPanel { display: none; background-color: var(--bg-body); min-height: 100vh; padding-bottom: 50px; }
         .admin-header-bar { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
-        .admin-header-bar h2 { font-size: 1.3rem; font-weight: 600; display: flex; align-items: center; gap: 15px; color: var(--accent); }
+        .admin-header-bar h2 { font-size: 1.2rem; font-weight: 600; display: flex; align-items: center; gap: 10px; color: var(--accent); }
         
-        .admin-container { padding: 40px 5%; max-width: 1300px; margin: 0 auto; }
+        .admin-container { padding: 30px 5%; max-width: 1300px; margin: 0 auto; }
         .tab-content { display: none; animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         .tab-content.active { display: block; }
         
-        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; }
-        .card { background: var(--bg-card); padding: 30px; border-radius: var(--radius-md); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); margin-bottom: 25px; transition: box-shadow 0.3s; }
-        .card:hover { box-shadow: var(--shadow-md); }
-        .card h3 { margin-bottom: 25px; font-weight: 600; font-size: 1.3rem; display: flex; align-items: center; gap: 10px; color: var(--accent); }
-        .card h3::before { content: ''; display: block; width: 4px; height: 20px; background: var(--accent); border-radius: 4px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .card { background: var(--bg-card); padding: 25px; border-radius: var(--radius-md); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); margin-bottom: 25px; width: 100%; overflow: hidden; }
+        .card h3 { margin-bottom: 20px; font-weight: 600; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; color: var(--accent); }
+        .card h3::before { content: ''; display: block; width: 4px; height: 18px; background: var(--accent); border-radius: 4px; }
         
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 0.95rem; margin-bottom: 8px; color: var(--text-muted); font-weight: 500; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95rem; background: #f8fafc; transition: all 0.3s; }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); background: #ffffff; box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.05); }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.9rem; margin-bottom: 6px; color: var(--text-muted); font-weight: 500; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95rem; background: #f8fafc; transition: all 0.3s; }
         
         /* Contenedor de Items de Venta Dinámicos */
-        .sale-item-row { display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px; margin-bottom: 10px; align-items: center; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); }
-        .sale-item-row select, .sale-item-row input { margin-bottom: 0; padding: 8px; }
+        .sale-item-row { display: grid; grid-template-columns: 2fr 1fr auto; gap: 8px; margin-bottom: 10px; align-items: center; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .sale-item-row select, .sale-item-row input { margin-bottom: 0; padding: 8px; font-size: 0.9rem; }
         .btn-remove-row { background: #fee2e2; color: #dc2626; border: none; width: 35px; height: 35px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .btn-remove-row:hover { background: #fecaca; }
 
-        table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 15px; font-size: 0.95rem; }
-        table th, table td { padding: 15px; border-bottom: 1px solid var(--border-color); text-align: left; }
-        table th { background-color: #f8fafc; font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
-        table tr { transition: background 0.2s; }
-        table tr:hover td { background-color: #f8fafc; }
+        /* Contenedor responsivo para tablas */
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; min-width: 600px; border-collapse: separate; border-spacing: 0; margin-top: 10px; font-size: 0.9rem; }
+        table th, table td { padding: 12px 10px; border-bottom: 1px solid var(--border-color); text-align: left; }
+        table th { background-color: #f8fafc; font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; }
         
-        .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; display: inline-block; letter-spacing: 0.3px; }
+        .status-badge { padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; display: inline-block; letter-spacing: 0.3px; white-space: nowrap; }
         .status-badge.pagada { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
-        .status-badge.pendiente { background-color: #fef9c3; color: #854d0e; border: 1px solid #fef08a; }
+        .status-badge.pendiente { background-color: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
 
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 35px; }
-        .metric-box { background: var(--bg-card); border: 1px solid var(--border-color); padding: 25px; border-radius: var(--radius-md); text-align: center; box-shadow: var(--shadow-sm); transition: transform 0.3s; }
-        .metric-box:hover { transform: translateY(-5px); }
-        .metric-box p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
-        .metric-box h4 { font-size: 2rem; font-weight: 700; color: var(--accent); }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .metric-box { background: var(--bg-card); border: 1px solid var(--border-color); padding: 20px 15px; border-radius: var(--radius-md); text-align: center; box-shadow: var(--shadow-sm); }
+        .metric-box p { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+        .metric-box h4 { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
 
-        /* MODAL DE EDICIÓN */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 1000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
+        /* MODAL */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 1000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; padding: 20px; }
         .modal-overlay.active { display: flex; opacity: 1; }
-        .modal-content { background: var(--bg-card); width: 90%; max-width: 600px; border-radius: var(--radius-md); padding: 30px; box-shadow: var(--shadow-md); max-height: 90vh; overflow-y: auto; animation: slideUp 0.4s; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); }
+        .modal-content { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: var(--radius-md); padding: 25px; box-shadow: var(--shadow-md); max-height: 90vh; overflow-y: auto; animation: slideUp 0.4s; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
         
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* === MEDIA QUERIES PARA ADAPTABILIDAD MÓVIL TOTAL === */
+        @media (max-width: 768px) {
+            .side-menu { width: 100%; right: -100%; } /* Menú ocupa toda la pantalla en móvil */
+            .banner { padding: 40px 5%; flex-direction: column; text-align: center; }
+            .banner-content h1 { font-size: 2rem; }
+            .admin-container { padding: 20px 5%; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .card { padding: 15px; }
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+            /* Ajuste especial para fila de ventas en móvil */
+            .sale-item-row { grid-template-columns: 1fr; padding: 15px; }
+            .sale-item-row .btn-remove-row { width: 100%; margin-top: 5px; }
+            .btn-action { padding: 6px 10px; font-size: 0.75rem; margin-bottom: 5px; width: 100%; display: block; text-align: center; }
+        }
     </style>
 </head>
 <body>
@@ -197,7 +211,7 @@
                 Centro de Control
             </h2>
             <div style="display: flex; align-items: center; gap: 15px;">
-                <span id="activeUserDisplay" style="font-weight: 600; font-size: 0.95rem; color: var(--text-muted);"></span>
+                <span id="activeUserDisplay" style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted);"></span>
                 <button class="btn-action" style="background:#fee2e2; color:#dc2626;" onclick="cerrarSesionAdmin()">Salir</button>
             </div>
         </div>
@@ -213,25 +227,41 @@
         </nav>
 
         <div class="admin-container">
-            <!-- Pestaña Finanzas -->
+            <!-- Pestaña Finanzas Potenciada -->
             <div id="tab-finanzas" class="tab-content active">
+                <h3 style="margin-bottom: 15px; color: var(--accent);">Resumen Financiero Global</h3>
                 <div class="metrics-grid">
-                    <div class="metric-box"><p>Ventas Totales</p><h4 id="m-ventas">$0.00</h4></div>
-                    <div class="metric-box"><p>Costo Producto</p><h4 id="m-costos">$0.00</h4></div>
-                    <div class="metric-box"><p>Retiros</p><h4 id="m-retiros">$0.00</h4></div>
-                    <div class="metric-box"><p>Reinversión</p><h4 id="m-reinversiones">$0.00</h4></div>
-                    <div class="metric-box" style="background:#f0fdf4; border-color: #bbf7d0;"><p>Ganancia Neta</p><h4 id="m-ganancia" style="color:#15803d;">$0.00</h4></div>
+                    <!-- Dinero Real en Caja -->
+                    <div class="metric-box" style="background:#f0fdf4; border-color: #bbf7d0; grid-column: span 2;">
+                        <p style="color: #166534;">Dinero en Caja (Efectivo Neto)</p>
+                        <h4 id="m-caja" style="color:#15803d; font-size: 2.2rem;">$0.00</h4>
+                    </div>
+                    <!-- Pagos Pendientes -->
+                    <div class="metric-box" style="background:#fef2f2; border-color: #fecaca; grid-column: span 2;">
+                        <p style="color: #991b1b;">Pagos Pendientes por Cobrar</p>
+                        <h4 id="m-pendientes" style="color:#dc2626; font-size: 2.2rem;">$0.00</h4>
+                    </div>
+                    
+                    <div class="metric-box"><p>Ganancia Neta</p><h4 id="m-ganancia">$0.00</h4></div>
+                    <div class="metric-box"><p>Ventas Totales (Cobradas)</p><h4 id="m-ventas">$0.00</h4></div>
+                    <div class="metric-box"><p>Costo de lo Vendido</p><h4 id="m-costos">$0.00</h4></div>
+                    <div class="metric-box"><p>Egresos (Retiros/Inv)</p><h4 id="m-egresos">$0.00</h4></div>
+                    <!-- Dinero estancado en productos -->
+                    <div class="metric-box" style="background:#f8fafc; border-color: #cbd5e1; grid-column: span 2;">
+                        <p>Dinero Invertido en Inventario (Costo)</p>
+                        <h4 id="m-inventario" style="color: #475569;">$0.00</h4>
+                    </div>
                 </div>
             </div>
 
-            <!-- Pestaña Ventas -->
+            <!-- Pestaña Ventas con Filtros -->
             <div id="tab-ventas" class="tab-content">
                 <div class="grid-2">
                     <div class="card">
                         <h3>Registrar Nueva Venta</h3>
                         <form id="saleForm" onsubmit="registrarVenta(event)">
                             <div class="form-group">
-                                <label>Fecha (Opcional - Por defecto Hoy)</label>
+                                <label>Fecha</label>
                                 <input type="date" id="saleDate">
                             </div>
                             <div class="form-group">
@@ -239,10 +269,8 @@
                                 <input type="text" id="saleClient" required placeholder="Ej. Juan Pérez">
                             </div>
                             
-                            <label style="display:block; font-size:0.95rem; margin-bottom:8px; color:var(--text-muted); font-weight:500;">Perfumes a Vender</label>
-                            <div id="saleItemsContainer">
-                                <!-- Filas dinámicas aquí -->
-                            </div>
+                            <label style="display:block; font-size:0.9rem; margin-bottom:6px; color:var(--text-muted); font-weight:500;">Perfumes a Vender</label>
+                            <div id="saleItemsContainer"></div>
                             <button type="button" class="btn-add-row" onclick="addSaleItemRow('saleItemsContainer')">+ Añadir otro perfume</button>
 
                             <div class="form-group" style="margin-top: 15px;">
@@ -252,12 +280,22 @@
                                     <option value="Pendiente">Pendiente por Pagar</option>
                                 </select>
                             </div>
-                            <button type="submit" class="btn-submit">Procesar Venta Múltiple</button>
+                            <button type="submit" class="btn-submit">Procesar Venta</button>
                         </form>
                     </div>
-                    <div class="card" style="grid-column: span 2;">
-                        <h3>Historial de Ventas</h3>
-                        <div style="overflow-x:auto;">
+                    <div class="card" style="grid-column: 1 / -1;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                            <h3>Historial de Ventas</h3>
+                            <div class="filter-controls">
+                                <label style="font-size:0.85rem; font-weight:600;">Ordenar por:</label>
+                                <select id="sortSales" onchange="renderAllAdmin()">
+                                    <option value="date">Fecha (Más recientes)</option>
+                                    <option value="name">Nombre Cliente (A-Z)</option>
+                                    <option value="qty">Cantidad Vendida</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
                             <table>
                                 <thead><tr><th>Fecha</th><th>Cliente</th><th>Artículos</th><th>Total</th><th>Estatus</th><th>Acciones</th></tr></thead>
                                 <tbody id="salesTableBody"></tbody>
@@ -267,7 +305,7 @@
                 </div>
             </div>
 
-            <!-- Pestaña Inventario -->
+            <!-- Pestaña Inventario con Filtros -->
             <div id="tab-inventario" class="tab-content">
                 <div class="grid-2">
                     <div class="card">
@@ -289,9 +327,19 @@
                             <button type="submit" class="btn-submit">Guardar en Inventario</button>
                         </form>
                     </div>
-                    <div class="card" style="grid-column: span 2;">
-                        <h3>Existencias en Almacén</h3>
-                        <div style="overflow-x:auto;">
+                    <div class="card" style="grid-column: 1 / -1;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                            <h3>Existencias en Almacén</h3>
+                            <div class="filter-controls">
+                                <label style="font-size:0.85rem; font-weight:600;">Ordenar por:</label>
+                                <select id="sortInv" onchange="renderAllAdmin()">
+                                    <option value="name">Orden Alfabético (A-Z)</option>
+                                    <option value="stock">Cantidad (Mayor a menor)</option>
+                                    <option value="date">Fecha de Ingreso</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
                             <table>
                                 <thead><tr><th>Nombre</th><th>Categoría</th><th>Stock</th><th>PVP</th><th>Gestión</th></tr></thead>
                                 <tbody id="inventoryTableBody"></tbody>
@@ -301,7 +349,7 @@
                 </div>
             </div>
 
-            <!-- Analitica y Egresos y Auditoria quedan similares en HTML, la lógica se mantiene -->
+            <!-- Analítica y Egresos -->
             <div id="tab-analitica" class="tab-content">
                 <div class="grid-2">
                     <div class="card">
@@ -316,9 +364,9 @@
                             <button type="submit" class="btn-submit">Registrar Salida</button>
                         </form>
                     </div>
-                    <div class="card" style="grid-column: span 2;">
+                    <div class="card" style="grid-column: 1 / -1;">
                         <h3>Libro de Egresos</h3>
-                        <div style="overflow-x:auto;">
+                        <div class="table-responsive">
                             <table>
                                 <thead><tr><th>Fecha</th><th>Tipo</th><th>Monto</th><th>Justificación</th><th>Usuario</th></tr></thead>
                                 <tbody id="withdrawalsTableBody"></tbody>
@@ -328,10 +376,11 @@
                 </div>
             </div>
 
+            <!-- Auditoría -->
             <div id="tab-auditoria" class="tab-content">
                 <div class="card">
                     <h3>Registro de Movimientos</h3>
-                    <div style="overflow-x:auto;">
+                    <div class="table-responsive">
                         <table>
                             <thead><tr><th>Fecha y Hora</th><th>Usuario</th><th>Acción Ejecutada</th></tr></thead>
                             <tbody id="auditTableBody"></tbody>
@@ -346,8 +395,8 @@
     <div id="editSaleModal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 style="color:var(--accent);">Editar Venta</h3>
-                <button class="close-btn" style="position:static;" onclick="cerrarModalEdicion()">&times;</button>
+                <h3 style="color:var(--accent); font-size:1.2rem;">Editar Venta</h3>
+                <button class="close-btn" style="position:static; font-size:24px;" onclick="cerrarModalEdicion()">&times;</button>
             </div>
             <form id="editSaleForm" onsubmit="guardarEdicionVenta(event)">
                 <input type="hidden" id="editSaleId">
@@ -359,7 +408,7 @@
                     <label>Nombre del Cliente</label>
                     <input type="text" id="editSaleClient" required>
                 </div>
-                <label style="display:block; font-size:0.95rem; margin-bottom:8px; color:var(--text-muted); font-weight:500;">Modificar Perfumes</label>
+                <label style="display:block; font-size:0.9rem; margin-bottom:6px; color:var(--text-muted); font-weight:500;">Modificar Perfumes</label>
                 <div id="editSaleItemsContainer"></div>
                 <button type="button" class="btn-add-row" onclick="addSaleItemRow('editSaleItemsContainer')">+ Añadir otro perfume</button>
                 
@@ -395,7 +444,9 @@
         // Generador de Opciones de Select
         function getPerfumeOptions() {
             let options = '<option value="">Seleccione Perfume...</option>';
-            appState.perfumes.forEach(p => { 
+            // Ordenar alfabéticamente para los selects siempre
+            let sortedP = [...appState.perfumes].sort((a,b) => a.name.localeCompare(b.name));
+            sortedP.forEach(p => { 
                 options += `<option value="${p.id}">${p.name} (Disp: ${p.stock})</option>`; 
             });
             return options;
@@ -428,7 +479,6 @@
                 renderAll();
                 if(document.getElementById('adminPanel').style.display === 'block') renderAllAdmin();
             });
-            // Pre-llenar fecha de hoy
             document.getElementById('saleDate').valueAsDate = new Date();
         };
 
@@ -461,8 +511,9 @@
             document.getElementById('publicSite').style.display = 'none';
             document.getElementById('adminPanel').style.display = 'block';
             document.getElementById('activeUserDisplay').innerText = `Operador: ${currentUser}`;
-            registrarLog("Inicio de sesión exitoso al panel de administración.");
-            addSaleItemRow('saleItemsContainer'); // Inicializar una fila vacía
+            registrarLog("Inicio de sesión al panel.");
+            document.getElementById('saleItemsContainer').innerHTML = '';
+            addSaleItemRow('saleItemsContainer'); 
             renderAllAdmin();
         }
 
@@ -476,15 +527,17 @@
         function registrarLog(accion) {
             if(!currentUser) return; 
             appState.logs.unshift({ timestamp: new Date().toLocaleString('es-VE'), user: currentUser, action: accion });
-            if(appState.logs.length > 100) appState.logs.pop(); // Limite de logs
+            if(appState.logs.length > 100) appState.logs.pop(); 
         }
 
-        // --- RENDERIZADO ---
         function renderAll() {
+            // Catálogo Público siempre alfabético
+            let catPerfumes = [...appState.perfumes].sort((a,b) => a.name.localeCompare(b.name));
+            
             ['Caballeros', 'Damas', 'Unisex', 'Niños'].forEach(cat => {
                 const grid = document.getElementById(`grid-${cat}`);
                 grid.innerHTML = '';
-                const filtered = appState.perfumes.filter(p => p.category === cat);
+                const filtered = catPerfumes.filter(p => p.category === cat);
                 if(filtered.length === 0) { grid.innerHTML = '<p style="color:#94a3b8; font-style:italic;">Sin stock registrado.</p>'; return; }
                 
                 let imgFile = cat === 'Caballeros' ? 'caballeros.png' : cat === 'Damas' ? 'damas.png' : cat === 'Unisex' ? 'unisex.png' : 'ninos.png';
@@ -501,40 +554,73 @@
         }
 
         function renderAllAdmin() {
-            // FINANZAS
-            let tVentas = 0, tCostos = 0, tRetiros = 0, tReinversiones = 0;
+            // 1. CÁLCULOS FINANCIEROS
+            let tVentasPagadas = 0, tCostosPagados = 0, tPendientes = 0;
             appState.sales.forEach(s => { 
-                if(s.status === 'Pagada') {
-                    // Adaptador para ventas viejas o nuevas multiples
-                    let items = s.items || [{ quantity: s.quantity, price: s.price, cost: s.cost }];
-                    items.forEach(i => { tVentas += (i.quantity * i.price); tCostos += (i.quantity * i.cost); });
-                }
+                let items = s.items || [{ quantity: s.quantity, price: s.price, cost: s.cost }];
+                items.forEach(i => {
+                    if(s.status === 'Pagada') {
+                        tVentasPagadas += (i.quantity * i.price); 
+                        tCostosPagados += (i.quantity * i.cost); 
+                    } else {
+                        tPendientes += (i.quantity * i.price);
+                    }
+                });
             });
+
+            let tRetiros = 0, tReinversiones = 0;
             appState.withdrawals.forEach(w => { w.type === 'Retiro' ? tRetiros += w.amount : tReinversiones += w.amount; });
-            let gNeta = tVentas - tCostos - tRetiros - tReinversiones;
+            
+            let tEgresos = tRetiros + tReinversiones;
+            let dineroEnCaja = tVentasPagadas - tEgresos; // Efectivo real
+            let gananciaNeta = tVentasPagadas - tCostosPagados - tEgresos;
+            
+            let dineroInventario = 0;
+            appState.perfumes.forEach(p => { dineroInventario += (p.stock * p.cost); });
 
-            document.getElementById('m-ventas').innerText = `$${tVentas.toFixed(2)}`;
-            document.getElementById('m-costos').innerText = `$${tCostos.toFixed(2)}`;
-            document.getElementById('m-retiros').innerText = `$${tRetiros.toFixed(2)}`;
-            document.getElementById('m-reinversiones').innerText = `$${tReinversiones.toFixed(2)}`;
-            document.getElementById('m-ganancia').innerText = `$${gNeta.toFixed(2)}`;
-            document.getElementById('m-ganancia').style.color = gNeta >= 0 ? '#15803d' : '#dc2626';
+            document.getElementById('m-caja').innerText = `$${dineroEnCaja.toFixed(2)}`;
+            document.getElementById('m-caja').style.color = dineroEnCaja >= 0 ? '#15803d' : '#dc2626';
+            document.getElementById('m-pendientes').innerText = `$${tPendientes.toFixed(2)}`;
+            document.getElementById('m-ganancia').innerText = `$${gananciaNeta.toFixed(2)}`;
+            document.getElementById('m-ventas').innerText = `$${tVentasPagadas.toFixed(2)}`;
+            document.getElementById('m-costos').innerText = `$${tCostosPagados.toFixed(2)}`;
+            document.getElementById('m-egresos').innerText = `$${tEgresos.toFixed(2)}`;
+            document.getElementById('m-inventario').innerText = `$${dineroInventario.toFixed(2)}`;
 
-            // VENTAS
-            // Actualizar options dinámicos
+            // Actualizar opciones de selects de ventas
             document.querySelectorAll('.perfume-select').forEach(sel => {
                 let val = sel.value; sel.innerHTML = getPerfumeOptions(); sel.value = val;
             });
 
+            // 2. ORDENAMIENTO VENTAS
+            let salesSort = document.getElementById('sortSales').value;
+            let sortedSales = [...appState.sales];
+            if(salesSort === 'name') {
+                sortedSales.sort((a,b) => a.client.localeCompare(b.client));
+            } else if(salesSort === 'qty') {
+                sortedSales.sort((a,b) => {
+                    let qA = (a.items || []).reduce((acc, i) => acc + i.quantity, 0);
+                    let qB = (b.items || []).reduce((acc, i) => acc + i.quantity, 0);
+                    return qB - qA;
+                });
+            } else {
+                // Por defecto Date (más recientes primero según ID)
+                sortedSales.sort((a,b) => {
+                    let idA = parseInt(a.id.split('_')[1]) || 0;
+                    let idB = parseInt(b.id.split('_')[1]) || 0;
+                    return idB - idA;
+                });
+            }
+
             const salesBody = document.getElementById('salesTableBody');
             salesBody.innerHTML = '';
-            appState.sales.forEach(s => {
-                let itemsList = (s.items || [{perfumeName: s.perfumeName, quantity: s.quantity, price: s.price}]).map(i => `${i.quantity}x ${i.perfumeName}`).join(', ');
+            sortedSales.forEach(s => {
+                let itemsList = (s.items || [{perfumeName: s.perfumeName, quantity: s.quantity}]).map(i => `${i.quantity}x ${i.perfumeName}`).join(', ');
                 let totalAmount = (s.items || [{quantity: s.quantity, price: s.price}]).reduce((acc, i) => acc + (i.quantity * i.price), 0);
                 
                 salesBody.innerHTML += `<tr>
                     <td>${s.date}</td><td><strong>${s.client}</strong></td>
-                    <td style="font-size:0.85rem; color:#64748b;">${itemsList}</td>
+                    <td style="font-size:0.8rem; color:#64748b;">${itemsList}</td>
                     <td style="font-weight:600;">$${totalAmount.toFixed(2)}</td>
                     <td><span class="status-badge ${s.status.toLowerCase()}">${s.status}</span></td>
                     <td>
@@ -544,10 +630,25 @@
                 </tr>`;
             });
 
-            // INVENTARIO
+            // 3. ORDENAMIENTO INVENTARIO
+            let invSort = document.getElementById('sortInv').value;
+            let sortedPerfumes = [...appState.perfumes];
+            if (invSort === 'name') {
+                sortedPerfumes.sort((a, b) => a.name.localeCompare(b.name));
+            } else if (invSort === 'stock') {
+                sortedPerfumes.sort((a, b) => b.stock - a.stock);
+            } else {
+                // Date (ID desc)
+                sortedPerfumes.sort((a, b) => {
+                    let idA = parseInt(a.id.split('_')[1]) || 0;
+                    let idB = parseInt(b.id.split('_')[1]) || 0;
+                    return idB - idA;
+                });
+            }
+
             const invBody = document.getElementById('inventoryTableBody');
             invBody.innerHTML = '';
-            appState.perfumes.forEach(p => {
+            sortedPerfumes.forEach(p => {
                 invBody.innerHTML += `<tr>
                     <td><strong>${p.name}</strong></td><td>${p.category}</td>
                     <td><span class="status-badge" style="background:#f1f5f9; color:#0f172a;">${p.stock}</span></td>
@@ -556,14 +657,14 @@
                 </tr>`;
             });
 
-            // AUDITORIA Y EGRESOS
+            // EGRESOS Y AUDITORIA
             const wBody = document.getElementById('withdrawalsTableBody');
             wBody.innerHTML = '';
             appState.withdrawals.forEach(w => wBody.innerHTML += `<tr><td>${w.date}</td><td>${w.type}</td><td style="color:#dc2626; font-weight:600;">-$${w.amount.toFixed(2)}</td><td>${w.reason}</td><td>${w.user}</td></tr>`);
             
             const audBody = document.getElementById('auditTableBody');
             audBody.innerHTML = '';
-            appState.logs.forEach(l => audBody.innerHTML += `<tr><td style="font-size:0.8rem; color:#94a3b8;">${l.timestamp}</td><td><strong>${l.user}</strong></td><td>${l.action}</td></tr>`);
+            appState.logs.forEach(l => audBody.innerHTML += `<tr><td style="font-size:0.75rem; color:#94a3b8;">${l.timestamp}</td><td><strong>${l.user}</strong></td><td>${l.action}</td></tr>`);
         }
 
         // --- LÓGICA DE REGISTRO ---
@@ -578,10 +679,10 @@
             let item = appState.perfumes.find(p => p.name.toLowerCase() === name.toLowerCase());
             if(item) {
                 item.stock += stockToAdd; item.cost = cost; item.price = price;
-                registrarLog(`Actualizó '${name}': +${stockToAdd} unds. Stock actual: ${item.stock}`);
+                registrarLog(`Actualizó '${name}': +${stockToAdd} unds. Stock: ${item.stock}`);
             } else {
                 appState.perfumes.push({ id: 'p_' + Date.now(), name, category, stock: stockToAdd, cost, price, soldQuantity: 0 });
-                registrarLog(`Ingresó perfume: '${name}' (${stockToAdd} unds)`);
+                registrarLog(`Ingresó: '${name}' (${stockToAdd} unds)`);
             }
             saveToFirebase(); document.getElementById('perfumeForm').reset();
         }
@@ -594,23 +695,19 @@
             const status = document.getElementById('saleStatus').value;
 
             const rows = document.querySelectorAll('#saleItemsContainer .sale-item-row');
-            if(rows.length === 0) return alert("Debe añadir al menos un perfume.");
+            if(rows.length === 0) return alert("Añade al menos un perfume.");
 
             let itemsToProcess = [];
-            // Validación previa de stock
             for(let row of rows) {
                 let pId = row.querySelector('.perfume-select').value;
                 let qty = parseInt(row.querySelector('.qty-input').value);
-                if(!pId || qty < 1) return alert("Complete los datos de los perfumes correctamente.");
+                if(!pId || qty < 1) return alert("Completa los datos correctamente.");
                 
                 let p = appState.perfumes.find(x => x.id === pId);
-                // Si el mismo perfume se agrega 2 veces en filas distintas, sumar la validación (se simplifica asumiendo uso correcto)
-                if(p.stock < qty) return alert(`Stock insuficiente para el perfume: ${p.name}. (Disp: ${p.stock})`);
-                
+                if(p.stock < qty) return alert(`Stock insuficiente para: ${p.name}. (Disp: ${p.stock})`);
                 itemsToProcess.push({ perfumeId: p.id, perfumeName: p.name, quantity: qty, cost: p.cost, price: p.price });
             }
 
-            // Descontar stock
             itemsToProcess.forEach(item => {
                 let p = appState.perfumes.find(x => x.id === item.perfumeId);
                 p.stock -= item.quantity;
@@ -618,7 +715,7 @@
             });
 
             appState.sales.unshift({ id: 's_' + Date.now(), date, client, items: itemsToProcess, status, user: currentUser });
-            registrarLog(`Venta registrada a '${client}' (${itemsToProcess.length} artículos). Estatus: ${status}`);
+            registrarLog(`Venta a '${client}' (${itemsToProcess.length} items). Estado: ${status}`);
             
             saveToFirebase(); 
             document.getElementById('saleForm').reset();
@@ -635,13 +732,11 @@
             }
         }
 
-        // --- LÓGICA DE EDICIÓN ---
         function abrirModalEdicion(id) {
             const sale = appState.sales.find(s => s.id === id);
             if(!sale) return;
 
             document.getElementById('editSaleId').value = sale.id;
-            // Convertir DD/MM/YYYY a YYYY-MM-DD para el input date
             let parts = sale.date.split('/');
             if(parts.length === 3) document.getElementById('editSaleDate').value = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
             
@@ -666,49 +761,45 @@
             if(saleIndex === -1) return;
             let originalSale = appState.sales[saleIndex];
 
-            // 1. Devolver el stock original temporalmente
+            // Devolver stock original
             let oldItems = originalSale.items || [{perfumeId: originalSale.perfumeId, quantity: originalSale.quantity}];
             oldItems.forEach(oldI => {
                 let p = appState.perfumes.find(x => x.id === oldI.perfumeId);
                 if(p) { p.stock += oldI.quantity; p.soldQuantity -= oldI.quantity; }
             });
 
-            // 2. Procesar los nuevos items del formulario
+            // Procesar nuevos items
             const rows = document.querySelectorAll('#editSaleItemsContainer .sale-item-row');
             let newItemsToProcess = [];
             
             for(let row of rows) {
                 let pId = row.querySelector('.perfume-select').value;
                 let qty = parseInt(row.querySelector('.qty-input').value);
-                if(!pId || qty < 1) { alert("Revise los campos de perfumes."); return; } // Revertir stock manual aquí omitido por simplicidad de entorno seguro
+                if(!pId || qty < 1) { alert("Revise los campos de perfumes."); return; } 
                 
                 let p = appState.perfumes.find(x => x.id === pId);
-                if(p.stock < qty) { alert(`Stock insuficiente para: ${p.name} tras ajustar.`); return; }
+                if(p.stock < qty) { alert(`Stock insuficiente para: ${p.name}`); return; }
                 newItemsToProcess.push({ perfumeId: p.id, perfumeName: p.name, quantity: qty, cost: p.cost, price: p.price });
             }
 
-            // 3. Aplicar nuevo stock
+            // Aplicar nuevo stock
             newItemsToProcess.forEach(item => {
                 let p = appState.perfumes.find(x => x.id === item.perfumeId);
                 p.stock -= item.quantity; p.soldQuantity += item.quantity;
             });
 
-            // 4. Actualizar objeto de venta
             const rawDate = document.getElementById('editSaleDate').value;
             originalSale.date = new Date(rawDate + "T12:00:00").toLocaleDateString('es-VE');
             originalSale.client = document.getElementById('editSaleClient').value.trim();
             originalSale.status = document.getElementById('editSaleStatus').value;
             originalSale.items = newItemsToProcess;
             
-            // Limpiar datos viejos si existían en el formato antiguo
             delete originalSale.perfumeId; delete originalSale.perfumeName; delete originalSale.quantity; delete originalSale.cost; delete originalSale.price;
 
-            registrarLog(`Editó la venta de '${originalSale.client}'.`);
-            saveToFirebase();
-            cerrarModalEdicion();
+            registrarLog(`Editó venta de '${originalSale.client}'.`);
+            saveToFirebase(); cerrarModalEdicion();
         }
 
-        // --- ELIMINAR Y EGRESOS ---
         function eliminarPerfume(id) {
             if(confirm("¿Seguro que deseas ELIMINAR este perfume?")) {
                 appState.perfumes = appState.perfumes.filter(p => p.id !== id);
@@ -722,7 +813,7 @@
             const type = document.getElementById('wType').value;
             const reason = document.getElementById('wReason').value.trim();
             appState.withdrawals.unshift({ id: 'w_' + Date.now(), date: new Date().toLocaleDateString('es-VE'), type, amount, reason, user: currentUser });
-            registrarLog(`Declaró ${type}: -$${amount}. Razón: "${reason}"`);
+            registrarLog(`Egreso (${type}): -$${amount}. Razón: "${reason}"`);
             saveToFirebase(); document.getElementById('withdrawalForm').reset();
         }
     </script>
