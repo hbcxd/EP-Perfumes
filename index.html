@@ -84,17 +84,37 @@
         .price-tag { font-size: 1.4rem; font-weight: 600; color: var(--text-main); }
         .promo-tag { display: inline-block; background-color: #ecfdf5; color: #059669; padding: 8px 20px; border-radius: 30px; font-size: 0.9rem; margin-top: 15px; font-weight: 600; border: 1px solid #a7f3d0; }
 
-        /* === CATÁLOGO PÚBLICO (NUEVO DISEÑO CUADRÍCULA) === */
-        .catalogo { padding: 40px 5%; max-width: 1200px; margin: 0 auto; }
-        .category-section { margin-bottom: 50px; background: #ffffff; padding: 25px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); }
-        .category-title { font-size: 1.5rem; font-weight: 700; color: var(--accent); margin-bottom: 25px; padding-bottom: 10px; border-bottom: 2px solid #f1f5f9; display: flex; align-items: center; }
+        /* === CATÁLOGO PÚBLICO (VISTA MACRO Y BUSCADOR) === */
+        .catalogo { padding: 40px 5%; max-width: 1300px; margin: 0 auto; }
+        
+        .search-container { text-align: center; margin-bottom: 40px; }
+        .search-container input { 
+            width: 100%; max-width: 500px; padding: 15px 25px; border-radius: 30px; 
+            border: 2px solid var(--border-color); font-size: 1.05rem; box-shadow: var(--shadow-sm); 
+            background: #ffffff; transition: 0.3s;
+        }
+        .search-container input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.1); }
 
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
-        .product-card { background: var(--bg-card); border-radius: var(--radius-md); padding: 15px; transition: transform 0.3s ease, box-shadow 0.3s ease; border: 1px solid #e2e8f0; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; }
+        .category-section { margin-bottom: 40px; background: #ffffff; padding: 20px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); transition: all 0.3s ease; }
+        
+        .category-title { 
+            font-size: 1.3rem; font-weight: 700; color: var(--accent); margin-bottom: 15px; 
+            padding-bottom: 10px; border-bottom: 2px solid #f1f5f9; display: flex; 
+            align-items: center; justify-content: space-between; cursor: pointer; user-select: none;
+        }
+        .category-title:hover { color: var(--accent-hover); }
+        .toggle-icon { font-size: 1.1rem; transition: transform 0.3s ease; color: var(--text-muted); }
+        .category-title.collapsed .toggle-icon { transform: rotate(-90deg); }
+
+        /* Vista Macro (tarjetas más pequeñas, más columnas) */
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; transition: max-height 0.4s ease, opacity 0.3s ease; opacity: 1; }
+        .product-grid.collapsed { display: none; opacity: 0; }
+        
+        .product-card { background: var(--bg-card); border-radius: var(--radius-md); padding: 12px; transition: transform 0.3s ease, box-shadow 0.3s ease; border: 1px solid #e2e8f0; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; }
         .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: #cbd5e1; }
-        .product-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; margin-bottom: 15px; background: #f8fafc; }
-        .product-title { font-weight: 600; margin-bottom: 8px; font-size: 1.1rem; color: var(--text-main); }
-        .product-stock { font-size: 0.85rem; color: var(--text-muted); display: inline-block; padding: 5px 12px; background: #f1f5f9; border-radius: 20px; font-weight: 500; }
+        .product-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; margin-bottom: 10px; background: #f8fafc; }
+        .product-title { font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; color: var(--text-main); line-height: 1.2; }
+        .product-stock { font-size: 0.75rem; color: var(--text-muted); display: inline-block; padding: 4px 10px; background: #f1f5f9; border-radius: 20px; font-weight: 500; }
 
         /* === PANEL ADMINISTRATIVO === */
         #adminPanel { display: none; background-color: var(--bg-body); min-height: 100vh; padding-bottom: 50px; }
@@ -155,6 +175,7 @@
             .sale-item-row { grid-template-columns: 1fr; padding: 15px; }
             .sale-item-row .btn-remove-row { width: 100%; margin-top: 5px; }
             .btn-action { padding: 6px 10px; font-size: 0.75rem; margin-bottom: 5px; width: 100%; display: block; text-align: center; }
+            .product-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); } /* Más compacto en móvil */
         }
     </style>
 </head>
@@ -192,23 +213,35 @@
         </section>
 
         <section class="catalogo">
+            <div class="search-container">
+                <input type="text" id="searchCatalog" placeholder="🔍 Buscar perfume por nombre..." onkeyup="renderAll()">
+            </div>
+
             <div class="category-section" id="cat-caballeros">
-                <h2 class="category-title">Caballeros</h2>
+                <h2 class="category-title" onclick="toggleCategorySection('grid-Caballeros', this)">
+                    Caballeros <span class="toggle-icon">▼</span>
+                </h2>
                 <div class="product-grid" id="grid-Caballeros"></div>
             </div>
             
             <div class="category-section" id="cat-damas">
-                <h2 class="category-title">Damas</h2>
+                <h2 class="category-title" onclick="toggleCategorySection('grid-Damas', this)">
+                    Damas <span class="toggle-icon">▼</span>
+                </h2>
                 <div class="product-grid" id="grid-Damas"></div>
             </div>
             
             <div class="category-section" id="cat-unisex">
-                <h2 class="category-title">Unisex</h2>
+                <h2 class="category-title" onclick="toggleCategorySection('grid-Unisex', this)">
+                    Unisex <span class="toggle-icon">▼</span>
+                </h2>
                 <div class="product-grid" id="grid-Unisex"></div>
             </div>
             
             <div class="category-section" id="cat-ninos">
-                <h2 class="category-title">Niños</h2>
+                <h2 class="category-title" onclick="toggleCategorySection('grid-Niños', this)">
+                    Niños <span class="toggle-icon">▼</span>
+                </h2>
                 <div class="product-grid" id="grid-Niños"></div>
             </div>
         </section>
@@ -420,11 +453,26 @@
 
         function saveToFirebase() { db.ref('tienda').set(appState); }
         function toggleMenu(menuId) { document.getElementById(menuId).classList.toggle('active'); }
-        // Actualizada para desplazarse suavemente a la nueva estructura de divs
+        
+        // Función para minimizar/maximizar secciones del catálogo
+        function toggleCategorySection(gridId, headerElement) {
+            const grid = document.getElementById(gridId);
+            grid.classList.toggle('collapsed');
+            headerElement.classList.toggle('collapsed');
+        }
+
         function navigateToCategory(id) { 
             toggleMenu('sideMenu'); 
             const el = document.getElementById(id); 
             if(el) { 
+                // Asegurar que la categoría esté abierta antes de hacer scroll
+                const gridId = id.replace('cat-', 'grid-');
+                const grid = document.getElementById(gridId);
+                const header = el.querySelector('.category-title');
+                if (grid.classList.contains('collapsed')) {
+                    grid.classList.remove('collapsed');
+                    header.classList.remove('collapsed');
+                }
                 el.scrollIntoView({ behavior: 'smooth', block: 'start' }); 
             } 
         }
@@ -452,15 +500,29 @@
         function cerrarSesionAdmin() { registrarLog("Cierre de sesión."); currentUser = null; document.getElementById('adminPanel').style.display = 'none'; document.getElementById('publicSite').style.display = 'block'; }
         function registrarLog(accion) { if(!currentUser) return; appState.logs.unshift({ timestamp: new Date().toLocaleString('es-VE'), user: currentUser, action: accion }); if(appState.logs.length > 100) appState.logs.pop(); }
 
+        // RENDERIZADO DEL CATÁLOGO ACTUALIZADO CON BÚSQUEDA Y ORDEN ALFABÉTICO
         function renderAll() {
+            const searchTerm = document.getElementById('searchCatalog') ? document.getElementById('searchCatalog').value.toLowerCase().trim() : '';
+            // El sort() asegura que siempre se rendericen de la A a la Z
             let catPerfumes = [...appState.perfumes].sort((a,b) => a.name.localeCompare(b.name));
+            
             ['Caballeros', 'Damas', 'Unisex', 'Niños'].forEach(cat => {
                 const grid = document.getElementById(`grid-${cat}`);
+                if(!grid) return;
+                
                 grid.innerHTML = '';
-                const filtered = catPerfumes.filter(p => p.category === cat);
-                if(filtered.length === 0) { grid.innerHTML = '<p style="color:#94a3b8; font-style:italic;">Sin stock registrado.</p>'; return; }
+                
+                const filtered = catPerfumes.filter(p => p.category === cat && p.name.toLowerCase().includes(searchTerm));
+                
+                if(filtered.length === 0) { 
+                    grid.innerHTML = `<p style="color:#94a3b8; font-style:italic; grid-column: 1 / -1; font-size: 0.9rem;">No se encontraron perfumes ${searchTerm ? 'con esa búsqueda' : 'registrados'}.</p>`; 
+                    return; 
+                }
+                
                 let imgFile = cat === 'Caballeros' ? 'caballeros.jpg' : cat === 'Damas' ? 'damas.jpg' : cat === 'Unisex' ? 'unisex.jpg' : 'ninos.jpg';
-                filtered.forEach(p => { grid.innerHTML += `<div class="product-card"><img src="${imgFile}" onerror="this.src='https://via.placeholder.com/300?text=Perfume'" class="product-img"><div class="product-title">${p.name}</div><div class="product-stock">Disp: ${p.stock} unds</div></div>`; });
+                filtered.forEach(p => { 
+                    grid.innerHTML += `<div class="product-card"><img src="${imgFile}" onerror="this.src='https://via.placeholder.com/300?text=Perfume'" class="product-img"><div class="product-title">${p.name}</div><div class="product-stock">Disp: ${p.stock} unds</div></div>`; 
+                });
             });
         }
 
@@ -514,7 +576,6 @@
                 invBody.innerHTML += `<tr><td><strong>${p.name}</strong></td><td>${p.category}</td><td><span class="status-badge" style="background:#f1f5f9; color:#0f172a;">${p.stock}</span></td><td>$${p.price.toFixed(2)}</td><td><button class="btn-action" style="background:#fee2e2; color:#dc2626;" onclick="eliminarPerfume('${p.id}')">Borrar</button></td></tr>`;
             });
 
-            // RENDERIZADO DE EGRESOS CON BOTÓN BORRAR
             const wBody = document.getElementById('withdrawalsTableBody');
             wBody.innerHTML = '';
             appState.withdrawals.forEach(w => {
@@ -549,7 +610,6 @@
 
         function registrarEgreso(e) { e.preventDefault(); const amount = parseFloat(document.getElementById('wAmount').value); const type = document.getElementById('wType').value; const reason = document.getElementById('wReason').value.trim(); appState.withdrawals.unshift({ id: 'w_' + Date.now(), date: new Date().toLocaleDateString('es-VE'), type, amount, reason, user: currentUser }); registrarLog(`Egreso (${type}): -$${amount}.`); saveToFirebase(); document.getElementById('withdrawalForm').reset(); }
 
-        // NUEVA FUNCIÓN PARA ELIMINAR EGRESOS
         function eliminarEgreso(id) {
             if(confirm("¿Estás seguro de que deseas eliminar este registro de egreso? Esta acción actualizará tus finanzas.")) {
                 const egreso = appState.withdrawals.find(w => w.id === id);
