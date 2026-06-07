@@ -425,7 +425,7 @@
                 grid.innerHTML = '';
                 const filtered = catPerfumes.filter(p => p.category === cat);
                 if(filtered.length === 0) { grid.innerHTML = '<p style="color:#94a3b8; font-style:italic;">Sin stock registrado.</p>'; return; }
-                let imgFile = cat === 'Caballeros' ? 'caballeros.png' : cat === 'Damas' ? 'damas.png' : cat === 'Unisex' ? 'unisex.png' : 'ninos.png';
+                let imgFile = cat === 'Caballeros' ? 'caballeros.jpg' : cat === 'Damas' ? 'damas.jpg' : cat === 'Unisex' ? 'unisex.jpg' : 'ninos.jpg';
                 filtered.forEach(p => { grid.innerHTML += `<div class="product-card"><img src="${imgFile}" onerror="this.src='https://via.placeholder.com/300?text=Perfume'" class="product-img"><div class="product-title">${p.name}</div><div class="product-stock">Disp: ${p.stock} unds</div></div>`; });
             });
         }
