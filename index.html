@@ -84,19 +84,17 @@
         .price-tag { font-size: 1.4rem; font-weight: 600; color: var(--text-main); }
         .promo-tag { display: inline-block; background-color: #ecfdf5; color: #059669; padding: 8px 20px; border-radius: 30px; font-size: 0.9rem; margin-top: 15px; font-weight: 600; border: 1px solid #a7f3d0; }
 
-        /* === CATÁLOGO PÚBLICO === */
+        /* === CATÁLOGO PÚBLICO (NUEVO DISEÑO CUADRÍCULA) === */
         .catalogo { padding: 40px 5%; max-width: 1200px; margin: 0 auto; }
-        details { margin-bottom: 20px; background: var(--bg-card); border-radius: var(--radius-md); padding: 15px 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); }
-        summary { font-size: 1.2rem; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; color: var(--accent); }
-        summary::after { content: '+'; font-weight: 400; font-size: 1.6rem; transition: 0.3s; }
-        details[open] summary::after { transform: rotate(45deg); }
-        
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-top: 20px; padding-bottom: 10px; }
-        .product-card { background: var(--bg-card); border-radius: var(--radius-md); padding: 15px; transition: transform 0.3s ease, box-shadow 0.3s ease; border: 1px solid #f1f5f9; text-align: center; }
-        .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
+        .category-section { margin-bottom: 50px; background: #ffffff; padding: 25px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); }
+        .category-title { font-size: 1.5rem; font-weight: 700; color: var(--accent); margin-bottom: 25px; padding-bottom: 10px; border-bottom: 2px solid #f1f5f9; display: flex; align-items: center; }
+
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
+        .product-card { background: var(--bg-card); border-radius: var(--radius-md); padding: 15px; transition: transform 0.3s ease, box-shadow 0.3s ease; border: 1px solid #e2e8f0; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: #cbd5e1; }
         .product-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; margin-bottom: 15px; background: #f8fafc; }
-        .product-title { font-weight: 600; margin-bottom: 5px; font-size: 1.05rem; }
-        .product-stock { font-size: 0.85rem; color: var(--text-muted); display: inline-block; padding: 4px 10px; background: #f1f5f9; border-radius: 20px; font-weight: 500; }
+        .product-title { font-weight: 600; margin-bottom: 8px; font-size: 1.1rem; color: var(--text-main); }
+        .product-stock { font-size: 0.85rem; color: var(--text-muted); display: inline-block; padding: 5px 12px; background: #f1f5f9; border-radius: 20px; font-weight: 500; }
 
         /* === PANEL ADMINISTRATIVO === */
         #adminPanel { display: none; background-color: var(--bg-body); min-height: 100vh; padding-bottom: 50px; }
@@ -194,10 +192,25 @@
         </section>
 
         <section class="catalogo">
-            <details id="cat-caballeros" open><summary>Caballeros</summary><div class="product-grid" id="grid-Caballeros"></div></details>
-            <details id="cat-damas"><summary>Damas</summary><div class="product-grid" id="grid-Damas"></div></details>
-            <details id="cat-unisex"><summary>Unisex</summary><div class="product-grid" id="grid-Unisex"></div></details>
-            <details id="cat-ninos"><summary>Niños</summary><div class="product-grid" id="grid-Niños"></div></details>
+            <div class="category-section" id="cat-caballeros">
+                <h2 class="category-title">Caballeros</h2>
+                <div class="product-grid" id="grid-Caballeros"></div>
+            </div>
+            
+            <div class="category-section" id="cat-damas">
+                <h2 class="category-title">Damas</h2>
+                <div class="product-grid" id="grid-Damas"></div>
+            </div>
+            
+            <div class="category-section" id="cat-unisex">
+                <h2 class="category-title">Unisex</h2>
+                <div class="product-grid" id="grid-Unisex"></div>
+            </div>
+            
+            <div class="category-section" id="cat-ninos">
+                <h2 class="category-title">Niños</h2>
+                <div class="product-grid" id="grid-Niños"></div>
+            </div>
         </section>
     </div>
 
@@ -314,7 +327,21 @@
                     </div>
                     <div class="card" style="grid-column: 1 / -1;">
                         <h3>Libro de Egresos</h3>
-                        <div class="table-responsive"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Monto</th><th>Justificación</th><th>Usuario</th></tr></thead><tbody id="withdrawalsTableBody"></tbody></table></div>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Tipo</th>
+                                        <th>Monto</th>
+                                        <th>Justificación</th>
+                                        <th>Usuario</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="withdrawalsTableBody"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -393,7 +420,14 @@
 
         function saveToFirebase() { db.ref('tienda').set(appState); }
         function toggleMenu(menuId) { document.getElementById(menuId).classList.toggle('active'); }
-        function navigateToCategory(id) { toggleMenu('sideMenu'); const el = document.getElementById(id); if(el) { el.open = true; el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }
+        // Actualizada para desplazarse suavemente a la nueva estructura de divs
+        function navigateToCategory(id) { 
+            toggleMenu('sideMenu'); 
+            const el = document.getElementById(id); 
+            if(el) { 
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' }); 
+            } 
+        }
         function switchTab(tabId, btnElement) { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('#adminSideMenu a').forEach(a => a.classList.remove('active-link')); document.getElementById(tabId).classList.add('active'); btnElement.classList.add('active-link'); document.getElementById('adminSideMenu').classList.remove('active'); }
 
         function solicitarAccesoAdmin() {
@@ -480,9 +514,19 @@
                 invBody.innerHTML += `<tr><td><strong>${p.name}</strong></td><td>${p.category}</td><td><span class="status-badge" style="background:#f1f5f9; color:#0f172a;">${p.stock}</span></td><td>$${p.price.toFixed(2)}</td><td><button class="btn-action" style="background:#fee2e2; color:#dc2626;" onclick="eliminarPerfume('${p.id}')">Borrar</button></td></tr>`;
             });
 
+            // RENDERIZADO DE EGRESOS CON BOTÓN BORRAR
             const wBody = document.getElementById('withdrawalsTableBody');
             wBody.innerHTML = '';
-            appState.withdrawals.forEach(w => wBody.innerHTML += `<tr><td>${w.date}</td><td>${w.type}</td><td style="color:#dc2626; font-weight:600;">-$${w.amount.toFixed(2)}</td><td>${w.reason}</td><td>${w.user}</td></tr>`);
+            appState.withdrawals.forEach(w => {
+                wBody.innerHTML += `<tr>
+                    <td>${w.date}</td>
+                    <td>${w.type}</td>
+                    <td style="color:#dc2626; font-weight:600;">-$${w.amount.toFixed(2)}</td>
+                    <td>${w.reason}</td>
+                    <td>${w.user}</td>
+                    <td><button class="btn-action" style="background:#fee2e2; color:#dc2626;" onclick="eliminarEgreso('${w.id}')">Borrar</button></td>
+                </tr>`;
+            });
             
             const audBody = document.getElementById('auditTableBody');
             audBody.innerHTML = '';
@@ -504,6 +548,19 @@
         function eliminarPerfume(id) { if(confirm("¿Eliminar perfume?")) { appState.perfumes = appState.perfumes.filter(p => p.id !== id); saveToFirebase(); } }
 
         function registrarEgreso(e) { e.preventDefault(); const amount = parseFloat(document.getElementById('wAmount').value); const type = document.getElementById('wType').value; const reason = document.getElementById('wReason').value.trim(); appState.withdrawals.unshift({ id: 'w_' + Date.now(), date: new Date().toLocaleDateString('es-VE'), type, amount, reason, user: currentUser }); registrarLog(`Egreso (${type}): -$${amount}.`); saveToFirebase(); document.getElementById('withdrawalForm').reset(); }
+
+        // NUEVA FUNCIÓN PARA ELIMINAR EGRESOS
+        function eliminarEgreso(id) {
+            if(confirm("¿Estás seguro de que deseas eliminar este registro de egreso? Esta acción actualizará tus finanzas.")) {
+                const egreso = appState.withdrawals.find(w => w.id === id);
+                if (egreso) {
+                    appState.withdrawals = appState.withdrawals.filter(w => w.id !== id);
+                    registrarLog(`Eliminó egreso por -$${egreso.amount.toFixed(2)} (${egreso.type}).`);
+                    saveToFirebase();
+                    renderAllAdmin();
+                }
+            }
+        }
     </script>
 </body>
 </html>
