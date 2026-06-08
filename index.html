@@ -128,7 +128,6 @@
         .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-color); }
         .cart-item-details { flex-grow: 1; text-align: left; }
         .cart-item-title { font-weight: 600; font-size: 0.9rem; }
-        .cart-item-price { color: var(--text-muted); font-size: 0.85rem; }
         .cart-item-controls { display: flex; align-items: center; gap: 10px; }
         .btn-qty { background: #f1f5f9; border: none; width: 25px; height: 25px; border-radius: 4px; font-weight: bold; cursor: pointer; }
 
@@ -162,6 +161,7 @@
         .status-badge { padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; display: inline-block; letter-spacing: 0.3px; white-space: nowrap; }
         .status-badge.pagada { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
         .status-badge.pendiente { background-color: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+        .status-badge.cancelada { background-color: #f3f4f6; color: #4b5563; border: 1px solid #d1d5db; text-decoration: line-through; }
 
         .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 25px; }
         .metric-box { background: var(--bg-card); border: 1px solid var(--border-color); padding: 20px 15px; border-radius: var(--radius-md); text-align: center; box-shadow: var(--shadow-sm); }
@@ -223,8 +223,8 @@
             <div class="banner-content">
                 <h1>Esencia & Distinción en 30ml</h1>
                 <p>Elaborados minuciosamente a base de finos aceites y feromonas de alta concentración para garantizar una fijación estelar que te acompañe en tu día a día.</p>
-                <div class="price-tag">Precio: $4 <span style="font-size:0.9rem; font-weight:400; color:var(--text-muted);">(Tasa BCV)</span></div>
-                <div class="promo-tag">✨ PROMO: 2x$5 en Divisas (Efectivo)</div>
+                <div class="price-tag">Ref: $4 <span style="font-size:0.9rem; font-weight:400; color:var(--text-muted);">(Tasa BCV)</span></div>
+                <div class="promo-tag">✨ PROMO DIVISAS: 1x$3 o Llévate 2x$5</div>
             </div>
             <div class="banner-image">
                 <img src="perfumes.png" alt="Colección de perfumes premium" onerror="this.src='https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=600&q=80'">
@@ -272,9 +272,8 @@
                 <h3>🛒 Tu Pedido</h3>
                 <button class="close-btn" style="position:static; font-size:24px;" onclick="cerrarCarrito()">&times;</button>
             </div>
-            <div id="cartItemsContainer" style="margin-bottom: 15px;">
-                </div>
-            <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1.1rem; margin-bottom:20px; border-top:1px solid #e2e8f0; padding-top:10px;">
+            <div id="cartItemsContainer" style="margin-bottom: 15px;"></div>
+            <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1.1rem; margin-bottom:20px; border-top:1px solid #e2e8f0; padding-top:10px; align-items: center;">
                 <span>Total Estimado:</span>
                 <span id="cartTotal">$0.00</span>
             </div>
@@ -358,7 +357,7 @@
                         <h3 style="color: #b91c1c;">⚠️ Cuentas por Cobrar (Pendientes)</h3>
                         <div class="table-responsive">
                             <table>
-                                <thead><tr><th>Cliente</th><th>Monto</th><th>Acción</th></tr></thead>
+                                <thead><tr><th>Cliente</th><th>Monto Interno</th><th>Acción</th></tr></thead>
                                 <tbody id="pendingTableBody"></tbody>
                             </table>
                         </div>
@@ -369,7 +368,7 @@
                             <h3>Historial General de Ventas</h3>
                             <div class="filter-controls"><label style="font-size:0.85rem; font-weight:600;">Ordenar por:</label><select id="sortSales" onchange="renderAllAdmin()"><option value="date">Fecha (Más recientes)</option><option value="name">Nombre Cliente (A-Z)</option><option value="qty">Cantidad Vendida</option></select></div>
                         </div>
-                        <div class="table-responsive"><table><thead><tr><th>Fecha</th><th>Cliente</th><th>Artículos</th><th>Total</th><th>Estatus</th><th>Acciones</th></tr></thead><tbody id="salesTableBody"></tbody></table></div>
+                        <div class="table-responsive"><table><thead><tr><th>Fecha</th><th>Cliente</th><th>Artículos</th><th>Total (Int)</th><th>Estatus</th><th>Acciones</th></tr></thead><tbody id="salesTableBody"></tbody></table></div>
                     </div>
                 </div>
             </div>
@@ -382,8 +381,8 @@
                             <div class="form-group"><label>Nombre del Perfume</label><input type="text" id="perfumeName" required></div>
                             <div class="form-group"><label>Categoría</label><select id="perfumeCategory"><option value="Caballeros">Caballeros</option><option value="Damas">Damas</option><option value="Unisex">Unisex</option><option value="Niños">Niños</option></select></div>
                             <div class="form-group"><label>Cantidad a Añadir</label><input type="number" id="perfumeStock" min="0" required></div>
-                            <div class="form-group"><label>Costo Interno ($)</label><input type="number" id="perfumeCost" step="0.01" min="0" required></div>
-                            <div class="form-group"><label>Precio Venta ($)</label><input type="number" id="perfumePrice" step="0.01" min="0" required></div>
+                            <div class="form-group"><label>Costo Interno ($)</label><input type="number" id="perfumeCost" step="0.01" min="0" required placeholder="Ej. 1.50"></div>
+                            <div class="form-group"><label>Precio Venta Interno ($)</label><input type="number" id="perfumePrice" step="0.01" min="0" required placeholder="Ej. 2.50"></div>
                             <button type="submit" class="btn-submit">Guardar en Inventario</button>
                         </form>
                     </div>
@@ -392,7 +391,7 @@
                             <h3>Existencias en Almacén</h3>
                             <div class="filter-controls"><label style="font-size:0.85rem; font-weight:600;">Ordenar por:</label><select id="sortInv" onchange="renderAllAdmin()"><option value="name">Orden Alfabético (A-Z)</option><option value="stock">Cantidad (Mayor a menor)</option><option value="date">Fecha de Ingreso</option></select></div>
                         </div>
-                        <div class="table-responsive"><table><thead><tr><th>Nombre</th><th>Categoría</th><th>Stock</th><th>PVP</th><th>Gestión</th></tr></thead><tbody id="inventoryTableBody"></tbody></table></div>
+                        <div class="table-responsive"><table><thead><tr><th>Nombre</th><th>Categoría</th><th>Stock</th><th>PVP Int.</th><th>Gestión</th></tr></thead><tbody id="inventoryTableBody"></tbody></table></div>
                     </div>
                 </div>
             </div>
@@ -538,20 +537,21 @@
         function renderizarCarritoUI() {
             const container = document.getElementById('cartItemsContainer');
             container.innerHTML = '';
-            let total = 0;
             
             if(carrito.length === 0) {
                 container.innerHTML = '<p style="color:var(--text-muted); text-align:center;">Tu carrito está vacío.</p>';
                 document.getElementById('btnProcesarPedido').disabled = true;
+                document.getElementById('cartTotal').innerHTML = '$0.00';
             } else {
                 document.getElementById('btnProcesarPedido').disabled = false;
+                let totalQty = 0;
+
                 carrito.forEach(item => {
-                    total += (item.price * item.qty);
+                    totalQty += item.qty;
                     container.innerHTML += `
                         <div class="cart-item">
                             <div class="cart-item-details">
                                 <div class="cart-item-title">${item.name}</div>
-                                <div class="cart-item-price">$${item.price.toFixed(2)} c/u</div>
                             </div>
                             <div class="cart-item-controls">
                                 <button type="button" class="btn-qty" onclick="modificarCantCarrito('${item.id}', -1)">-</button>
@@ -561,8 +561,20 @@
                         </div>
                     `;
                 });
+
+                // Cálculos de Precios Públicos
+                let totalBsRef = totalQty * 4;
+                let pares = Math.floor(totalQty / 2);
+                let impar = totalQty % 2;
+                let totalDivisas = (pares * 5) + (impar * 3);
+
+                document.getElementById('cartTotal').innerHTML = `
+                    <div style="text-align: right; font-size: 0.95rem;">
+                        <div style="color: var(--text-muted);">En Bs (Ref: $4 c/u): <strong style="color: var(--text-main);">$${totalBsRef.toFixed(2)}</strong></div>
+                        <div style="color: #059669; margin-top: 5px;">En Divisas (Promo): <strong>$${totalDivisas.toFixed(2)}</strong></div>
+                    </div>
+                `;
             }
-            document.getElementById('cartTotal').innerText = `$${total.toFixed(2)}`;
         }
 
         function procesarPedido(e) {
@@ -575,7 +587,7 @@
             const date = new Date().toLocaleDateString('es-VE');
 
             let itemsToProcess = [];
-            let totalPedido = 0;
+            let totalQty = 0;
             let textoWhatsApp = `¡Hola! Quiero hacer un pedido de EP Perfumes.%0A%0A*Cliente:* ${name}%0A*Teléfono:* ${phone}%0A%0A*Mi Pedido:*%0A`;
 
             // Validar stock antes de procesar y armar texto
@@ -583,16 +595,23 @@
                 let p = appState.perfumes.find(x => x.id === item.id);
                 if(p.stock < item.qty) return alert(`Lo sentimos, el stock de ${p.name} cambió. Solo quedan ${p.stock}.`);
                 
-                itemsToProcess.push({ perfumeId: p.id, perfumeName: p.name, quantity: item.qty, cost: item.cost, price: item.price });
-                totalPedido += (item.qty * item.price);
-                textoWhatsApp += `- ${item.qty}x ${item.name} ($${(item.qty * item.price).toFixed(2)})%0A`;
+                // Internamente se guarda al costo y precio registrado en el inventario (Ej. $2.5)
+                itemsToProcess.push({ perfumeId: p.id, perfumeName: p.name, quantity: item.qty, cost: p.cost, price: p.price });
+                
+                totalQty += item.qty;
+                textoWhatsApp += `- ${item.qty}x ${item.name}%0A`;
                 
                 // Descontar stock
                 p.stock -= item.qty;
                 p.soldQuantity = (p.soldQuantity || 0) + item.qty;
             }
 
-            textoWhatsApp += `%0A*Total Estimado:* $${totalPedido.toFixed(2)}`;
+            let totalBsRef = totalQty * 4;
+            let pares = Math.floor(totalQty / 2);
+            let impar = totalQty % 2;
+            let totalDivisas = (pares * 5) + (impar * 3);
+
+            textoWhatsApp += `%0A*Total a Pagar:*%0A- En Bs: Ref $${totalBsRef.toFixed(2)}%0A- En Divisas: $${totalDivisas.toFixed(2)}`;
 
             // Guardar Venta en Firebase como PENDIENTE
             appState.sales.unshift({ 
@@ -731,7 +750,10 @@
             let tVentasPagadas = 0, tCostosPagados = 0, tPendientes = 0;
             let ventasPendientesData = [];
             
+            // Excluimos las ventas canceladas de la suma financiera
             appState.sales.forEach(s => { 
+                if (s.status === 'Cancelada') return;
+
                 let items = s.items || [{ quantity: s.quantity, price: s.price, cost: s.cost }];
                 let saleTotal = 0;
                 items.forEach(i => {
@@ -785,7 +807,26 @@
             [...appState.sales].sort((a,b) => parseInt(b.id.split('_')[1]) - parseInt(a.id.split('_')[1])).forEach(s => {
                 let itemsList = (s.items || []).map(i => `${i.quantity}x ${i.perfumeName}`).join(', ');
                 let totalAmount = (s.items || []).reduce((acc, i) => acc + (i.quantity * i.price), 0);
-                salesBody.innerHTML += `<tr><td>${s.date}</td><td><strong>${s.client}</strong></td><td style="font-size:0.8rem; color:#64748b;">${itemsList}</td><td style="font-weight:600;">$${totalAmount.toFixed(2)}</td><td><span class="status-badge ${s.status.toLowerCase()}">${s.status}</span></td><td><button class="btn-action" onclick="toggleStatusVenta('${s.id}')">Cambiar</button><button class="btn-action" onclick="abrirModalEdicion('${s.id}')">Editar</button></td></tr>`;
+                
+                let btnsHTML = '';
+                if(s.status !== 'Cancelada') {
+                    btnsHTML = `
+                        <button class="btn-action" onclick="toggleStatusVenta('${s.id}')">Pag/Pend</button>
+                        <button class="btn-action" onclick="abrirModalEdicion('${s.id}')">Editar</button>
+                        <button class="btn-action" style="background:#fee2e2; color:#dc2626;" onclick="cancelarVenta('${s.id}')">X</button>
+                    `;
+                } else {
+                    btnsHTML = `<span style="font-size:0.8rem; color:var(--text-muted);">Anulada</span>`;
+                }
+
+                salesBody.innerHTML += `<tr>
+                    <td>${s.date}</td>
+                    <td><strong>${s.client}</strong></td>
+                    <td style="font-size:0.8rem; color:#64748b;">${itemsList}</td>
+                    <td style="font-weight:600;">$${totalAmount.toFixed(2)}</td>
+                    <td><span class="status-badge ${s.status.toLowerCase()}">${s.status}</span></td>
+                    <td>${btnsHTML}</td>
+                </tr>`;
             });
 
             // Render Inventario
@@ -810,6 +851,7 @@
             topClientsBody.innerHTML = '';
             let conteoClientes = {};
             appState.sales.forEach(s => { 
+                if (s.status === 'Cancelada') return;
                 let nombreLimpio = s.client.replace(' (Vía Web)', '').trim();
                 if(!conteoClientes[nombreLimpio]) conteoClientes[nombreLimpio] = 0;
                 conteoClientes[nombreLimpio]++; 
@@ -842,9 +884,48 @@
 
         function registrarVenta(e) { e.preventDefault(); const date = document.getElementById('saleDate').value ? new Date(document.getElementById('saleDate').value + "T12:00:00").toLocaleDateString('es-VE') : new Date().toLocaleDateString('es-VE'); const client = document.getElementById('saleClient').value.trim(); const status = document.getElementById('saleStatus').value; const rows = document.querySelectorAll('#saleItemsContainer .sale-item-row'); if(rows.length === 0) return alert("Añade un perfume."); let itemsToProcess = []; for(let row of rows) { let pId = row.querySelector('.perfume-select').value; let qty = parseInt(row.querySelector('.qty-input').value); let p = appState.perfumes.find(x => x.id === pId); if(p.stock < qty) return alert(`Stock insuficiente para: ${p.name}`); itemsToProcess.push({ perfumeId: p.id, perfumeName: p.name, quantity: qty, cost: p.cost, price: p.price }); } itemsToProcess.forEach(item => { let p = appState.perfumes.find(x => x.id === item.perfumeId); p.stock -= item.quantity; p.soldQuantity = (p.soldQuantity || 0) + item.quantity; }); appState.sales.unshift({ id: 's_' + Date.now(), date, client, items: itemsToProcess, status, user: currentUser }); registrarLog(`Venta a '${client}'.`); saveToFirebase(); document.getElementById('saleForm').reset(); document.getElementById('saleItemsContainer').innerHTML = ''; addSaleItemRow('saleItemsContainer'); }
 
-        function toggleStatusVenta(id) { const sale = appState.sales.find(s => s.id === id); if(sale) { sale.status = sale.status === 'Pagada' ? 'Pendiente' : 'Pagada'; saveToFirebase(); } }
+        function toggleStatusVenta(id) { 
+            const sale = appState.sales.find(s => s.id === id); 
+            if(sale) { 
+                if(sale.status === 'Cancelada') return alert("Esta venta fue cancelada y no se puede modificar su estado.");
+                sale.status = sale.status === 'Pagada' ? 'Pendiente' : 'Pagada'; 
+                saveToFirebase(); 
+            } 
+        }
 
-        function abrirModalEdicion(id) { const sale = appState.sales.find(s => s.id === id); if(!sale) return; document.getElementById('editSaleId').value = sale.id; let parts = sale.date.split('/'); document.getElementById('editSaleDate').value = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`; document.getElementById('editSaleClient').value = sale.client; document.getElementById('editSaleStatus').value = sale.status; const container = document.getElementById('editSaleItemsContainer'); container.innerHTML = ''; sale.items.forEach(i => addSaleItemRow('editSaleItemsContainer', i.perfumeId, i.quantity)); document.getElementById('editSaleModal').classList.add('active'); }
+        function cancelarVenta(id) {
+            if(!confirm("¿Estás seguro de cancelar esta venta? Los perfumes regresarán al inventario y el monto dejará de sumar en tus finanzas.")) return;
+            const sale = appState.sales.find(s => s.id === id);
+            if(sale && sale.status !== 'Cancelada') {
+                // Devolver stock al inventario y restar cantidad vendida
+                sale.items.forEach(i => {
+                    let p = appState.perfumes.find(x => x.id === i.perfumeId);
+                    if(p) {
+                        p.stock += i.quantity;
+                        p.soldQuantity = Math.max(0, (p.soldQuantity || 0) - i.quantity);
+                    }
+                });
+                sale.status = 'Cancelada';
+                registrarLog(`Canceló venta de '${sale.client}'.`);
+                saveToFirebase();
+            }
+        }
+
+        function abrirModalEdicion(id) { 
+            const sale = appState.sales.find(s => s.id === id); 
+            if(!sale) return; 
+            if(sale.status === 'Cancelada') return alert("Las ventas canceladas no se pueden editar.");
+
+            document.getElementById('editSaleId').value = sale.id; 
+            let parts = sale.date.split('/'); 
+            document.getElementById('editSaleDate').value = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`; 
+            document.getElementById('editSaleClient').value = sale.client; 
+            document.getElementById('editSaleStatus').value = sale.status; 
+            const container = document.getElementById('editSaleItemsContainer'); 
+            container.innerHTML = ''; 
+            sale.items.forEach(i => addSaleItemRow('editSaleItemsContainer', i.perfumeId, i.quantity)); 
+            document.getElementById('editSaleModal').classList.add('active'); 
+        }
 
         function cerrarModalEdicion() { document.getElementById('editSaleModal').classList.remove('active'); }
 
