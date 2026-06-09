@@ -284,8 +284,8 @@
                 <div class="form-group">
                     <label>Enviar pedido a:</label>
                     <select id="checkoutAgent" required>
-                        <option value="584244416044">Víctor (+58 424-4416044)</option>
-                        <option value="584244178356">Angélica (+58 424-4178356)</option>
+                        <option value="584244416044">Víctor</option>
+                        <option value="584244178356">Angélica</option>
                     </select>
                 </div>
                 <button type="submit" class="btn-submit" id="btnProcesarPedido">Completar y Enviar al WhatsApp</button>
@@ -498,6 +498,18 @@
         let appState = { perfumes: [], sales: [], withdrawals: [], logs: [] };
         let currentUser = null; 
         
+        // --- FUNCIÓN ADAPTADORA PARA VENTAS ANTIGUAS ---
+        function getSaleItems(sale) {
+            if (sale.items && Array.isArray(sale.items)) return sale.items;
+            return [{
+                perfumeId: sale.perfumeId || '',
+                perfumeName: sale.perfumeName || 'Perfume (Antiguo)',
+                quantity: sale.quantity || 1,
+                price: sale.price || 0,
+                cost: sale.cost || 0
+            }];
+        }
+
         // --- LOGICA DEL CARRITO ---
         let carrito = [];
 
@@ -578,7 +590,6 @@
             let totalPedido = 0;
             let textoWhatsApp = `¡Hola! Quiero hacer un pedido de EP Perfumes.%0A%0A*Cliente:* ${name}%0A*Teléfono:* ${phone}%0A%0A*Mi Pedido:*%0A`;
 
-            // Validar stock antes de procesar y armar texto
             for(let item of carrito) {
                 let p = appState.perfumes.find(x => x.id === item.id);
                 if(p.stock < item.qty) return alert(`Lo sentimos, el stock de ${p.name} cambió. Solo quedan ${p.stock}.`);
@@ -587,14 +598,12 @@
                 totalPedido += (item.qty * item.price);
                 textoWhatsApp += `- ${item.qty}x ${item.name} ($${(item.qty * item.price).toFixed(2)})%0A`;
                 
-                // Descontar stock
                 p.stock -= item.qty;
                 p.soldQuantity = (p.soldQuantity || 0) + item.qty;
             }
 
             textoWhatsApp += `%0A*Total Estimado:* $${totalPedido.toFixed(2)}`;
 
-            // Guardar Venta en Firebase como PENDIENTE
             appState.sales.unshift({ 
                 id: 's_' + Date.now(), 
                 date, 
@@ -606,13 +615,11 @@
             
             saveToFirebase();
             
-            // Limpiar carrito
             carrito = [];
             actualizarBadgeCarrito();
             cerrarCarrito();
             document.getElementById('checkoutForm').reset();
             
-            // Redirigir a WhatsApp
             window.open(`https://wa.me/${agentPhone}?text=${textoWhatsApp}`, '_blank');
         }
 
@@ -732,7 +739,7 @@
             let ventasPendientesData = [];
             
             appState.sales.forEach(s => { 
-                let items = s.items || [{ quantity: s.quantity, price: s.price, cost: s.cost }];
+                let items = getSaleItems(s);
                 let saleTotal = 0;
                 items.forEach(i => {
                     saleTotal += (i.quantity * i.price);
@@ -783,9 +790,10 @@
             const salesBody = document.getElementById('salesTableBody');
             salesBody.innerHTML = '';
             [...appState.sales].sort((a,b) => parseInt(b.id.split('_')[1]) - parseInt(a.id.split('_')[1])).forEach(s => {
-                let itemsList = (s.items || []).map(i => `${i.quantity}x ${i.perfumeName}`).join(', ');
-                let totalAmount = (s.items || []).reduce((acc, i) => acc + (i.quantity * i.price), 0);
-                salesBody.innerHTML += `<tr><td>${s.date}</td><td><strong>${s.client}</strong></td><td style="font-size:0.8rem; color:#64748b;">${itemsList}</td><td style="font-weight:600;">$${totalAmount.toFixed(2)}</td><td><span class="status-badge ${s.status.toLowerCase()}">${s.status}</span></td><td><button class="btn-action" onclick="toggleStatusVenta('${s.id}')">Cambiar</button><button class="btn-action" onclick="abrirModalEdicion('${s.id}')">Editar</button></td></tr>`;
+                let items = getSaleItems(s);
+                let itemsList = items.map(i => `${i.quantity}x ${i.perfumeName}`).join(', ');
+                let totalAmount = items.reduce((acc, i) => acc + (i.quantity * i.price), 0);
+                salesBody.innerHTML += `<tr><td>${s.date}</td><td><strong>${s.client}</strong></td><td style="font-size:0.8rem; color:#64748b;">${itemsList}</td><td style="font-weight:600;">$${totalAmount.toFixed(2)}</td><td><span class="status-badge ${s.status.toLowerCase()}">${s.status}</span></td><td><button class="btn-action" onclick="toggleStatusVenta('${s.id}')">Cambiar</button><button class="btn-action" onclick="abrirModalEdicion('${s.id}')">Editar</button><button class="btn-action" style="background:#fee2e2; color:#dc2626;" onclick="eliminarVenta('${s.id}')">Borrar</button></td></tr>`;
             });
 
             // Render Inventario
@@ -844,11 +852,82 @@
 
         function toggleStatusVenta(id) { const sale = appState.sales.find(s => s.id === id); if(sale) { sale.status = sale.status === 'Pagada' ? 'Pendiente' : 'Pagada'; saveToFirebase(); } }
 
-        function abrirModalEdicion(id) { const sale = appState.sales.find(s => s.id === id); if(!sale) return; document.getElementById('editSaleId').value = sale.id; let parts = sale.date.split('/'); document.getElementById('editSaleDate').value = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`; document.getElementById('editSaleClient').value = sale.client; document.getElementById('editSaleStatus').value = sale.status; const container = document.getElementById('editSaleItemsContainer'); container.innerHTML = ''; sale.items.forEach(i => addSaleItemRow('editSaleItemsContainer', i.perfumeId, i.quantity)); document.getElementById('editSaleModal').classList.add('active'); }
+        function eliminarVenta(id) {
+            if(confirm("¿Estás seguro de que deseas eliminar este pedido? El inventario de los perfumes vendidos se restaurará automáticamente.")) {
+                const sale = appState.sales.find(s => s.id === id);
+                if(sale) {
+                    let items = getSaleItems(sale);
+                    items.forEach(item => {
+                        let p = appState.perfumes.find(x => x.id === item.perfumeId);
+                        if(p) {
+                            p.stock += item.quantity;
+                            p.soldQuantity -= item.quantity;
+                        }
+                    });
+                    appState.sales = appState.sales.filter(s => s.id !== id);
+                    registrarLog(`Eliminó pedido de '${sale.client}'.`);
+                    saveToFirebase();
+                    renderAllAdmin();
+                }
+            }
+        }
+
+        function abrirModalEdicion(id) { 
+            const sale = appState.sales.find(s => s.id === id); 
+            if(!sale) return; 
+            document.getElementById('editSaleId').value = sale.id; 
+            let parts = sale.date.split('/'); 
+            document.getElementById('editSaleDate').value = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`; 
+            document.getElementById('editSaleClient').value = sale.client; 
+            document.getElementById('editSaleStatus').value = sale.status; 
+            const container = document.getElementById('editSaleItemsContainer'); 
+            container.innerHTML = ''; 
+            
+            let items = getSaleItems(sale);
+            items.forEach(i => addSaleItemRow('editSaleItemsContainer', i.perfumeId, i.quantity)); 
+            
+            document.getElementById('editSaleModal').classList.add('active'); 
+        }
 
         function cerrarModalEdicion() { document.getElementById('editSaleModal').classList.remove('active'); }
 
-        function guardarEdicionVenta(e) { e.preventDefault(); const id = document.getElementById('editSaleId').value; const saleIndex = appState.sales.findIndex(s => s.id === id); let originalSale = appState.sales[saleIndex]; originalSale.items.forEach(oldI => { let p = appState.perfumes.find(x => x.id === oldI.perfumeId); p.stock += oldI.quantity; p.soldQuantity -= oldI.quantity; }); const rows = document.querySelectorAll('#editSaleItemsContainer .sale-item-row'); let newItems = []; for(let row of rows) { let pId = row.querySelector('.perfume-select').value; let qty = parseInt(row.querySelector('.qty-input').value); let p = appState.perfumes.find(x => x.id === pId); p.stock -= qty; p.soldQuantity += qty; newItems.push({ perfumeId: p.id, perfumeName: p.name, quantity: qty, cost: p.cost, price: p.price }); } originalSale.date = new Date(document.getElementById('editSaleDate').value + "T12:00:00").toLocaleDateString('es-VE'); originalSale.client = document.getElementById('editSaleClient').value.trim(); originalSale.status = document.getElementById('editSaleStatus').value; originalSale.items = newItems; registrarLog(`Editó venta de '${originalSale.client}'.`); saveToFirebase(); cerrarModalEdicion(); }
+        function guardarEdicionVenta(e) { 
+            e.preventDefault(); 
+            const id = document.getElementById('editSaleId').value; 
+            const saleIndex = appState.sales.findIndex(s => s.id === id); 
+            let originalSale = appState.sales[saleIndex]; 
+            
+            let oldItems = getSaleItems(originalSale);
+            oldItems.forEach(oldI => { 
+                let p = appState.perfumes.find(x => x.id === oldI.perfumeId); 
+                if(p) {
+                    p.stock += oldI.quantity; 
+                    p.soldQuantity -= oldI.quantity; 
+                }
+            }); 
+            
+            const rows = document.querySelectorAll('#editSaleItemsContainer .sale-item-row'); 
+            let newItems = []; 
+            for(let row of rows) { 
+                let pId = row.querySelector('.perfume-select').value; 
+                let qty = parseInt(row.querySelector('.qty-input').value); 
+                let p = appState.perfumes.find(x => x.id === pId); 
+                if(p) {
+                    p.stock -= qty; 
+                    p.soldQuantity += qty; 
+                    newItems.push({ perfumeId: p.id, perfumeName: p.name, quantity: qty, cost: p.cost, price: p.price }); 
+                }
+            } 
+            
+            originalSale.date = new Date(document.getElementById('editSaleDate').value + "T12:00:00").toLocaleDateString('es-VE'); 
+            originalSale.client = document.getElementById('editSaleClient').value.trim(); 
+            originalSale.status = document.getElementById('editSaleStatus').value; 
+            originalSale.items = newItems; 
+            
+            registrarLog(`Editó venta de '${originalSale.client}'.`); 
+            saveToFirebase(); 
+            cerrarModalEdicion(); 
+        }
 
         function eliminarPerfume(id) { if(confirm("¿Eliminar perfume?")) { appState.perfumes = appState.perfumes.filter(p => p.id !== id); saveToFirebase(); } }
 
