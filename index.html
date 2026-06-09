@@ -3,864 +3,577 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EP Perfumes - Aromas de Alta Gama</title>
+    <title>Perfumería Premium & Panel de Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
+
     <style>
-        /* --- PALETA DE COLORES Y VARIABLES --- */
-        :root {
-            --bg-principal: #f8f9fa; 
-            --bg-tarjetas: #ffffff;  
-            --texto-oscuro: #1e293b;  
-            --texto-mutado: #64748b;  
-            --oro: #c5a059;           
-            --oro-hover: #b08d4b;     
-            --oro-suave: #fcf9f2;     
-            --exito: #10b981;
-            --alerta: #f59e0b;
-            --peligro: #ef4444;
-            --borde: #e2e8f0;         
-        }
+        /* === ESTILOS GLOBALES MINIMALISTAS === */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #ffffff; color: #222222; overflow-x: hidden; }
+        button, input, select, textarea { font-family: inherit; outline: none; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        /* === COMPONENTES COMPARTIDOS === */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background-color: #ffffff; border-bottom: 1px solid #eeeeee; position: sticky; top: 0; z-index: 100; }
+        .logo img { height: 40px; }
+        .menu-btn { font-size: 24px; cursor: pointer; background: none; border: none; display: flex; flex-direction: column; gap: 5px; padding: 5px; }
+        .menu-btn span { display: block; width: 25px; height: 2px; background-color: #222222; transition: 0.3s; }
         
-        body { 
-            background-color: var(--bg-principal); 
-            color: var(--texto-oscuro); 
-            min-height: 100vh; 
-            position: relative; 
-            overflow-x: hidden;
-        }
+        .side-menu { position: fixed; top: 0; right: -300px; width: 300px; height: 100vh; background-color: #ffffff; box-shadow: -5px 0 15px rgba(0,0,0,0.05); transition: right 0.3s ease; z-index: 200; padding: 60px 20px 20px; display: flex; flex-direction: column; }
+        .side-menu.active { right: 0; }
+        .close-btn { position: absolute; top: 20px; right: 20px; font-size: 30px; cursor: pointer; border: none; background: none; color: #222; }
+        .side-menu a { text-decoration: none; color: #555; font-size: 1.1rem; margin: 12px 0; cursor: pointer; transition: color 0.2s; padding: 5px 0; }
+        .side-menu a:hover, .side-menu a.active-link { color: #222; font-weight: 500; border-bottom: 2px solid #222; display: inline-block; width: fit-content; }
         
-        h1, h2, h3 { color: var(--texto-oscuro); font-weight: 600; }
+        .btn-submit { background-color: #222222; color: #ffffff; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; width: 100%; font-weight: 500; transition: background 0.3s; }
+        .btn-submit:hover { background-color: #444444; }
+
+        /* === TIENDA PÚBLICA === */
+        .admin-link { margin-top: auto; background-color: #222222; color: #ffffff !important; padding: 12px; text-align: center; border-radius: 5px; font-weight: 500; border: none !important; }
+        .admin-link:hover { background-color: #444 !important; color: #fff !important; }
+
+        /* Banner Optimizado con Imagen */
+        .banner { background-color: #fcfcfc; padding: 60px 5%; border-bottom: 1px solid #f5f5f5; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 40px; }
+        .banner-content { flex: 1; min-width: 300px; max-width: 600px; }
+        .banner-content h1 { font-size: 2.5rem; font-weight: 600; margin-bottom: 10px; line-height: 1.2; }
+        .banner-content p { color: #666666; margin-bottom: 20px; font-size: 1rem; }
+        .banner-image { flex: 1; min-width: 300px; max-width: 500px; display: flex; justify-content: center; }
+        .banner-image img { width: 100%; border-radius: 12px; object-fit: cover; box-shadow: 0 15px 35px rgba(0,0,0,0.08); }
         
-        /* --- VISTAS PRINCIPALES (CONTROL DE DESPLIEGUE) --- */
-        .vista-sistema { display: none; padding: 15px; }
-        .container { max-width: 1000px; margin: 0 auto; }
+        .price-tag { font-size: 1.3rem; font-weight: 600; }
+        .promo-tag { display: inline-block; background-color: #222222; color: #ffffff; padding: 8px 20px; border-radius: 25px; font-size: 0.9rem; margin-top: 15px; font-weight: 500; letter-spacing: 0.5px; }
 
-        /* --- SECCIÓN PÚBLICA (LANDING PAGE) --- */
-        #vista-publica { display: block; background-color: #ffffff; }
+        /* Catálogo y Tarjetas de Producto */
+        .catalogo { padding: 50px 5%; max-width: 1200px; margin: 0 auto; }
+        details { margin-bottom: 30px; border-bottom: 1px solid #f0f0f0; padding-bottom: 20px; }
+        summary { font-size: 1.5rem; font-weight: 500; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+        summary::after { content: '+'; font-weight: 300; font-size: 1.8rem; }
+        details[open] summary::after { content: '−'; }
         
-        /* Navegación Pública */
-        .pub-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 40px;
-            border-bottom: 1px solid var(--borde);
-            background: #ffffff;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .pub-logo-box { display: flex; align-items: center; gap: 10px; }
-        .pub-logo { max-width: 40px; height: auto; }
-        .pub-brand { font-size: 20px; font-weight: 700; color: var(--oro); letter-spacing: 1px; }
-        .btn-acceso-admin {
-            background-color: transparent;
-            color: var(--texto-mutado);
-            border: 1px solid var(--borde);
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            box-shadow: none;
-        }
-        .btn-acceso-admin:hover {
-            border-color: var(--oro);
-            color: var(--oro);
-            background: transparent;
-            transform: none;
-        }
-
-        /* Hero / Presentación */
-        .pub-hero {
-            text-align: center;
-            padding: 80px 20px;
-            background: linear-gradient(rgba(255,255,255,0.9), rgba(252,249,242,0.9)), url('IMAGENES/LOGO.png');
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: contain;
-        }
-        .pub-hero h1 { font-size: 42px; color: var(--texto-oscuro); margin-bottom: 15px; letter-spacing: 1px; }
-        .pub-hero p { font-size: 18px; color: var(--texto-mutado); max-width: 600px; margin: 0 auto 30px auto; line-height: 1.6; }
-        .btn-cta {
-            background-color: var(--oro);
-            color: #ffffff;
-            padding: 14px 28px;
-            border-radius: 30px;
-            font-size: 16px;
-            text-decoration: none;
-            font-weight: bold;
-            display: inline-block;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3);
-        }
-        .btn-cta:hover { background-color: var(--oro-hover); transform: translateY(-2px); }
-
-        /* Catálogo Público */
-        .pub-catalogo { max-width: 1100px; margin: 0 auto; padding: 60px 20px; }
-        .pub-catalogo h2 { text-align: center; font-size: 28px; margin-bottom: 40px; border: none; position: relative; padding-bottom: 15px; }
-        .pub-catalogo h2::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 60px; height: 3px; background-color: var(--oro); }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 30px; margin-top: 25px; }
+        .product-card { border: none; padding: 0; text-align: left; border-radius: 8px; transition: transform 0.3s ease; }
+        .product-card:hover { transform: translateY(-5px); }
         
-        .grid-productos { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
-        .producto-card {
-            background: #ffffff;
-            border: 1px solid var(--borde);
-            border-radius: 12px;
-            padding: 25px;
-            text-align: center;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .producto-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: var(--oro); }
-        .producto-icon { font-size: 40px; color: var(--oro); margin-bottom: 15px; }
-        .producto-card h3 { font-size: 20px; margin-bottom: 10px; color: var(--texto-oscuro); }
-        .producto-precio { font-size: 22px; font-weight: 700; color: var(--oro); margin-bottom: 15px; }
-        .badge-stock { display: inline-block; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 600; background-color: #f1f5f9; color: var(--texto-mutado); }
+        /* Imágenes de Stock Dinámicas */
+        .product-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
         
-        /* Footer */
-        .pub-footer { background-color: var(--texto-oscuro); color: #ffffff; text-align: center; padding: 40px 20px; font-size: 14px; margin-top: 60px; }
-        .pub-footer p { color: #94a3b8; margin-bottom: 10px; }
-        .pub-footer span { color: var(--oro); font-weight: bold; }
+        .product-title { font-weight: 600; margin-bottom: 4px; font-size: 1.1rem; }
+        .product-stock { font-size: 0.9rem; color: #888888; }
+        .no-products { color: #999999; font-style: italic; font-size: 0.95rem; }
 
-        /* --- PANTALLA DE ACCESO (LOGIN) --- */
-        #login-screen {
-            display: none;
-            justify-content: center;
-            align-items: center;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(248, 249, 250, 0.95);
-            z-index: 9999;
-            padding: 20px;
-        }
-        .login-box {
-            background: var(--bg-tarjetas);
-            padding: 40px 35px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(197, 160, 89, 0.15);
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-            border: 1px solid var(--borde);
-            position: relative;
-        }
-        .login-box .logo-login { max-width: 100px; height: auto; margin-bottom: 15px; }
-        .login-box h2 { justify-content: center; border: none; color: var(--oro); font-size: 24px; margin-bottom: 8px; letter-spacing: 1px; padding-bottom: 0; }
-        .login-box p { color: var(--texto-mutado); font-size: 14px; margin-bottom: 25px; }
-        .btn-cerrar-login { position: absolute; top: 15px; right: 20px; background: none; border: none; box-shadow: none; color: var(--texto-mutado); font-size: 20px; cursor: pointer; }
-        .btn-cerrar-login:hover { color: var(--peligro); background: none; transform: none; }
-
-        /* --- ARREGLOS Y ELEMENTOS DEL PANEL ADMINISTRATIVO --- */
-        h2 { font-size: 18px; margin-bottom: 20px; border-bottom: 2px solid var(--oro); padding-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-
-        /* Cabecera Superior */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            background: var(--bg-tarjetas);
-            padding: 12px 20px;
-            border-radius: 12px;
-            border: 1px solid var(--borde);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-        .header-left { display: flex; align-items: center; gap: 15px; }
+        /* === PANEL ADMINISTRATIVO === */
+        #adminPanel { display: none; background-color: #f9fafb; min-height: 100vh; padding-bottom: 40px; }
+        .admin-header-bar { background: #fff; display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
+        .admin-header-bar h2 { font-size: 1.2rem; font-weight: 500; display: flex; align-items: center; gap: 15px; }
         
-        .menu-toggle { background: none; border: none; box-shadow: none; padding: 5px; cursor: pointer; display: flex; flex-direction: column; gap: 5px; }
-        .menu-toggle:hover { background: none; transform: none; }
-        .menu-toggle span { display: block; width: 25px; height: 3px; background-color: var(--texto-oscuro); border-radius: 3px; transition: 0.3s; }
-
-        .header-logo { max-width: 40px; height: auto; object-fit: contain; }
-        .header-title h1 { font-size: 18px; letter-spacing: 1px; color: var(--oro); font-weight: 700; }
-
-        /* Menú Lateral */
-        .sidebar {
-            position: fixed;
-            top: 0; left: -280px; width: 280px; height: 100%;
-            background-color: var(--bg-tarjetas);
-            box-shadow: 4px 0 25px rgba(0, 0, 0, 0.15);
-            z-index: 10000;
-            transition: left 0.3s ease;
-            padding: 25px 20px;
-            display: flex;
-            flex-direction: column;
-        }
-        .sidebar.open { left: 0; }
-
-        .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid var(--borde); }
-        .sidebar-brand { display: flex; align-items: center; gap: 10px; }
-        .sidebar-logo { max-width: 35px; height: auto; }
-        .sidebar-close { background: none; border: none; box-shadow: none; color: var(--texto-mutado); font-size: 24px; cursor: pointer; padding: 0 5px; }
-        .sidebar-close:hover { color: var(--peligro); background: none; transform: none; }
-
-        .nav-menu { display: flex; flex-direction: column; gap: 10px; flex-grow: 1; }
-        .nav-btn {
-            background-color: transparent; color: var(--texto-oscuro); border: 1px solid transparent; padding: 12px 15px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; text-align: left; transition: all 0.2s ease; box-shadow: none;
-        }
-        .nav-btn:hover { background-color: #f1f5f9; color: var(--texto-oscuro); transform: none; }
-        .nav-btn.active { background-color: var(--oro); color: #ffffff; box-shadow: 0 4px 10px rgba(197, 160, 89, 0.25); }
-
-        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); z-index: 9998; display: none; }
-        .sidebar-overlay.show { display: block; }
-
-        /* Vistas internas del Panel */
-        .tab-content { display: none; }
+        .admin-container { padding: 30px 5%; max-width: 1200px; margin: 0 auto; }
+        .tab-content { display: none; animation: fadeIn 0.4s ease; }
         .tab-content.active { display: block; }
-        .section { background: var(--bg-tarjetas); padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid var(--borde); }
-        
-        /* Formularios y Tablas */
-        .form-group { margin-bottom: 16px; }
-        label { display: block; margin-bottom: 6px; font-size: 12px; color: var(--texto-mutado); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
-        input, select, textarea { 
-            width: 100%; padding: 12px; border: 1px solid var(--borde); border-radius: 6px; font-size: 15px; background-color: #fff; color: var(--texto-oscuro);
-        }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--oro); box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.15); }
-        
-        button { background-color: var(--oro); color: #ffffff; border: none; padding: 12px 20px; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(197, 160, 89, 0.2); }
-        button:hover { background-color: var(--oro-hover); transform: translateY(-1px); }
-        .btn-secondary { background-color: #f1f5f9; color: var(--texto-oscuro); margin-bottom: 15px; box-shadow: none; border: 1px solid var(--borde); }
-        .btn-secondary:hover { background-color: #e2e8f0; }
-        .btn-danger { background-color: transparent; color: var(--peligro); border: 1px solid var(--peligro); padding: 6px 10px; font-size: 12px; box-shadow: none; }
-        .btn-danger:hover { background-color: var(--peligro); color: #fff; }
-        .btn-logout { background-color: transparent; border: 1px solid var(--borde); color: var(--texto-mutado); padding: 10px 15px; font-size: 14px; box-shadow: none; border-radius: 8px; text-align: left; font-weight: 600; }
-        .btn-logout:hover { border-color: var(--peligro); color: var(--peligro); background: transparent; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .perfume-row { display: flex; gap: 12px; margin-bottom: 10px; align-items: flex-end; }
-        .perfume-row div { flex: 1; }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
+        .card { background: #ffffff; padding: 25px; border-radius: 8px; border: 1px solid #eeeeee; box-shadow: 0 2px 10px rgba(0,0,0,0.02); margin-bottom: 20px; }
+        .card h3 { margin-bottom: 20px; font-weight: 600; font-size: 1.2rem; border-left: 3px solid #222222; padding-left: 10px; }
         
-        .table-responsive { overflow-x: auto; margin-top: 15px; border-radius: 8px; border: 1px solid var(--borde); }
-        table { width: 100%; border-collapse: collapse; font-size: 14px; background: #ffffff; text-align: left; }
-        th, td { padding: 14px; border-bottom: 1px solid var(--borde); }
-        th { background-color: #f8fafc; color: var(--texto-mutado); font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
-
-        .badge { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; display: inline-block; cursor: pointer; }
-        .badge-pagado { background-color: rgba(16, 185, 129, 0.1); color: var(--exito); border: 1px solid var(--exito); }
-        .badge-pendiente { background-color: rgba(245, 158, 11, 0.1); color: var(--alerta); border: 1px solid var(--alerta); }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 0.9rem; margin-bottom: 8px; color: #555555; font-weight: 500; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #dddddd; border-radius: 4px; font-size: 0.95rem; transition: border-color 0.3s; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #222; }
         
-        .resumen { display: flex; gap: 15px; margin-top: 15px; flex-wrap: wrap; }
-        .card { flex: 1; min-width: 180px; background: var(--bg-tarjetas); padding: 20px; border-radius: 10px; border-top: 3px solid var(--oro); border-left: 1px solid var(--borde); border-right: 1px solid var(--borde); border-bottom: 1px solid var(--borde); cursor: help; }
-        .card-title { font-size: 11px; color: var(--texto-mutado); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; font-weight: 600; }
-        .card-value { font-size: 20px; font-weight: bold; color: var(--texto-oscuro); }
-        .loading { text-align: center; color: var(--texto-mutado); font-style: italic; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
+        table th, table td { padding: 12px 15px; border-bottom: 1px solid #eeeeee; text-align: left; }
+        table th { background-color: #fafafa; font-weight: 600; color: #444; }
+        
+        .status-badge { padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 500; display: inline-block; }
+        .status-badge.pagada { background-color: #e2f5ea; color: #15803d; }
+        .status-badge.pendiente { background-color: #fef3c7; color: #b45309; }
+        .btn-status, .btn-delete { border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; transition: 0.2s; }
+        .btn-status { background-color: #f1f5f9; color: #334155; margin-left: 5px; }
+        .btn-status:hover { background-color: #e2e8f0; }
+        .btn-delete { background-color: #fee2e2; color: #dc2626; }
+        .btn-delete:hover { background-color: #fecaca; }
 
-        @media (max-width: 600px) { 
-            .pub-nav { padding: 15px 20px; }
-            .pub-hero h1 { font-size: 30px; }
-            .resumen { flex-direction: column; } 
-            .perfume-row { flex-direction: column; gap: 5px; background: var(--bg-principal); padding: 10px; border-radius: 6px; } 
-            .perfume-row div { width: 100%; } 
-        }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .metric-box { background: #ffffff; border: 1px solid #eeeeee; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        .metric-box p { font-size: 0.85rem; color: #666666; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .metric-box h4 { font-size: 1.6rem; font-weight: 600; color: #222222; }
+
+        .top-list { list-style: none; }
+        .top-list li { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f5f5f5; font-size: 0.95rem; }
+        .logout-btn { background-color: transparent; color: #dc2626; border: 1px solid #dc2626; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 500; transition: 0.3s; }
+        .logout-btn:hover { background-color: #dc2626; color: #fff; }
     </style>
 </head>
 <body>
 
-<div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar(false)"></div>
+    <!-- ==================== TIENDA PÚBLICA ==================== -->
+    <div id="publicSite">
+        <header>
+            <div class="logo"><img src="LOGO.png" alt="LOGO"></div>
+            <!-- Menú Hamburguesa Público -->
+            <button class="menu-btn" onclick="toggleMenu('sideMenu')"><span></span><span></span><span></span></button>
+        </header>
 
-<!-- ========================================== -->
-<!-- 1. BLOQUE DE LA PÁGINA DE INICIO PÚBLICA    -->
-<!-- ========================================== -->
-<div id="vista-publica">
-    <nav class="pub-nav">
-        <div class="pub-logo-box">
-            <img src="IMAGENES/LOGO.png" alt="EP Perfume" class="pub-logo" onerror="this.style.display='none'">
-            <span class="pub-brand">EP PERFUME</span>
-        </div>
-        <button class="btn-acceso-admin" onclick="mostrarLogin(true)">🔑 Panel Administrativo</button>
-    </nav>
+        <!-- Menú Lateral Público -->
+        <nav class="side-menu" id="sideMenu">
+            <button class="close-btn" onclick="toggleMenu('sideMenu')">&times;</button>
+            <h3 style="margin-bottom: 20px; font-weight: 600;">Categorías</h3>
+            <a onclick="navigateToCategory('cat-caballeros')">Caballeros</a>
+            <a onclick="navigateToCategory('cat-damas')">Damas</a>
+            <a onclick="navigateToCategory('cat-unisex')">Unisex</a>
+            <a onclick="navigateToCategory('cat-ninos')">Niños</a>
+            <div style="flex-grow: 1;"></div>
+            <a class="admin-link" onclick="solicitarAccesoAdmin()">Acceso Admin</a>
+        </nav>
 
-    <header class="pub-hero">
-        <h1>Esencias que Definen tu Presencia</h1>
-        <p>Explora nuestra exclusiva colección de fragancias de alta gama inspiradas en las tendencias internacionales más sofisticadas.</p>
-        <a href="#catalogo" class="btn-cta">Ver Fragancias Disponibles</a>
-    </header>
+        <section class="banner">
+            <div class="banner-content">
+                <h1>Perfumes Premium 30ml</h1>
+                <p>Elaborados minuciosamente a base de finos aceites y feromonas de alta concentración para garantizar una fijación estelar en tu día a día.</p>
+                <div class="price-tag">Precio Unitario: $4 <span style="font-size:0.9rem; font-weight:300; color:#666;">(Tasa BCV)</span></div>
+                <div class="promo-tag">PROMO: 2x$5 en Divisas en efectivo</div>
+            </div>
+            <!-- Imagen del Banner (perfumes.png) -->
+            <div class="banner-image">
+                <img src="perfumes.png" alt="Colección de perfumes premium">
+            </div>
+        </section>
 
-    <main class="pub-catalogo" id="catalogo">
-        <h2>Nuestro Stock en Tiempo Real</h2>
-        <!-- Las tarjetas se generan dinámicamente con la info de tu Firebase -->
-        <div class="grid-productos" id="grid-publico-productos">
-            <p class="loading" style="grid-column: 1/-1;">Sincronizando fragancias disponibles...</p>
-        </div>
-    </main>
-
-    <footer class="pub-footer">
-        <p>&copy; 2026 <span>EP Perfume</span>. Todos los derechos reservados.</p>
-        <p style="font-size: 11px; opacity: 0.6;">Control de Calidad e Importación Directa.</p>
-    </footer>
-</div>
-
-
-<!-- ========================================== -->
-<!-- 2. PANTALLA DE ACCESO (LOGIN MODAL)        -->
-<!-- ========================================== -->
-<div id="login-screen">
-    <div class="login-box">
-        <button class="btn-cerrar-login" onclick="mostrarLogin(false)">✕</button>
-        <img src="IMAGENES/LOGO.png" alt="EP Perfume" class="logo-login" onerror="this.style.display='none'">
-        <h2>EP PERFUME</h2>
-        <p>Control Interno Comercial</p>
-        <div class="form-group" style="text-align: left;">
-            <label>Código de Seguridad</label>
-            <input type="password" id="app-password" placeholder="••••••••" onkeypress="evaluarTecla(event)">
-        </div>
-        <button onclick="verificarAcceso()" style="width: 100%; margin-top: 10px;">Entrar al Sistema</button>
-    </div>
-</div>
-
-
-<!-- ========================================== -->
-<!-- 3. MENÚ LATERAL PLEGABLE (SIDEBAR)         -->
-<!-- ========================================== -->
-<div id="my-sidebar" class="sidebar">
-    <div class="sidebar-header">
-        <div class="sidebar-brand">
-            <img src="IMAGENES/LOGO.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'">
-            <h3 style="color: var(--oro); font-size: 16px;">EP PERFUME</h3>
-        </div>
-        <button class="sidebar-close" onclick="toggleSidebar(false)">✕</button>
-    </div>
-    
-    <div class="nav-menu">
-        <button class="nav-btn active" onclick="cambiarVista('vista-finanzas', this)">📊 Finanzas</button>
-        <button class="nav-btn" onclick="cambiarVista('vista-ventas', this)">💼 Ventas</button>
-        <button class="nav-btn" onclick="cambiarVista('vista-retiros', this)">💸 Retiros / Gastos</button>
-        <button class="nav-btn" onclick="cambiarVista('vista-inventario', this)">📦 Inventario</button>
+        <section class="catalogo">
+            <details id="cat-caballeros"><summary>Caballeros</summary><div class="product-grid" id="grid-Caballeros"></div></details>
+            <details id="cat-damas"><summary>Damas</summary><div class="product-grid" id="grid-Damas"></div></details>
+            <details id="cat-unisex"><summary>Unisex</summary><div class="product-grid" id="grid-Unisex"></div></details>
+            <details id="cat-ninos"><summary>Niños</summary><div class="product-grid" id="grid-Niños"></div></details>
+        </section>
     </div>
 
-    <button class="btn-logout" onclick="cerrarSesion()">🚪 Cerrar Sesión</button>
-</div>
-
-
-<!-- ========================================== -->
-<!-- 4. PANEL DE CONTROL INTERNO (SISTEMA)      -->
-<!-- ========================================== -->
-<div class="container vista-sistema" id="main-panel">
-    <div class="header">
-        <div class="header-left">
-            <button class="menu-toggle" onclick="toggleSidebar(true)">
-                <span></span><span></span><span></span>
-            </button>
-            <img src="IMAGENES/LOGO.png" alt="Logo" class="header-logo" onerror="this.style.display='none'">
-            <div class="header-title"><h1>EP PERFUME</h1></div>
-        </div>
-        <p style="font-size: 11px; color: var(--texto-mutado); font-weight: 600;" id="txt-seccion-actual">FINANZAS</p>
-    </div>
-
-    <!-- SECCIÓN FINANZAS -->
-    <div id="vista-finanzas" class="tab-content active">
-        <div class="section" style="background: var(--oro-suave); border: 1px solid rgba(197, 160, 89, 0.2);">
-            <h2>📊 Resumen Financiero Efectivo</h2>
-            <div class="resumen">
-                <div class="card" title="Es todo el dinero cobrado por ventas concretadas (Suma el costo base de fábrica y la ganancia neta).">
-                    <div class="card-title">Ventas Totales (Ingreso bruto)</div>
-                    <div class="card-value" id="total-ventas-bruto" style="color: var(--texto-oscuro);">$0.00</div>
-                </div>
-                <div class="card" title="Es la ganancia limpia real obtenida de las ventas cobradas, restando el costo de fábrica de los productos despachados.">
-                    <div class="card-title">Ganancia Neta Generada</div>
-                    <div class="card-value" id="total-ganancia" style="color: var(--exito);">$0.00</div>
-                </div>
-                <div class="card" title="Es el monto total invertido en los productos que ya se vendieron. Representa el dinero de fábrica que debe recuperarse.">
-                    <div class="card-title">Costo Acumulado (Inversión Vendida)</div>
-                    <div class="card-value" id="total-costo-acumulado" style="color: var(--alerta);">$0.00</div>
-                </div>
-                <div class="card" title="Dinero total que ha salido de la caja para gastos operativos, insumos, envases, etiquetas o imprevistos de la marca.">
-                    <div class="card-title">Retiros / Gastos Totales</div>
-                    <div class="card-value" id="total-retiros" style="color: var(--peligro);">$0.00</div>
-                </div>
-                <div class="card" style="border-top-color: var(--oro); min-width: 100%;" title="Efectivo real en físico/cuenta. Es el ingreso bruto total de ventas menos todos los gastos y retiros ejecutados.">
-                    <div class="card-title">Caja Total Disponible (Ventas - Retiros)</div>
-                    <div class="card-value" id="ganancia-disponible" style="color: var(--texto-oscuro); font-size: 26px;">$0.00</div>
-                </div>
-                <div class="card" style="border-top-color: var(--alerta);" title="Dinero retenido de despachos entregados pero cuyos clientes aún no han pagado formalmente.">
-                    <div class="card-title">Por Cobrar (Cuentas Pendientes)</div>
-                    <div class="card-value" id="total-pendiente" style="color: var(--alerta);">$0.00</div>
-                </div>
+    <!-- ==================== PANEL ADMINISTRATIVO ==================== -->
+    <div id="adminPanel">
+        <div class="admin-header-bar">
+            <h2>
+                <!-- Menú Hamburguesa Admin -->
+                <button class="menu-btn" onclick="toggleMenu('adminSideMenu')"><span></span><span></span><span></span></button>
+                Centro de Control
+            </h2>
+            <div>
+                <span id="activeUserDisplay" style="font-weight: 500; margin-right: 15px; font-size: 0.9rem; color: #555;"></span>
+                <button class="logout-btn" onclick="cerrarSesionAdmin()">Salir</button>
             </div>
         </div>
-    </div>
 
-    <!-- SECCIÓN VENTAS -->
-    <div id="vista-ventas" class="tab-content">
-        <div class="section">
-            <h2>💼 Registro de Órdenes y Clientes</h2>
-            <div class="form-group">
-                <label>Nombre del Comprador</label>
-                <input type="text" id="venta-cliente" placeholder="Nombre completo">
-            </div>
-            
-            <label>Fragancias Despachadas</label>
-            <div id="contenedor-perfumes-venta"></div>
-            <button type="button" class="btn-secondary" onclick="agregarFilaPerfume()" style="width: 100%;">+ Añadir Producto</button>
+        <!-- Menú Lateral Administrativo -->
+        <nav class="side-menu" id="adminSideMenu">
+            <button class="close-btn" onclick="toggleMenu('adminSideMenu')">&times;</button>
+            <h3 style="margin-bottom: 20px; font-weight: 600;">Módulos</h3>
+            <a onclick="switchTab('tab-finanzas', this)" class="active-link">1. Finanzas</a>
+            <a onclick="switchTab('tab-ventas', this)">2. Ventas</a>
+            <a onclick="switchTab('tab-inventario', this)">3. Inventario</a>
+            <a onclick="switchTab('tab-analitica', this)">4. Analítica & Egresos</a>
+            <a onclick="switchTab('tab-auditoria', this)">5. Auditoría</a>
+        </nav>
 
-            <div class="form-group">
-                <label>Estatus de Cobro</label>
-                <select id="venta-estatus">
-                    <option value="Pagado">Pagado</option>
-                    <option value="Pendiente">Pendiente por cobrar</option>
-                </select>
-            </div>
-            <button onclick="procesarVenta()" style="width: 100%;">Registrar Transacción</button>
-
-            <h3 style="margin-top: 25px; font-size: 13px; color: var(--texto-mutado); text-transform: uppercase;">Historial Comercial</h3>
-            <div class="table-responsive">
-                <table id="tabla-ventas">
-                    <thead>
-                        <tr><th>Cliente</th><th>Detalle</th><th>Total</th><th>Estado</th><th>Acción</th></tr>
-                    </thead>
-                    <tbody><tr><td colspan="5" class="loading">Cargando transacciones...</td></tr></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- SECCIÓN RETIROS -->
-    <div id="vista-retiros" class="tab-content">
-        <div class="section">
-            <h2>💸 Registrar Retiro / Gasto de Caja</h2>
-            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                <div class="form-group" style="flex: 1; min-width: 150px;">
-                    <label>Monto a Retirar ($)</label>
-                    <input type="number" id="retiro-monto" step="0.01" placeholder="0.00">
+        <div class="admin-container">
+            <!-- Pestaña Finanzas -->
+            <div id="tab-finanzas" class="tab-content active">
+                <div class="metrics-grid">
+                    <div class="metric-box"><p>Ventas Totales</p><h4 id="m-ventas">$0.00</h4></div>
+                    <div class="metric-box"><p>Costo de Inventario</p><h4 id="m-costos">$0.00</h4></div>
+                    <div class="metric-box"><p>Retiros Totales</p><h4 id="m-retiros">$0.00</h4></div>
+                    <div class="metric-box"><p>Reinversiones</p><h4 id="m-reinversiones">$0.00</h4></div>
+                    <div class="metric-box" style="background:#f4fbf7; border-color: #dcfce7;"><p>Ganancia Neta</p><h4 id="m-ganancia" style="color:#16a34a;">$0.00</h4></div>
                 </div>
-                <div class="form-group" style="flex: 2; min-width: 250px;">
-                    <label>Nota de Uso / Justificación</label>
-                    <input type="text" id="retiro-nota" placeholder="Ej: Envases, etiquetas, pasajes...">
-                </div>
-            </div>
-            <button onclick="registrarRetiro()" style="background-color: var(--texto-oscuro);">Procesar Retiro</button>
-
-            <h3 style="margin-top: 25px; font-size: 13px; color: var(--texto-mutado); text-transform: uppercase;">Libro de Gastos</h3>
-            <div class="table-responsive">
-                <table id="tabla-retiros">
-                    <thead><tr><th>Fecha</th><th>Nota</th><th>Monto</th><th>Acción</th></tr></thead>
-                    <tbody><tr><td colspan="4" class="loading">Cargando bitácora...</td></tr></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- SECCIÓN INVENTARIO -->
-    <div id="vista-inventario" class="tab-content">
-        <div class="section">
-            <h2>📦 Control de Inventario</h2>
-            
-            <div class="resumen" style="margin-bottom: 25px;">
-                <div class="card" style="border-top-color: var(--texto-oscuro);" title="La cantidad física de perfumes de todas las fragancias combinadas que se encuentran listas en almacén.">
-                    <div class="card-title">Total Fragancias en Stock</div>
-                    <div class="card-value" id="inv-total-productos">0 ud</div>
-                </div>
-                <div class="card" style="border-top-color: var(--oro);" title="El capital total de tu marca que se encuentra congelado en mercancía física (Multiplica unidades en stock por su costo de fábrica).">
-                    <div class="card-title">Dinero Invertido en Mercancía</div>
-                    <div class="card-value" id="inv-dinero-mercancia" style="color: var(--oro);">$0.00</div>
+                <div class="card">
+                    <h3>Resumen Financiero</h3>
+                    <p style="font-size:0.95rem; color:#555; line-height: 1.5;">Este panel calcula automáticamente los ingresos de ventas marcadas como <span class="status-badge pagada">Pagada</span> menos los costos de producción y los retiros declarados.</p>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>Nombre de la Fragancia</label>
-                <input type="text" id="prod-nombre" placeholder="Ej: Sauvage 30ml">
+            <!-- Pestaña Ventas -->
+            <div id="tab-ventas" class="tab-content">
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Registrar Nueva Venta</h3>
+                        <form id="saleForm" onsubmit="registrarVenta(event)">
+                            <div class="form-group"><label>Nombre del Cliente</label><input type="text" id="saleClient" required></div>
+                            <div class="form-group"><label>Seleccionar Perfume</label><select id="salePerfumeSelect" required></select></div>
+                            <div class="form-group"><label>Cantidad</label><input type="number" id="saleQty" min="1" required></div>
+                            <div class="form-group">
+                                <label>Estatus de Pago</label>
+                                <select id="saleStatus">
+                                    <option value="Pendiente">Pendiente por Pagar</option>
+                                    <option value="Pagada">Pagada</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn-submit">Procesar Venta</button>
+                        </form>
+                    </div>
+                    <div class="card" style="grid-column: span 2;">
+                        <h3>Historial de Ventas</h3>
+                        <div style="overflow-x:auto;">
+                            <table>
+                                <thead><tr><th>Fecha</th><th>Cliente</th><th>Perfume</th><th>Cant.</th><th>Estatus</th><th>Usuario</th></tr></thead>
+                                <tbody id="salesTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                <div class="form-group" style="flex: 1; min-width: 100px;">
-                    <label>Stock Inicial</label>
-                    <input type="number" id="prod-stock" min="1" value="1">
-                </div>
-                <div class="form-group" style="flex: 1; min-width: 100px;">
-                    <label>Costo Fábrica ($)</label>
-                    <input type="number" id="prod-costo" step="0.01" placeholder="0.00">
-                </div>
-                <div class="form-group" style="flex: 1; min-width: 100px;">
-                    <label>Precio Venta ($)</label>
-                    <input type="number" id="prod-precio" step="0.01" placeholder="0.00">
-                </div>
-            </div>
-            <button onclick="agregarProducto()" style="width: 100%;">Guardar en Inventario</button>
 
-            <h3 style="margin-top: 25px; font-size: 13px; color: var(--texto-mutado); text-transform: uppercase;">Stock Actual</h3>
-            <div class="table-responsive">
-                <table id="tabla-inventario">
-                    <thead><tr><th>Perfume</th><th>Stock</th><th>Costo</th><th>P. Venta</th><th>Ganancia</th><th>Acción</th></tr></thead>
-                    <tbody><tr><td colspan="6" class="loading">Cargando inventario...</td></tr></tbody>
-                </table>
+            <!-- Pestaña Inventario -->
+            <div id="tab-inventario" class="tab-content">
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Ingresar Perfume</h3>
+                        <p style="font-size: 0.85rem; margin-bottom: 15px; color: #666;">Si el nombre ya existe, se sumará el stock y se actualizarán los precios.</p>
+                        <form id="perfumeForm" onsubmit="registrarPerfume(event)">
+                            <div class="form-group"><label>Nombre del Perfume</label><input type="text" id="perfumeName" required></div>
+                            <div class="form-group">
+                                <label>Categoría</label>
+                                <select id="perfumeCategory">
+                                    <option value="Caballeros">Caballeros</option>
+                                    <option value="Damas">Damas</option>
+                                    <option value="Unisex">Unisex</option>
+                                    <option value="Niños">Niños</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><label>Cantidad a Añadir</label><input type="number" id="perfumeStock" min="0" required placeholder="0"></div>
+                            <div class="form-group"><label>Costo Interno ($)</label><input type="number" id="perfumeCost" step="0.01" min="0" required></div>
+                            <div class="form-group"><label>Precio Venta ($)</label><input type="number" id="perfumePrice" step="0.01" min="0" required></div>
+                            <button type="submit" class="btn-submit">Guardar en Inventario</button>
+                        </form>
+                    </div>
+                    <div class="card" style="grid-column: span 2;">
+                        <h3>Existencias en Almacén</h3>
+                        <div style="overflow-x:auto;">
+                            <table>
+                                <thead><tr><th>Nombre</th><th>Categoría</th><th>Stock</th><th>Costo</th><th>PVP</th><th>Gestión</th></tr></thead>
+                                <tbody id="inventoryTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pestaña Analítica y Egresos -->
+            <div id="tab-analitica" class="tab-content">
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Top 10 Más Vendidos</h3>
+                        <ul class="top-list" id="topPerfumesList"></ul>
+                    </div>
+                    <div class="card">
+                        <h3>Registrar Egreso</h3>
+                        <form id="withdrawalForm" onsubmit="registrarEgreso(event)">
+                            <div class="form-group"><label>Monto ($)</label><input type="number" id="wAmount" step="0.01" min="0.01" required></div>
+                            <div class="form-group">
+                                <label>Tipo de Flujo</label>
+                                <select id="wType">
+                                    <option value="Retiro">Retiro Personal</option>
+                                    <option value="Reinversión">Reinversión en Insumos</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><label>Justificación</label><textarea id="wReason" rows="3" required></textarea></div>
+                            <button type="submit" class="btn-submit">Registrar Salida</button>
+                        </form>
+                    </div>
+                    <div class="card" style="grid-column: span 2;">
+                        <h3>Libro de Egresos</h3>
+                        <div style="overflow-x:auto;">
+                            <table>
+                                <thead><tr><th>Fecha</th><th>Tipo</th><th>Monto</th><th>Justificación</th><th>Usuario</th></tr></thead>
+                                <tbody id="withdrawalsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pestaña Auditoría -->
+            <div id="tab-auditoria" class="tab-content">
+                <div class="card">
+                    <h3>Registro de Movimientos</h3>
+                    <div style="overflow-x:auto;">
+                        <table>
+                            <thead><tr><th>Fecha y Hora</th><th>Usuario</th><th>Acción Ejecutada</th></tr></thead>
+                            <tbody id="auditTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- CDN MODERNO DE FIREBASE V10 -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyArphq3sSjhWWXr8w6I6f7UVGRMwaDp7i0",
-        authDomain: "ep-perfumes-92b9c.firebaseapp.com",
-        databaseURL: "https://ep-perfumes-92b9c-default-rtdb.firebaseio.com",
-        projectId: "ep-perfumes-92b9c",
-        storageBucket: "ep-perfumes-92b9c.firebasestorage.app",
-        messagingSenderId: "914809541616",
-        appId: "1:914809541616:web:d99ba79fa586355de24335",
-        measurementId: "G-3HL9NDKXKZ"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    let inventario = {};
-    let ventas = {};
-    let retiros = {};
-    const CLAVE_ACCESO = "EP-030699";
-
-    // --- MANEJO DE VISTAS (PÚBLICA / LOGIN / PANEL) ---
-    window.mostrarLogin = function(ver) {
-        document.getElementById('login-screen').style.display = ver ? 'flex' : 'none';
-        if(ver) {
-            document.getElementById('app-password').value = '';
-            document.getElementById('app-password').focus();
-        }
-    };
-
-    window.toggleSidebar = function(abrir) {
-        document.getElementById('my-sidebar').classList.toggle('open', abrir);
-        document.getElementById('sidebar-overlay').classList.toggle('show', abrir);
-    };
-
-    window.cambiarVista = function(idVista, botonActivo) {
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(idVista).classList.add('active');
-        botonActivo.classList.add('active');
-        document.getElementById('txt-seccion-actual').innerText = botonActivo.innerText.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]/g, '').trim().toUpperCase();
-        window.toggleSidebar(false);
-    };
-
-    window.verificarAcceso = function() {
-        if(document.getElementById('app-password').value === CLAVE_ACCESO) {
-            localStorage.setItem('sesion_activa_perfumes', 'true');
-            ejecutarArranquePanel();
-        } else {
-            alert("Acceso denegado.");
-        }
-    };
-    
-    window.evaluarTecla = function(e) { if(e.key === 'Enter') window.verificarAcceso(); };
-    window.cerrarSesion = function() { localStorage.removeItem('sesion_activa_perfumes'); window.location.reload(); };
-
-
-    // --- ACCIÓN INVENTARIO (GUARDAR / ELIMINAR) ---
-    window.agregarProducto = function() {
-        const nombreInp = document.getElementById('prod-nombre');
-        const stockInp = document.getElementById('prod-stock');
-        const costoInp = document.getElementById('prod-costo');
-        const precioInp = document.getElementById('prod-precio');
-
-        const nombre = nombreInp.value.trim();
-        const stock = parseInt(stockInp.value);
-        const costo = parseFloat(costoInp.value) || 0;
-        const precio = parseFloat(precioInp.value) || 0;
-
-        if (!nombre || isNaN(stock) || stock <= 0 || isNaN(precio) || precio <= 0) { 
-            alert("Por favor, completa el nombre, stock y precio de venta."); 
-            return; 
-        }
-
-        const idProducto = nombre.replace(/[.#$/\[\]]/g, "-");
-        
-        let nuevoStock = stock;
-        if (inventario && inventario[idProducto] && inventario[idProducto].stock) { 
-            nuevoStock += parseInt(inventario[idProducto].stock); 
-        }
-
-        set(ref(db, 'inventario/' + idProducto), {
-            nombre: nombre,
-            stock: parseInt(nuevoStock),
-            costo: parseFloat(costo),
-            precio: parseFloat(precio)
-        }).then(() => {
-            nombreInp.value = '';
-            stockInp.value = '1';
-            costoInp.value = '';
-            precioInp.value = '';
-            alert("¡Perfume guardado exitosamente!");
-        }).catch((err) => alert("Error al guardar en Firebase: " + err.message));
-    };
-
-    window.eliminarProductoInventario = function(key) {
-        if(confirm(`¿Estás seguro de eliminar esta fragancia por completo del inventario?`)) {
-            remove(ref(db, `inventario/${key}`)).catch(err => alert("Error al eliminar: " + err.message));
-        }
-    };
-
-
-    // --- ACCIÓN REGISTRAR RETIRO ---
-    window.registrarRetiro = function() {
-        const monto = parseFloat(document.getElementById('retiro-monto').value) || 0;
-        const nota = document.getElementById('retiro-nota').value.trim();
-        if(monto <= 0 || !nota) { alert("Indica monto y nota."); return; }
-
-        const idRetiro = Date.now();
-        const fecha = new Date().toLocaleDateString();
-
-        set(ref(db, 'retiros/' + idRetiro), { id: idRetiro, fecha, nota, monto }).then(() => {
-            document.getElementById('retiro-monto').value = '';
-            document.getElementById('retiro-nota').value = '';
-        }).catch(err => alert("Error al guardar retiro: " + err.message));
-    };
-
-    window.eliminarRetiro = function(key) { if(confirm("¿Remover este gasto?")) remove(ref(db, `retiros/${key}`)); };
-
-
-    // --- ACCIÓN VENTAS ---
-    window.agregarFilaPerfume = function() {
-        const keys = Object.keys(inventario);
-        if (keys.length === 0) return;
-        const contenedor = document.getElementById('contenedor-perfumes-venta');
-        const filaId = Date.now();
-        let opciones = keys.map(k => `<option value="${k}">${inventario[k].nombre} (Stock: ${inventario[k].stock})</option>`).join('');
-
-        contenedor.insertAdjacentHTML('beforeend', `
-            <div class="perfume-row" id="fila-${filaId}">
-                <div><select class="select-perfume">${opciones}</select></div>
-                <div style="max-width: 80px;"><input type="number" class="input-cant" min="1" value="1"></div>
-                <div style="flex:none;"><button type="button" class="btn-danger" onclick="document.getElementById('fila-${filaId}').remove()">X</button></div>
-            </div>
-        `);
-    };
-
-    window.procesarVenta = function() {
-        const cliente = document.getElementById('venta-cliente').value.trim();
-        const estatus = document.getElementById('venta-estatus').value;
-        const filas = document.querySelectorAll('.perfume-row');
-        if (!cliente || filas.length === 0) { alert("Completa los datos del cliente y fragancias."); return; }
-
-        let productosVendidos = [];
-        let totalVenta = 0, totalCosto = 0;
-        let actualizaciones = {};
-
-        for (let fila of filas) {
-            const idProd = fila.querySelector('.select-perfume').value;
-            const cantidad = parseInt(fila.querySelector('.input-cant').value) || 0;
-            const producto = inventario[idProd];
-
-            if (!producto || cantidad <= 0 || producto.stock < cantidad) { alert(`Stock insuficiente para el producto seleccionado.`); return; }
-
-            productosVendidos.push({ idProd, nombre: producto.nombre, cantidad, precio: producto.precio, costo: producto.costo || 0, totalProductoCosto: (producto.costo || 0) * cantidad });
-            totalVenta += (producto.precio * cantidad);
-            totalCosto += ((producto.costo || 0) * quantity);
-            actualizaciones[`inventario/${idProd}/stock`] = producto.stock - cantidad;
-        }
-
-        const idVenta = Date.now();
-        actualizaciones[`ventas/${idVenta}`] = { 
-            id: idVenta, 
-            cliente, 
-            productos: productosVendidos, 
-            total: totalVenta, 
-            costoTotalVenta: totalCosto,
-            ganancia: (totalVenta - totalCosto), 
-            estatus 
+    <script>
+        // 1. CONFIGURACIÓN DE FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyArphq3sSjhWWXr8w6I6f7UVGRMwaDp7i0",
+            authDomain: "ep-perfumes-92b9c.firebaseapp.com",
+            databaseURL: "https://ep-perfumes-92b9c-default-rtdb.firebaseio.com",
+            projectId: "ep-perfumes-92b9c",
+            storageBucket: "ep-perfumes-92b9c.firebasestorage.app",
+            messagingSenderId: "914809541616",
+            appId: "1:914809541616:web:d99ba79fa586355de24335",
+            measurementId: "G-3HL9NDKXKZ"
         };
 
-        update(ref(db), actualizaciones).then(() => {
-            document.getElementById('venta-cliente').value = '';
-            document.getElementById('contenedor-perfumes-venta').innerHTML = '';
-            window.agregarFilaPerfume();
-        }).catch(err => alert("Error al registrar venta: " + err.message));
-    };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-    window.cambiarEstatusPago = function(key) {
-        const nuevoEstatus = ventas[key].estatus === 'Pagado' ? 'Pendiente' : 'Pagado';
-        update(ref(db, `ventas/${key}`), { estatus: nuevoEstatus });
-    };
-    window.eliminarVenta = function(key) { if(confirm("¿Eliminar esta venta del historial?")) remove(ref(db, `ventas/${key}`)); };
+        let appState = { perfumes: [], sales: [], withdrawals: [], logs: [] };
+        let currentUser = null; 
 
+        window.onload = function() {
+            db.ref('tienda').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if(data) {
+                    appState.perfumes = data.perfumes ? Object.values(data.perfumes) : [];
+                    appState.sales = data.sales ? Object.values(data.sales) : [];
+                    appState.withdrawals = data.withdrawals ? Object.values(data.withdrawals) : [];
+                    appState.logs = data.logs ? Object.values(data.logs) : [];
+                } else {
+                    saveToFirebase();
+                }
+                
+                renderAll();
+                if(document.getElementById('adminPanel').style.display === 'block') {
+                    renderAllAdmin();
+                }
+            });
+        };
 
-    // --- ARRANQUE Y RENDERIZADO DE CONTENIDOS ---
-    
-    // El sistema arranca leyendo el inventario para la sección pública de inmediato
-    onValue(ref(db, 'inventario'), (snapshot) => {
-        inventario = snapshot.val() || {};
-        actualizarTablaInventario();
-        actualizarSelectoresVenta();
-        renderizarCatalogoPublico(); // <--- Muestra las fragancias a tus clientes
-    }, (error) => {
-        alert("Error de conexión Firebase: " + error.message);
-    });
-
-    if(localStorage.getItem('sesion_activa_perfumes') === 'true') {
-        ejecutarArranquePanel();
-    }
-
-    function ejecutarArranquePanel() {
-        // Intercambiar las pantallas principales
-        document.getElementById('vista-publica').style.display = 'none';
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('main-panel').style.display = 'block';
-        
-        onValue(ref(db, 'ventas'), (snapshot) => {
-            ventas = snapshot.val() || {};
-            actualizarTotalesYVentas();
-        });
-
-        onValue(ref(db, 'retiros'), (snapshot) => {
-            retiros = snapshot.val() || {};
-            actualizarTotalesYRetiros();
-        });
-    }
-
-    // Nueva función para armar la vitrina de productos que ve la gente
-    function renderizarCatalogoPublico() {
-        const gridPublico = document.getElementById('grid-publico-productos');
-        if(!gridPublico) return;
-        gridPublico.innerHTML = '';
-
-        const keys = Object.keys(inventario);
-        if(keys.length === 0) {
-            gridPublico.innerHTML = '<p class="loading" style="grid-column: 1/-1;">Por los momentos no tenemos fragancias en stock. ¡Vuelve pronto!</p>';
-            return;
+        function saveToFirebase() {
+            db.ref('tienda').set({
+                perfumes: appState.perfumes,
+                sales: appState.sales,
+                withdrawals: appState.withdrawals,
+                logs: appState.logs
+            });
         }
 
-        keys.forEach(key => {
-            const p = inventario[key];
-            const stockVal = parseInt(p.stock) || 0;
-            const precioVal = parseFloat(p.precio) || 0;
-
-            // Solo mostramos productos que tengan stock real disponible para la venta
-            if (stockVal > 0) {
-                gridPublico.innerHTML += `
-                    <div class="producto-card">
-                        <div class="producto-icon">✨</div>
-                        <h3>${p.nombre}</h3>
-                        <div class="producto-precio">$${precioVal.toFixed(2)}</div>
-                        <span class="badge-stock">Disponible: ${stockVal} ud</span>
-                    </div>
-                `;
-            }
-        });
-
-        if(gridPublico.innerHTML === '') {
-            gridPublico.innerHTML = '<p class="loading" style="grid-column: 1/-1;">Por los momentos no tenemos fragancias en stock. ¡Vuelve pronto!</p>';
+        // --- NAVEGACIÓN Y MENÚS ---
+        function toggleMenu(menuId) { 
+            document.getElementById(menuId).classList.toggle('active'); 
         }
-    }
 
-    function actualizarTablaInventario() {
-        const tbody = document.querySelector('#tabla-inventario tbody');
-        if (!tbody) return;
-        tbody.innerHTML = '';
-        
-        let totalUnidades = 0;
-        let dineroMercancia = 0;
-        
-        const keys = Object.keys(inventario);
-        if(keys.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--texto-mutado);">No hay fragancias registradas</td></tr>';
-            document.getElementById('inv-total-productos').innerText = "0 ud";
-            document.getElementById('inv-dinero-mercancia').innerText = "$0.00";
-            return;
+        function navigateToCategory(id) {
+            toggleMenu('sideMenu');
+            const el = document.getElementById(id);
+            if(el) { el.open = true; el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
         }
-        
-        keys.forEach(key => {
-            const p = inventario[key];
-            const stockVal = parseInt(p.stock) || 0;
-            const costoVal = parseFloat(p.costo) || 0;
-            const precioVal = parseFloat(p.precio) || 0;
+
+        function switchTab(tabId, btnElement) {
+            // Ocultar todas las pestañas
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            // Quitar clase activa de los enlaces del menú admin
+            document.querySelectorAll('#adminSideMenu a').forEach(a => a.classList.remove('active-link'));
             
-            totalUnidades += stockVal;
-            dineroMercancia += (stockVal * costoVal);
+            // Mostrar la pestaña seleccionada y marcar el enlace
+            document.getElementById(tabId).classList.add('active');
+            btnElement.classList.add('active-link');
             
-            tbody.innerHTML += `<tr>
-                <td style="font-weight:600;">${p.nombre}</td>
-                <td style="color:${stockVal <= 3 ? 'var(--peligro)':'var(--texto-oscuro)'}; font-weight:bold;">${stockVal} ud</td>
-                <td>$${costoVal.toFixed(2)}</td>
-                <td style="color:var(--oro); font-weight:600;">$${precioVal.toFixed(2)}</td>
-                <td style="color:var(--exito); font-weight:600;">$${(precioVal - costoVal).toFixed(2)}</td>
-                <td><button class="btn-danger" onclick="window.eliminarProductoInventario('${key}')">X</button></td>
-            </tr>`;
-        });
-        
-        document.getElementById('inv-total-productos').innerText = `${totalUnidades} ud`;
-        document.getElementById('inv-dinero-mercancia').innerText = `$${dineroMercancia.toFixed(2)}`;
-    }
-
-    function actualizarTotalesYRetiros() {
-        const tbody = document.querySelector('#tabla-retiros tbody');
-        if (!tbody) return;
-        tbody.innerHTML = '';
-        const keys = Object.keys(retiros);
-        if(keys.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--texto-mutado);">Sin registros</td></tr>';
-            calcularBalancesGlobales(); return;
+            // Cerrar el menú lateral después de seleccionar
+            document.getElementById('adminSideMenu').classList.remove('active');
         }
-        keys.forEach(key => {
-            const r = retiros[key];
-            tbody.innerHTML += `<tr><td>${r.fecha}</td><td style="font-weight:500;">${r.nota}</td><td style="color:var(--peligro); font-weight:600;">-$${parseFloat(r.monto).toFixed(2)}</td><td><button class="btn-danger" onclick="window.eliminarRetiro('${key}')">X</button></td></tr>`;
-        });
-        calcularBalancesGlobales();
-    }
 
-    function actualizarSelectoresVenta() {
-        document.querySelectorAll('.select-perfume').forEach(select => {
-            const valorPrevio = select.value;
-            select.innerHTML = Object.keys(inventario).map(k => `<option value="${k}">${inventario[k].nombre} (Stock: ${inventario[k].stock})</option>`).join('');
-            if(inventario[valorPrevio]) select.value = valorPrevio;
-        });
-    }
+        // --- AUTENTICACIÓN ---
+        function solicitarAccesoAdmin() {
+            toggleMenu('sideMenu');
+            const password = prompt("Centro de Control - Ingrese su clave de acceso:");
+            if (!password) return;
 
-    function actualizarTotalesYVentas() {
-        const tbody = document.querySelector('#tabla-ventas tbody');
-        if (!tbody) return;
-        tbody.innerHTML = '';
-        const keys = Object.keys(ventas);
-        if(keys.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Sin órdenes registradas</td></tr>';
-            calcularBalancesGlobales(); return;
+            if (password === "EP-030699") { currentUser = "Víctor"; abrirPanelAdmin(); } 
+            else if (password === "AP-20092024") { currentUser = "Kika"; abrirPanelAdmin(); } 
+            else { alert("Clave incorrecta."); }
         }
-        keys.forEach(key => {
-            const v = ventas[key];
-            const detalle = (v.productos && Array.isArray(v.productos)) ? v.productos.map(p => `${p.nombre} (x${p.cantidad})`).join(', ') : 'Sin detalle';
-            tbody.innerHTML += `<tr><td style="font-weight:600;">${v.cliente}</td><td style="font-size:12px; color:var(--texto-mutado);">${detalle}</td><td style="font-weight:600;">$${parseFloat(v.total).toFixed(2)}</td><td><span class="badge ${v.estatus==='Pagado'?'badge-pagado':'badge-pendiente'}" onclick="window.cambiarEstatusPago('${key}')">${v.estatus}</span></td><td><button class="btn-danger" onclick="window.eliminarVenta('${key}')">X</button></td></tr>`;
-        });
-        calcularBalancesGlobales();
-    }
 
-    function calcularBalancesGlobales() {
-        let ingresosVentasBruto = 0; 
-        let gananciaTotal = 0;
-        let costoAcumuladoTotal = 0;
-        let pendienteCobro = 0;
-        let retirosTotal = 0;
-        
-        Object.keys(ventas).forEach(k => {
-            const totalVenta = parseFloat(ventas[k].total) || 0;
-            const costoVenta = parseFloat(ventas[k].costoTotalVenta) || parseFloat(ventas[k].total - ventas[k].ganancia) || 0;
-            const gananciaVenta = parseFloat(ventas[k].ganancia) || 0;
+        function abrirPanelAdmin() {
+            document.getElementById('publicSite').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            document.getElementById('activeUserDisplay').innerText = `Operador: ${currentUser}`;
+            registrarLog("Inicio de sesión exitoso al panel de administración.");
+            renderAllAdmin();
+        }
 
-            if (ventas[k].estatus === 'Pagado') {
-                ingresosVentasBruto += totalVenta;
-                gananciaTotal += gananciaVenta;
-                costoAcumuladoTotal += costoVenta;
-            } else if (ventas[k].estatus === 'Pendiente') {
-                pendienteCobro += totalVenta;
+        function cerrarSesionAdmin() {
+            registrarLog("Cierre de sesión del panel administrativo.");
+            currentUser = null;
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('publicSite').style.display = 'block';
+        }
+
+        function registrarLog(accion) {
+            if(!currentUser) return; 
+            const now = new Date();
+            appState.logs.unshift({ timestamp: now.toLocaleString(), user: currentUser, action: accion });
+            saveToFirebase(); 
+        }
+
+        // --- RENDERIZADO VISUAL ---
+        function renderAll() { renderPublicCatalog(); }
+        function renderAllAdmin() { renderFinanzas(); renderVentasTab(); renderInventarioTab(); renderAnaliticaTab(); renderAuditoriaTab(); }
+
+        function renderPublicCatalog() {
+            ['Caballeros', 'Damas', 'Unisex', 'Niños'].forEach(cat => {
+                const grid = document.getElementById(`grid-${cat}`);
+                grid.innerHTML = '';
+                const filtered = appState.perfumes.filter(p => p.category === cat);
+                if(filtered.length === 0) { grid.innerHTML = '<p class="no-products">No hay perfumes registrados.</p>'; return; }
+                
+                // Asignación de imágenes unificadas (se usa ninos.jpg para evitar problemas con la ñ en URLs)
+                let imgFile = '';
+                if(cat === 'Caballeros') imgFile = 'caballeros.png';
+                else if(cat === 'Damas') imgFile = 'damas.png';
+                else if(cat === 'Unisex') imgFile = 'unisex.png';
+                else if(cat === 'Niños') imgFile = 'ninos.png';
+
+                filtered.forEach(p => {
+                    grid.innerHTML += `
+                    <div class="product-card">
+                        <img src="${imgFile}" alt="Perfume ${cat}" class="product-img">
+                        <div class="product-title">${p.name}</div>
+                        <div class="product-stock">Disponibles: ${p.stock} unds</div>
+                    </div>`;
+                });
+            });
+        }
+
+        function renderFinanzas() {
+            let tVentas = 0, tCostos = 0, tRetiros = 0, tReinversiones = 0;
+            appState.sales.forEach(s => { if(s.status === 'Pagada') { tVentas += (s.quantity * s.price); tCostos += (s.quantity * s.cost); } });
+            appState.withdrawals.forEach(w => { if(w.type === 'Retiro') tRetiros += w.amount; if(w.type === 'Reinversión') tReinversiones += w.amount; });
+            let gNeta = tVentas - tCostos - tRetiros - tReinversiones;
+
+            document.getElementById('m-ventas').innerText = `$${tVentas.toFixed(2)}`;
+            document.getElementById('m-costos').innerText = `$${tCostos.toFixed(2)}`;
+            document.getElementById('m-retiros').innerText = `$${tRetiros.toFixed(2)}`;
+            document.getElementById('m-reinversiones').innerText = `$${tReinversiones.toFixed(2)}`;
+            document.getElementById('m-ganancia').innerText = `$${gNeta.toFixed(2)}`;
+            document.getElementById('m-ganancia').style.color = gNeta >= 0 ? '#16a34a' : '#dc2626';
+        }
+
+        function renderVentasTab() {
+            const select = document.getElementById('salePerfumeSelect');
+            select.innerHTML = '<option value="">-- Seleccione Producto --</option>';
+            appState.perfumes.forEach(p => { if(p.stock > 0) select.innerHTML += `<option value="${p.id}">${p.name} (Stock: ${p.stock})</option>`; });
+
+            const tbody = document.getElementById('salesTableBody');
+            tbody.innerHTML = '';
+            appState.sales.forEach(s => {
+                tbody.innerHTML += `<tr><td>${s.date}</td><td><strong>${s.client}</strong></td><td>${s.perfumeName}</td><td>${s.quantity}</td><td><span class="status-badge ${s.status.toLowerCase()}">${s.status}</span><button class="btn-status" onclick="toggleStatusVenta('${s.id}')">Cambiar</button></td><td>${s.user}</td></tr>`;
+            });
+        }
+
+        function renderInventarioTab() {
+            const tbody = document.getElementById('inventoryTableBody');
+            tbody.innerHTML = '';
+            appState.perfumes.forEach(p => {
+                tbody.innerHTML += `<tr>
+                    <td><strong>${p.name}</strong></td><td>${p.category}</td><td>${p.stock} unds</td><td>$${p.cost.toFixed(2)}</td><td>$${p.price.toFixed(2)}</td>
+                    <td><button class="btn-delete" onclick="eliminarPerfume('${p.id}')">Eliminar</button></td>
+                </tr>`;
+            });
+        }
+
+        function renderAnaliticaTab() {
+            const topList = document.getElementById('topPerfumesList');
+            topList.innerHTML = '';
+            let sorted = [...appState.perfumes].sort((a,b) => b.soldQuantity - a.soldQuantity).slice(0, 10);
+            sorted.forEach((p, i) => { topList.innerHTML += `<li><span>${i+1}. <strong>${p.name}</strong></span> <span style="color:#666">${p.soldQuantity} vendidas</span></li>`; });
+
+            const tbody = document.getElementById('withdrawalsTableBody');
+            tbody.innerHTML = '';
+            appState.withdrawals.forEach(w => {
+                tbody.innerHTML += `<tr><td>${w.date}</td><td><span class="status-badge" style="background-color:#f1f5f9; color:#334155;">${w.type}</span></td><td style="color:#dc2626; font-weight:500;">-$${w.amount.toFixed(2)}</td><td>${w.reason}</td><td>${w.user}</td></tr>`;
+            });
+        }
+
+        function renderAuditoriaTab() {
+            const tbody = document.getElementById('auditTableBody');
+            tbody.innerHTML = '';
+            appState.logs.forEach(l => {
+                tbody.innerHTML += `<tr><td style="color:#777; font-size:0.85rem;">${l.timestamp}</td><td><strong>${l.user}</strong></td><td>${l.action}</td></tr>`;
+            });
+        }
+
+        // --- ACCIONES A FIREBASE ---
+        function registrarPerfume(e) {
+            e.preventDefault();
+            const name = document.getElementById('perfumeName').value.trim();
+            const category = document.getElementById('perfumeCategory').value;
+            const stockToAdd = parseInt(document.getElementById('perfumeStock').value);
+            const cost = parseFloat(document.getElementById('perfumeCost').value);
+            const price = parseFloat(document.getElementById('perfumePrice').value);
+
+            let item = appState.perfumes.find(p => p.name.toLowerCase() === name.toLowerCase());
+
+            if(item) {
+                item.stock += stockToAdd;
+                item.cost = cost;
+                item.price = price;
+                registrarLog(`Actualizó '${name}': Añadió ${stockToAdd} unds. Nuevo stock: ${item.stock}`);
+            } else {
+                appState.perfumes.push({ id: 'p_' + Date.now(), name, category, stock: stockToAdd, cost, price, soldQuantity: 0 });
+                registrarLog(`Ingresó nuevo perfume: '${name}' con ${stockToAdd} unds.`);
             }
-        });
-        
-        Object.keys(retiros).forEach(k => { retirosTotal += parseFloat(retiros[k].monto) || 0; });
-        
-        const disponible = ingresosVentasBruto - retirosTotal;
-
-        if(document.getElementById('total-ventas-bruto')) document.getElementById('total-ventas-bruto').innerText = `$${ingresosVentasBruto.toFixed(2)}`;
-        if(document.getElementById('total-ganancia')) document.getElementById('total-ganancia').innerText = `$${gananciaTotal.toFixed(2)}`;
-        if(document.getElementById('total-costo-acumulado')) document.getElementById('total-costo-acumulado').innerText = `$${costoAcumuladoTotal.toFixed(2)}`;
-        if(document.getElementById('total-pendiente')) document.getElementById('total-pendiente').innerText = `$${pendienteCobro.toFixed(2)}`;
-        if(document.getElementById('total-retiros')) document.getElementById('total-retiros').innerText = `$${retirosTotal.toFixed(2)}`;
-        
-        if(document.getElementById('ganancia-disponible')) {
-            document.getElementById('ganancia-disponible').innerText = `$${disponible.toFixed(2)}`;
-            document.getElementById('ganancia-disponible').style.color = disponible < 0 ? 'var(--peligro)' : 'var(--texto-oscuro)';
+            saveToFirebase();
+            document.getElementById('perfumeForm').reset();
+            alert("Inventario guardado en la nube.");
         }
-    }
 
-    setTimeout(() => { if(Object.keys(inventario).length > 0 && document.querySelectorAll('.perfume-row').length === 0) window.agregarFilaPerfume(); }, 1200);
-</script>
+        function eliminarPerfume(id) {
+            if(confirm("¿Estás seguro de que deseas ELIMINAR este perfume de tu base de datos permanentemente?")) {
+                const perfume = appState.perfumes.find(p => p.id === id);
+                appState.perfumes = appState.perfumes.filter(p => p.id !== id);
+                registrarLog(`Eliminó por completo el perfume '${perfume.name}' del inventario.`);
+                saveToFirebase();
+            }
+        }
+
+        function registrarVenta(e) {
+            e.preventDefault();
+            const client = document.getElementById('saleClient').value.trim();
+            const perfumeId = document.getElementById('salePerfumeSelect').value;
+            const qty = parseInt(document.getElementById('saleQty').value);
+            const status = document.getElementById('saleStatus').value;
+
+            const perfume = appState.perfumes.find(p => p.id === perfumeId);
+            if(qty > perfume.stock) { alert("Stock insuficiente."); return; }
+
+            perfume.stock -= qty;
+            perfume.soldQuantity += qty;
+            
+            appState.sales.unshift({ id: 's_' + Date.now(), date: new Date().toLocaleDateString(), client, perfumeId, perfumeName: perfume.name, quantity: qty, cost: perfume.cost, price: perfume.price, status, user: currentUser });
+            
+            registrarLog(`Vendió a '${client}' ${qty} unds de '${perfume.name}' [${status}].`);
+            saveToFirebase();
+            document.getElementById('saleForm').reset();
+            alert("Venta registrada en Firebase.");
+        }
+
+        function toggleStatusVenta(id) {
+            const sale = appState.sales.find(s => s.id === id);
+            if(sale) {
+                const viejoStatus = sale.status;
+                sale.status = sale.status === 'Pagada' ? 'Pendiente' : 'Pagada';
+                registrarLog(`Cambió estatus de venta de '${sale.client}' de ${viejoStatus} a ${sale.status}.`);
+                saveToFirebase();
+            }
+        }
+
+        function registrarEgreso(e) {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('wAmount').value);
+            const type = document.getElementById('wType').value;
+            const reason = document.getElementById('wReason').value.trim();
+
+            appState.withdrawals.unshift({ id: 'w_' + Date.now(), date: new Date().toLocaleDateString(), type, amount, reason, user: currentUser });
+            registrarLog(`Declaró ${type}: -$${amount}. Razón: "${reason}"`);
+            saveToFirebase();
+            document.getElementById('withdrawalForm').reset();
+            alert("Egreso subido a la base de datos.");
+        }
+    </script>
 </body>
 </html>
