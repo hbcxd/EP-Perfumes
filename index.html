@@ -36,6 +36,11 @@
             border-bottom: 1px solid rgba(226, 232, 240, 0.6); position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm);
         }
         .logo img { height: 45px; }
+        
+        .header-actions { display: flex; align-items: center; gap: 15px; }
+        .cart-btn { position: relative; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--accent); }
+        .cart-badge { position: absolute; top: -5px; right: -8px; background: #dc2626; color: white; font-size: 0.7rem; font-weight: bold; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        
         .menu-btn { font-size: 24px; cursor: pointer; background: none; border: none; display: flex; flex-direction: column; gap: 6px; padding: 5px; }
         .menu-btn span { display: block; width: 28px; height: 2px; background-color: var(--text-main); transition: 0.3s; border-radius: 2px; }
         
@@ -84,17 +89,48 @@
         .price-tag { font-size: 1.4rem; font-weight: 600; color: var(--text-main); }
         .promo-tag { display: inline-block; background-color: #ecfdf5; color: #059669; padding: 8px 20px; border-radius: 30px; font-size: 0.9rem; margin-top: 15px; font-weight: 600; border: 1px solid #a7f3d0; }
 
-        /* === CATÁLOGO PÚBLICO (NUEVO DISEÑO CUADRÍCULA) === */
-        .catalogo { padding: 40px 5%; max-width: 1200px; margin: 0 auto; }
-        .category-section { margin-bottom: 50px; background: #ffffff; padding: 25px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); }
-        .category-title { font-size: 1.5rem; font-weight: 700; color: var(--accent); margin-bottom: 25px; padding-bottom: 10px; border-bottom: 2px solid #f1f5f9; display: flex; align-items: center; }
+        /* === CATÁLOGO PÚBLICO === */
+        .catalogo { padding: 40px 5%; max-width: 1300px; margin: 0 auto; }
+        
+        .search-container { text-align: center; margin-bottom: 40px; }
+        .search-container input { 
+            width: 100%; max-width: 500px; padding: 15px 25px; border-radius: 30px; 
+            border: 2px solid var(--border-color); font-size: 1.05rem; box-shadow: var(--shadow-sm); 
+            background: #ffffff; transition: 0.3s;
+        }
+        .search-container input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.1); }
 
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
+        .category-section { margin-bottom: 40px; background: #ffffff; padding: 20px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); transition: all 0.3s ease; }
+        
+        .category-title { 
+            font-size: 1.3rem; font-weight: 700; color: var(--accent); margin-bottom: 15px; 
+            padding-bottom: 10px; border-bottom: 2px solid #f1f5f9; display: flex; 
+            align-items: center; justify-content: space-between; cursor: pointer; user-select: none;
+        }
+        .category-title:hover { color: var(--accent-hover); }
+        .toggle-icon { font-size: 1.1rem; transition: transform 0.3s ease; color: var(--text-muted); }
+        .category-title.collapsed .toggle-icon { transform: rotate(-90deg); }
+
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; transition: max-height 0.4s ease, opacity 0.3s ease; opacity: 1; }
+        .product-grid.collapsed { display: none; opacity: 0; }
+        
         .product-card { background: var(--bg-card); border-radius: var(--radius-md); padding: 15px; transition: transform 0.3s ease, box-shadow 0.3s ease; border: 1px solid #e2e8f0; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; }
         .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: #cbd5e1; }
-        .product-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; margin-bottom: 15px; background: #f8fafc; }
-        .product-title { font-weight: 600; margin-bottom: 8px; font-size: 1.1rem; color: var(--text-main); }
-        .product-stock { font-size: 0.85rem; color: var(--text-muted); display: inline-block; padding: 5px 12px; background: #f1f5f9; border-radius: 20px; font-weight: 500; }
+        .product-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; margin-bottom: 10px; background: #f8fafc; }
+        .product-title { font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; color: var(--text-main); line-height: 1.2; }
+        .product-stock { font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 10px; }
+        
+        .btn-cart-add { background: var(--accent); color: white; border: none; padding: 8px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.3s; width: 100%; }
+        .btn-cart-add:hover { background: var(--accent-hover); }
+        .btn-cart-add:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+        /* === MODAL CARRITO === */
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-color); }
+        .cart-item-details { flex-grow: 1; text-align: left; }
+        .cart-item-title { font-weight: 600; font-size: 0.9rem; }
+        .cart-item-price { color: var(--text-muted); font-size: 0.85rem; }
+        .cart-item-controls { display: flex; align-items: center; gap: 10px; }
+        .btn-qty { background: #f1f5f9; border: none; width: 25px; height: 25px; border-radius: 4px; font-weight: bold; cursor: pointer; }
 
         /* === PANEL ADMINISTRATIVO === */
         #adminPanel { display: none; background-color: var(--bg-body); min-height: 100vh; padding-bottom: 50px; }
@@ -114,12 +150,10 @@
         .form-group label { display: block; font-size: 0.9rem; margin-bottom: 6px; color: var(--text-muted); font-weight: 500; }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95rem; background: #f8fafc; transition: all 0.3s; }
         
-        /* Contenedor de Items de Venta Dinámicos */
         .sale-item-row { display: grid; grid-template-columns: 2fr 1fr auto; gap: 8px; margin-bottom: 10px; align-items: center; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); }
         .sale-item-row select, .sale-item-row input { margin-bottom: 0; padding: 8px; font-size: 0.9rem; }
         .btn-remove-row { background: #fee2e2; color: #dc2626; border: none; width: 35px; height: 35px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
 
-        /* Contenedor responsivo para tablas */
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table { width: 100%; min-width: 600px; border-collapse: separate; border-spacing: 0; margin-top: 10px; font-size: 0.9rem; }
         table th, table td { padding: 12px 10px; border-bottom: 1px solid var(--border-color); text-align: left; }
@@ -155,6 +189,7 @@
             .sale-item-row { grid-template-columns: 1fr; padding: 15px; }
             .sale-item-row .btn-remove-row { width: 100%; margin-top: 5px; }
             .btn-action { padding: 6px 10px; font-size: 0.75rem; margin-bottom: 5px; width: 100%; display: block; text-align: center; }
+            .product-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
         }
     </style>
 </head>
@@ -163,7 +198,12 @@
     <div id="publicSite">
         <header>
             <div class="logo"><img src="LOGO.png" alt="LOGO" onerror="this.style.display='none'"></div>
-            <button class="menu-btn" onclick="toggleMenu('sideMenu')"><span></span><span></span><span></span></button>
+            <div class="header-actions">
+                <button class="cart-btn" onclick="abrirCarrito()">
+                    🛒<span class="cart-badge" id="cartBadge">0</span>
+                </button>
+                <button class="menu-btn" onclick="toggleMenu('sideMenu')"><span></span><span></span><span></span></button>
+            </div>
         </header>
 
         <nav class="side-menu" id="sideMenu">
@@ -192,26 +232,65 @@
         </section>
 
         <section class="catalogo">
+            <div class="search-container">
+                <input type="text" id="searchCatalog" placeholder="🔍 Buscar perfume por nombre..." onkeyup="renderAll()">
+            </div>
+
             <div class="category-section" id="cat-caballeros">
-                <h2 class="category-title">Caballeros</h2>
+                <h2 class="category-title" onclick="toggleCategorySection('grid-Caballeros', this)">
+                    Caballeros <span class="toggle-icon">▼</span>
+                </h2>
                 <div class="product-grid" id="grid-Caballeros"></div>
             </div>
             
             <div class="category-section" id="cat-damas">
-                <h2 class="category-title">Damas</h2>
+                <h2 class="category-title" onclick="toggleCategorySection('grid-Damas', this)">
+                    Damas <span class="toggle-icon">▼</span>
+                </h2>
                 <div class="product-grid" id="grid-Damas"></div>
             </div>
             
             <div class="category-section" id="cat-unisex">
-                <h2 class="category-title">Unisex</h2>
+                <h2 class="category-title" onclick="toggleCategorySection('grid-Unisex', this)">
+                    Unisex <span class="toggle-icon">▼</span>
+                </h2>
                 <div class="product-grid" id="grid-Unisex"></div>
             </div>
             
             <div class="category-section" id="cat-ninos">
-                <h2 class="category-title">Niños</h2>
+                <h2 class="category-title" onclick="toggleCategorySection('grid-Niños', this)">
+                    Niños <span class="toggle-icon">▼</span>
+                </h2>
                 <div class="product-grid" id="grid-Niños"></div>
             </div>
         </section>
+    </div>
+
+    <div id="cartModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🛒 Tu Pedido</h3>
+                <button class="close-btn" style="position:static; font-size:24px;" onclick="cerrarCarrito()">&times;</button>
+            </div>
+            <div id="cartItemsContainer" style="margin-bottom: 15px;">
+                </div>
+            <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1.1rem; margin-bottom:20px; border-top:1px solid #e2e8f0; padding-top:10px;">
+                <span>Total Estimado:</span>
+                <span id="cartTotal">$0.00</span>
+            </div>
+            <form id="checkoutForm" onsubmit="procesarPedido(event)">
+                <div class="form-group"><label>Tu Nombre</label><input type="text" id="checkoutName" required placeholder="Ej. Juan Pérez"></div>
+                <div class="form-group"><label>Tu Teléfono</label><input type="tel" id="checkoutPhone" required placeholder="Ej. 04121234567"></div>
+                <div class="form-group">
+                    <label>Enviar pedido a:</label>
+                    <select id="checkoutAgent" required>
+                        <option value="584244416044">Víctor (+58 424-4416044)</option>
+                        <option value="584244178356">Angélica (+58 424-4178356)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-submit" id="btnProcesarPedido">Completar y Enviar al WhatsApp</button>
+            </form>
+        </div>
     </div>
 
     <div id="adminPanel">
@@ -230,9 +309,9 @@
             <button class="close-btn" onclick="toggleMenu('adminSideMenu')">&times;</button>
             <h3 style="margin-bottom: 25px; font-weight: 600; color: var(--accent);">Módulos</h3>
             <a onclick="switchTab('tab-finanzas', this)" class="active-link">📊 1. Finanzas</a>
-            <a onclick="switchTab('tab-ventas', this)">🛍️ 2. Ventas</a>
+            <a onclick="switchTab('tab-ventas', this)">🛍️ 2. Ventas & Deudores</a>
             <a onclick="switchTab('tab-inventario', this)">📦 3. Inventario</a>
-            <a onclick="switchTab('tab-analitica', this)">📉 4. Analítica & Egresos</a>
+            <a onclick="switchTab('tab-analitica', this)">📉 4. Analítica & Top 10</a>
             <a onclick="switchTab('tab-auditoria', this)">📋 5. Auditoría</a>
         </nav>
 
@@ -274,9 +353,20 @@
                             <button type="submit" class="btn-submit">Procesar Venta</button>
                         </form>
                     </div>
+                    
+                    <div class="card" style="background: #fef2f2; border-color: #fecaca;">
+                        <h3 style="color: #b91c1c;">⚠️ Cuentas por Cobrar (Pendientes)</h3>
+                        <div class="table-responsive">
+                            <table>
+                                <thead><tr><th>Cliente</th><th>Monto</th><th>Acción</th></tr></thead>
+                                <tbody id="pendingTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <div class="card" style="grid-column: 1 / -1;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-                            <h3>Historial de Ventas</h3>
+                            <h3>Historial General de Ventas</h3>
                             <div class="filter-controls"><label style="font-size:0.85rem; font-weight:600;">Ordenar por:</label><select id="sortSales" onchange="renderAllAdmin()"><option value="date">Fecha (Más recientes)</option><option value="name">Nombre Cliente (A-Z)</option><option value="qty">Cantidad Vendida</option></select></div>
                         </div>
                         <div class="table-responsive"><table><thead><tr><th>Fecha</th><th>Cliente</th><th>Artículos</th><th>Total</th><th>Estatus</th><th>Acciones</th></tr></thead><tbody id="salesTableBody"></tbody></table></div>
@@ -310,6 +400,26 @@
             <div id="tab-analitica" class="tab-content">
                 <div class="grid-2">
                     <div class="card">
+                        <h3>🏆 Top 10 Perfumes Más Vendidos</h3>
+                        <div class="table-responsive">
+                            <table>
+                                <thead><tr><th>Pos.</th><th>Perfume</th><th>Unds. Vendidas</th></tr></thead>
+                                <tbody id="topPerfumesBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>👑 Top 10 Clientes Frecuentes</h3>
+                        <div class="table-responsive">
+                            <table>
+                                <thead><tr><th>Pos.</th><th>Cliente</th><th>Compras Realizadas</th></tr></thead>
+                                <tbody id="topClientsBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card" style="grid-column: 1 / -1;">
                         <h3>Registrar Egreso</h3>
                         <form id="withdrawalForm" onsubmit="registrarEgreso(event)">
                             <div class="form-group"><label>Monto ($)</label><input type="number" id="wAmount" step="0.01" min="0.01" required></div>
@@ -325,6 +435,7 @@
                             <button type="submit" class="btn-submit">Registrar Salida</button>
                         </form>
                     </div>
+                    
                     <div class="card" style="grid-column: 1 / -1;">
                         <h3>Libro de Egresos</h3>
                         <div class="table-responsive">
@@ -386,6 +497,126 @@
 
         let appState = { perfumes: [], sales: [], withdrawals: [], logs: [] };
         let currentUser = null; 
+        
+        // --- LOGICA DEL CARRITO ---
+        let carrito = [];
+
+        function abrirCarrito() { document.getElementById('cartModal').classList.add('active'); renderizarCarritoUI(); }
+        function cerrarCarrito() { document.getElementById('cartModal').classList.remove('active'); }
+
+        function agregarAlCarrito(id) {
+            let p = appState.perfumes.find(x => x.id === id);
+            if(!p || p.stock <= 0) return alert("Lo sentimos, este perfume está agotado por el momento.");
+            
+            let itemCarrito = carrito.find(x => x.id === id);
+            if(itemCarrito) {
+                if(itemCarrito.qty < p.stock) itemCarrito.qty++;
+                else alert("Has alcanzado el límite de stock disponible para este perfume.");
+            } else {
+                carrito.push({ id: p.id, name: p.name, price: p.price, cost: p.cost, qty: 1 });
+            }
+            actualizarBadgeCarrito();
+        }
+
+        function modificarCantCarrito(id, delta) {
+            let item = carrito.find(x => x.id === id);
+            let p = appState.perfumes.find(x => x.id === id);
+            if(item) {
+                item.qty += delta;
+                if(item.qty <= 0) carrito = carrito.filter(x => x.id !== id);
+                else if(item.qty > p.stock) { item.qty = p.stock; alert("Stock máximo alcanzado."); }
+            }
+            renderizarCarritoUI();
+            actualizarBadgeCarrito();
+        }
+
+        function actualizarBadgeCarrito() {
+            let totalItems = carrito.reduce((acc, item) => acc + item.qty, 0);
+            document.getElementById('cartBadge').innerText = totalItems;
+        }
+
+        function renderizarCarritoUI() {
+            const container = document.getElementById('cartItemsContainer');
+            container.innerHTML = '';
+            let total = 0;
+            
+            if(carrito.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-muted); text-align:center;">Tu carrito está vacío.</p>';
+                document.getElementById('btnProcesarPedido').disabled = true;
+            } else {
+                document.getElementById('btnProcesarPedido').disabled = false;
+                carrito.forEach(item => {
+                    total += (item.price * item.qty);
+                    container.innerHTML += `
+                        <div class="cart-item">
+                            <div class="cart-item-details">
+                                <div class="cart-item-title">${item.name}</div>
+                                <div class="cart-item-price">$${item.price.toFixed(2)} c/u</div>
+                            </div>
+                            <div class="cart-item-controls">
+                                <button type="button" class="btn-qty" onclick="modificarCantCarrito('${item.id}', -1)">-</button>
+                                <span>${item.qty}</span>
+                                <button type="button" class="btn-qty" onclick="modificarCantCarrito('${item.id}', 1)">+</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            document.getElementById('cartTotal').innerText = `$${total.toFixed(2)}`;
+        }
+
+        function procesarPedido(e) {
+            e.preventDefault();
+            if(carrito.length === 0) return;
+
+            const name = document.getElementById('checkoutName').value.trim();
+            const phone = document.getElementById('checkoutPhone').value.trim();
+            const agentPhone = document.getElementById('checkoutAgent').value;
+            const date = new Date().toLocaleDateString('es-VE');
+
+            let itemsToProcess = [];
+            let totalPedido = 0;
+            let textoWhatsApp = `¡Hola! Quiero hacer un pedido de EP Perfumes.%0A%0A*Cliente:* ${name}%0A*Teléfono:* ${phone}%0A%0A*Mi Pedido:*%0A`;
+
+            // Validar stock antes de procesar y armar texto
+            for(let item of carrito) {
+                let p = appState.perfumes.find(x => x.id === item.id);
+                if(p.stock < item.qty) return alert(`Lo sentimos, el stock de ${p.name} cambió. Solo quedan ${p.stock}.`);
+                
+                itemsToProcess.push({ perfumeId: p.id, perfumeName: p.name, quantity: item.qty, cost: item.cost, price: item.price });
+                totalPedido += (item.qty * item.price);
+                textoWhatsApp += `- ${item.qty}x ${item.name} ($${(item.qty * item.price).toFixed(2)})%0A`;
+                
+                // Descontar stock
+                p.stock -= item.qty;
+                p.soldQuantity = (p.soldQuantity || 0) + item.qty;
+            }
+
+            textoWhatsApp += `%0A*Total Estimado:* $${totalPedido.toFixed(2)}`;
+
+            // Guardar Venta en Firebase como PENDIENTE
+            appState.sales.unshift({ 
+                id: 's_' + Date.now(), 
+                date, 
+                client: `${name} (Vía Web)`, 
+                items: itemsToProcess, 
+                status: 'Pendiente', 
+                user: 'Cliente Web' 
+            });
+            
+            saveToFirebase();
+            
+            // Limpiar carrito
+            carrito = [];
+            actualizarBadgeCarrito();
+            cerrarCarrito();
+            document.getElementById('checkoutForm').reset();
+            
+            // Redirigir a WhatsApp
+            window.open(`https://wa.me/${agentPhone}?text=${textoWhatsApp}`, '_blank');
+        }
+
+        // --- FIN LOGICA DEL CARRITO ---
 
         function getPerfumeOptions() {
             let options = '<option value="">Seleccione Perfume...</option>';
@@ -420,11 +651,24 @@
 
         function saveToFirebase() { db.ref('tienda').set(appState); }
         function toggleMenu(menuId) { document.getElementById(menuId).classList.toggle('active'); }
-        // Actualizada para desplazarse suavemente a la nueva estructura de divs
+        
+        function toggleCategorySection(gridId, headerElement) {
+            const grid = document.getElementById(gridId);
+            grid.classList.toggle('collapsed');
+            headerElement.classList.toggle('collapsed');
+        }
+
         function navigateToCategory(id) { 
             toggleMenu('sideMenu'); 
             const el = document.getElementById(id); 
             if(el) { 
+                const gridId = id.replace('cat-', 'grid-');
+                const grid = document.getElementById(gridId);
+                const header = el.querySelector('.category-title');
+                if (grid.classList.contains('collapsed')) {
+                    grid.classList.remove('collapsed');
+                    header.classList.remove('collapsed');
+                }
                 el.scrollIntoView({ behavior: 'smooth', block: 'start' }); 
             } 
         }
@@ -453,25 +697,49 @@
         function registrarLog(accion) { if(!currentUser) return; appState.logs.unshift({ timestamp: new Date().toLocaleString('es-VE'), user: currentUser, action: accion }); if(appState.logs.length > 100) appState.logs.pop(); }
 
         function renderAll() {
+            const searchTerm = document.getElementById('searchCatalog') ? document.getElementById('searchCatalog').value.toLowerCase().trim() : '';
             let catPerfumes = [...appState.perfumes].sort((a,b) => a.name.localeCompare(b.name));
+            
             ['Caballeros', 'Damas', 'Unisex', 'Niños'].forEach(cat => {
                 const grid = document.getElementById(`grid-${cat}`);
+                if(!grid) return;
+                
                 grid.innerHTML = '';
-                const filtered = catPerfumes.filter(p => p.category === cat);
-                if(filtered.length === 0) { grid.innerHTML = '<p style="color:#94a3b8; font-style:italic;">Sin stock registrado.</p>'; return; }
+                const filtered = catPerfumes.filter(p => p.category === cat && p.name.toLowerCase().includes(searchTerm));
+                
+                if(filtered.length === 0) { 
+                    grid.innerHTML = `<p style="color:#94a3b8; font-style:italic; grid-column: 1 / -1; font-size: 0.9rem;">No se encontraron perfumes ${searchTerm ? 'con esa búsqueda' : 'registrados'}.</p>`; 
+                    return; 
+                }
+                
                 let imgFile = cat === 'Caballeros' ? 'caballeros.jpg' : cat === 'Damas' ? 'damas.jpg' : cat === 'Unisex' ? 'unisex.jpg' : 'ninos.jpg';
-                filtered.forEach(p => { grid.innerHTML += `<div class="product-card"><img src="${imgFile}" onerror="this.src='https://via.placeholder.com/300?text=Perfume'" class="product-img"><div class="product-title">${p.name}</div><div class="product-stock">Disp: ${p.stock} unds</div></div>`; });
+                filtered.forEach(p => { 
+                    let btnDisabled = p.stock <= 0 ? 'disabled' : '';
+                    let btnText = p.stock <= 0 ? 'Agotado' : 'Añadir al Carrito';
+                    grid.innerHTML += `
+                        <div class="product-card">
+                            <img src="${imgFile}" onerror="this.src='https://via.placeholder.com/300?text=Perfume'" class="product-img">
+                            <div class="product-title">${p.name}</div>
+                            <span class="product-stock">Disp: ${p.stock} unds</span>
+                            <button class="btn-cart-add" ${btnDisabled} onclick="agregarAlCarrito('${p.id}')">${btnText}</button>
+                        </div>`; 
+                });
             });
         }
 
         function renderAllAdmin() {
             let tVentasPagadas = 0, tCostosPagados = 0, tPendientes = 0;
+            let ventasPendientesData = [];
+            
             appState.sales.forEach(s => { 
                 let items = s.items || [{ quantity: s.quantity, price: s.price, cost: s.cost }];
+                let saleTotal = 0;
                 items.forEach(i => {
+                    saleTotal += (i.quantity * i.price);
                     if(s.status === 'Pagada') { tVentasPagadas += (i.quantity * i.price); tCostosPagados += (i.quantity * i.cost); } 
                     else { tPendientes += (i.quantity * i.price); }
                 });
+                if(s.status === 'Pendiente') ventasPendientesData.push({ id: s.id, client: s.client, amount: saleTotal });
             });
 
             let tRetiroGanancia = 0, tRetiroCosto = 0, tReinversiones = 0;
@@ -500,21 +768,58 @@
 
             document.querySelectorAll('.perfume-select').forEach(sel => { let val = sel.value; sel.innerHTML = getPerfumeOptions(); sel.value = val; });
             
+            // Render Cuentas por Cobrar
+            const pendBody = document.getElementById('pendingTableBody');
+            pendBody.innerHTML = '';
+            if(ventasPendientesData.length === 0){
+                pendBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-muted);">No hay deudas pendientes</td></tr>';
+            } else {
+                ventasPendientesData.forEach(p => {
+                    pendBody.innerHTML += `<tr><td><strong>${p.client}</strong></td><td style="color:#b91c1c; font-weight:bold;">$${p.amount.toFixed(2)}</td><td><button class="btn-action" style="background:#dcfce7; color:#166534;" onclick="toggleStatusVenta('${p.id}')">Marcar Pagado</button></td></tr>`;
+                });
+            }
+
+            // Render Historial Ventas
             const salesBody = document.getElementById('salesTableBody');
             salesBody.innerHTML = '';
             [...appState.sales].sort((a,b) => parseInt(b.id.split('_')[1]) - parseInt(a.id.split('_')[1])).forEach(s => {
                 let itemsList = (s.items || []).map(i => `${i.quantity}x ${i.perfumeName}`).join(', ');
                 let totalAmount = (s.items || []).reduce((acc, i) => acc + (i.quantity * i.price), 0);
-                salesBody.innerHTML += `<tr><td>${s.date}</td><td><strong>${s.client}</strong></td><td style="font-size:0.8rem; color:#64748b;">${itemsList}</td><td style="font-weight:600;">$${totalAmount.toFixed(2)}</td><td><span class="status-badge ${s.status.toLowerCase()}">${s.status}</span></td><td><button class="btn-action" onclick="toggleStatusVenta('${s.id}')">Estado</button><button class="btn-action" onclick="abrirModalEdicion('${s.id}')">Editar</button></td></tr>`;
+                salesBody.innerHTML += `<tr><td>${s.date}</td><td><strong>${s.client}</strong></td><td style="font-size:0.8rem; color:#64748b;">${itemsList}</td><td style="font-weight:600;">$${totalAmount.toFixed(2)}</td><td><span class="status-badge ${s.status.toLowerCase()}">${s.status}</span></td><td><button class="btn-action" onclick="toggleStatusVenta('${s.id}')">Cambiar</button><button class="btn-action" onclick="abrirModalEdicion('${s.id}')">Editar</button></td></tr>`;
             });
 
+            // Render Inventario
             const invBody = document.getElementById('inventoryTableBody');
             invBody.innerHTML = '';
             [...appState.perfumes].sort((a,b) => a.name.localeCompare(b.name)).forEach(p => {
                 invBody.innerHTML += `<tr><td><strong>${p.name}</strong></td><td>${p.category}</td><td><span class="status-badge" style="background:#f1f5f9; color:#0f172a;">${p.stock}</span></td><td>$${p.price.toFixed(2)}</td><td><button class="btn-action" style="background:#fee2e2; color:#dc2626;" onclick="eliminarPerfume('${p.id}')">Borrar</button></td></tr>`;
             });
 
-            // RENDERIZADO DE EGRESOS CON BOTÓN BORRAR
+            // Render TOP 10 Perfumes
+            const topPerfumesBody = document.getElementById('topPerfumesBody');
+            topPerfumesBody.innerHTML = '';
+            let top10Perfumes = [...appState.perfumes].sort((a,b) => (b.soldQuantity || 0) - (a.soldQuantity || 0)).slice(0, 10);
+            top10Perfumes.forEach((p, idx) => {
+                if((p.soldQuantity || 0) > 0) {
+                    topPerfumesBody.innerHTML += `<tr><td>#${idx+1}</td><td><strong>${p.name}</strong></td><td>${p.soldQuantity} unds</td></tr>`;
+                }
+            });
+
+            // Render TOP 10 Clientes
+            const topClientsBody = document.getElementById('topClientsBody');
+            topClientsBody.innerHTML = '';
+            let conteoClientes = {};
+            appState.sales.forEach(s => { 
+                let nombreLimpio = s.client.replace(' (Vía Web)', '').trim();
+                if(!conteoClientes[nombreLimpio]) conteoClientes[nombreLimpio] = 0;
+                conteoClientes[nombreLimpio]++; 
+            });
+            let top10Clientes = Object.entries(conteoClientes).sort((a,b) => b[1] - a[1]).slice(0, 10);
+            top10Clientes.forEach((c, idx) => {
+                topClientsBody.innerHTML += `<tr><td>#${idx+1}</td><td><strong>${c[0]}</strong></td><td>${c[1]} compras</td></tr>`;
+            });
+
+            // Render Egresos
             const wBody = document.getElementById('withdrawalsTableBody');
             wBody.innerHTML = '';
             appState.withdrawals.forEach(w => {
@@ -535,7 +840,7 @@
 
         function registrarPerfume(e) { e.preventDefault(); const name = document.getElementById('perfumeName').value.trim(); const category = document.getElementById('perfumeCategory').value; const stockToAdd = parseInt(document.getElementById('perfumeStock').value); const cost = parseFloat(document.getElementById('perfumeCost').value); const price = parseFloat(document.getElementById('perfumePrice').value); let item = appState.perfumes.find(p => p.name.toLowerCase() === name.toLowerCase()); if(item) { item.stock += stockToAdd; item.cost = cost; item.price = price; registrarLog(`Actualizó '${name}': +${stockToAdd} unds.`); } else { appState.perfumes.push({ id: 'p_' + Date.now(), name, category, stock: stockToAdd, cost, price, soldQuantity: 0 }); registrarLog(`Ingresó: '${name}' (${stockToAdd} unds)`); } saveToFirebase(); document.getElementById('perfumeForm').reset(); }
 
-        function registrarVenta(e) { e.preventDefault(); const date = document.getElementById('saleDate').value ? new Date(document.getElementById('saleDate').value + "T12:00:00").toLocaleDateString('es-VE') : new Date().toLocaleDateString('es-VE'); const client = document.getElementById('saleClient').value.trim(); const status = document.getElementById('saleStatus').value; const rows = document.querySelectorAll('#saleItemsContainer .sale-item-row'); if(rows.length === 0) return alert("Añade un perfume."); let itemsToProcess = []; for(let row of rows) { let pId = row.querySelector('.perfume-select').value; let qty = parseInt(row.querySelector('.qty-input').value); let p = appState.perfumes.find(x => x.id === pId); if(p.stock < qty) return alert(`Stock insuficiente para: ${p.name}`); itemsToProcess.push({ perfumeId: p.id, perfumeName: p.name, quantity: qty, cost: p.cost, price: p.price }); } itemsToProcess.forEach(item => { let p = appState.perfumes.find(x => x.id === item.perfumeId); p.stock -= item.quantity; p.soldQuantity += item.quantity; }); appState.sales.unshift({ id: 's_' + Date.now(), date, client, items: itemsToProcess, status, user: currentUser }); registrarLog(`Venta a '${client}'.`); saveToFirebase(); document.getElementById('saleForm').reset(); document.getElementById('saleItemsContainer').innerHTML = ''; addSaleItemRow('saleItemsContainer'); }
+        function registrarVenta(e) { e.preventDefault(); const date = document.getElementById('saleDate').value ? new Date(document.getElementById('saleDate').value + "T12:00:00").toLocaleDateString('es-VE') : new Date().toLocaleDateString('es-VE'); const client = document.getElementById('saleClient').value.trim(); const status = document.getElementById('saleStatus').value; const rows = document.querySelectorAll('#saleItemsContainer .sale-item-row'); if(rows.length === 0) return alert("Añade un perfume."); let itemsToProcess = []; for(let row of rows) { let pId = row.querySelector('.perfume-select').value; let qty = parseInt(row.querySelector('.qty-input').value); let p = appState.perfumes.find(x => x.id === pId); if(p.stock < qty) return alert(`Stock insuficiente para: ${p.name}`); itemsToProcess.push({ perfumeId: p.id, perfumeName: p.name, quantity: qty, cost: p.cost, price: p.price }); } itemsToProcess.forEach(item => { let p = appState.perfumes.find(x => x.id === item.perfumeId); p.stock -= item.quantity; p.soldQuantity = (p.soldQuantity || 0) + item.quantity; }); appState.sales.unshift({ id: 's_' + Date.now(), date, client, items: itemsToProcess, status, user: currentUser }); registrarLog(`Venta a '${client}'.`); saveToFirebase(); document.getElementById('saleForm').reset(); document.getElementById('saleItemsContainer').innerHTML = ''; addSaleItemRow('saleItemsContainer'); }
 
         function toggleStatusVenta(id) { const sale = appState.sales.find(s => s.id === id); if(sale) { sale.status = sale.status === 'Pagada' ? 'Pendiente' : 'Pagada'; saveToFirebase(); } }
 
@@ -549,7 +854,6 @@
 
         function registrarEgreso(e) { e.preventDefault(); const amount = parseFloat(document.getElementById('wAmount').value); const type = document.getElementById('wType').value; const reason = document.getElementById('wReason').value.trim(); appState.withdrawals.unshift({ id: 'w_' + Date.now(), date: new Date().toLocaleDateString('es-VE'), type, amount, reason, user: currentUser }); registrarLog(`Egreso (${type}): -$${amount}.`); saveToFirebase(); document.getElementById('withdrawalForm').reset(); }
 
-        // NUEVA FUNCIÓN PARA ELIMINAR EGRESOS
         function eliminarEgreso(id) {
             if(confirm("¿Estás seguro de que deseas eliminar este registro de egreso? Esta acción actualizará tus finanzas.")) {
                 const egreso = appState.withdrawals.find(w => w.id === id);
