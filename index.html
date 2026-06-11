@@ -58,7 +58,7 @@
             background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             box-shadow: -10px 0 30px rgba(0,0,0,0.1); transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
             z-index: 200; padding: 80px 25px 30px; display: flex; flex-direction: column; 
-            overflow-y: auto; /* <-- SOLUCIÓN DEL RECORTE VISUAL */
+            overflow-y: auto; 
         }
         .side-menu.active { right: 0; }
         .close-btn { position: absolute; top: 20px; right: 25px; font-size: 32px; cursor: pointer; border: none; background: none; color: var(--text-main); transition: transform 0.3s; }
@@ -757,65 +757,85 @@
         async function solicitarAccAccessAdmin() {
             toggleMenu('sideMenu');
             
-            if (!window.PublicKeyCredential) {
-                alert("Tu dispositivo no soporta acceso biométrico desde el navegador. Usa la clave tradicional.");
-                ingresoPorClave();
-                return;
-            }
+            // 1. Verificamos si este dispositivo ya tiene la biometría vinculada
+            const biometriaVinculada = localStorage.getItem('biometria_vinculada') === 'true';
 
-            try {
-                // 1. Intentar iniciar sesión buscando una llave existente
-                const assertion = await navigator.credentials.get({
-                    publicKey: {
-                        challenge: new Uint8Array([1, 2, 3, 4]),
-                        userVerification: "required",
-                        timeout: 30000
-                    }
-                });
-
-                if (assertion) {
-                    currentUser = "Admin"; 
-                    abrirPanelAdmin();
-                    return;
-                }
-            } catch (error) {
-                console.log("No hay llave guardada para este sitio, intentando crear una nueva...");
-                
-                // 2. Si falla porque no hay credenciales vinculadas, las registramos automáticamente
+            if (biometriaVinculada && window.PublicKeyCredential) {
                 try {
-                    const credential = await navigator.credentials.create({
+                    const assertion = await navigator.credentials.get({
                         publicKey: {
-                            challenge: new Uint8Array([1, 2, 3, 4]),
-                            rp: { name: "EP Perfumes", id: window.location.hostname },
-                            user: {
-                                id: new Uint8Array([1]),
-                                name: "admin@ep.com",
-                                displayName: "Administrador"
-                            },
-                            pubKeyCredParams: [{ alg: -7, type: "public-key" }],
-                            authenticatorSelection: { userVerification: "required" }
+                            challenge: new Uint8Array([1, 2, 3, 4]), // Reto de seguridad básico
+                            timeout: 60000,
+                            userVerification: "required"
                         }
                     });
 
-                    if (credential) {
-                        alert("¡Llave biométrica vinculada correctamente! Ya puedes usar tu huella.");
-                        solicitarAccAccessAdmin(); // Reintentamos de inmediato ahora que la llave existe
-                    } else {
-                        ingresoPorClave();
+                    if (assertion) {
+                        // Recuperamos quién fue el usuario que vinculó este teléfono
+                        currentUser = localStorage.getItem('usuario_biometria') || "Admin"; 
+                        abrirPanelAdmin();
+                        return;
                     }
-                } catch (createError) {
-                    console.log("Registro biométrico cancelado, redirigiendo a clave.");
-                    ingresoPorClave();
+                } catch (error) {
+                    console.log("Canceló la biometría o falló, pasando a clave...", error);
+                    // Si cancela la lectura de huella, cae directamente a pedir la clave
                 }
             }
+
+            // 2. Si no está vinculada o falló el paso anterior, pedimos clave
+            ingresoPorClave();
         }
 
-        function ingresoPorClave() {
+        async function ingresoPorClave() {
             const password = prompt("Centro de Control - Clave de acceso:");
             if (!password) return;
-            if (password === "EP-030699") { currentUser = "Víctor"; abrirPanelAdmin(); } 
-            else if (password === "AP-20092024") { currentUser = "Kika"; abrirPanelAdmin(); } 
-            else { alert("Clave incorrecta."); }
+            
+            let usuarioAutenticado = null;
+            if (password === "EP-030699") { usuarioAutenticado = "Víctor"; } 
+            else if (password === "AP-20092024") { usuarioAutenticado = "Kika"; } 
+            
+            if (usuarioAutenticado) {
+                currentUser = usuarioAutenticado;
+                abrirPanelAdmin();
+                
+                // 3. Una vez adentro, si el dispositivo soporta biometría y NO está vinculada
+                if (window.PublicKeyCredential && localStorage.getItem('biometria_vinculada') !== 'true') {
+                    // Damos un pequeño respiro de medio segundo para que cargue la interfaz
+                    setTimeout(async () => {
+                        const vincular = confirm(`Hola ${currentUser}, ¿deseas vincular tu huella para ingresar automáticamente en este teléfono la próxima vez?`);
+                        
+                        if (vincular) {
+                            try {
+                                const credential = await navigator.credentials.create({
+                                    publicKey: {
+                                        challenge: new Uint8Array([1, 2, 3, 4]),
+                                        rp: { name: "EP Perfumes", id: window.location.hostname },
+                                        user: {
+                                            id: new Uint8Array([1]),
+                                            name: currentUser,
+                                            displayName: currentUser
+                                        },
+                                        pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+                                        authenticatorSelection: { userVerification: "required" }
+                                    }
+                                });
+
+                                if (credential) {
+                                    // Guardamos en este teléfono que ya está autorizado
+                                    localStorage.setItem('biometria_vinculada', 'true');
+                                    localStorage.setItem('usuario_biometria', currentUser);
+                                    alert("¡Excelente! Biometría vinculada a este dispositivo exitosamente.");
+                                }
+                            } catch (error) {
+                                console.log("Registro biométrico cancelado.", error);
+                                alert("No se pudo vincular la biometría. Seguirás usando tu clave con normalidad.");
+                            }
+                        }
+                    }, 500);
+                }
+            } else { 
+                alert("Clave incorrecta. Inténtalo de nuevo."); 
+            }
         }
 
         function abrirPanelAdmin() {
@@ -1096,7 +1116,6 @@
                     url: url
                 }).catch(err => console.log('Uso compartido cancelado o fallido', err));
             } else {
-                // Alternativa de respaldo directa a WhatsApp si la API nativa no responde (por ejemplo, en desktops)
                 const mensaje = encodeURIComponent(`¡Hola! Te invito a revisar nuestro catálogo de fragancias premium ingresando aquí: ${url}`);
                 window.open(`https://wa.me/?text=${mensaje}`, '_blank');
             }
@@ -1104,12 +1123,34 @@
     </script>
     
     <script>
+        // --- LOGICA DE ACTUALIZACIÓN AUTOMÁTICA DEL SERVICE WORKER ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                // AÑADIDO '?v=2' PARA FORZAR LA ACTUALIZACIÓN EN EL TELÉFONO
-                navigator.serviceWorker.register('./sw.js?v=2')
-                    .then(registration => console.log('ServiceWorker registrado con éxito'))
-                    .catch(err => console.log('Error al registrar ServiceWorker: ', err));
+                navigator.serviceWorker.register('./sw.js').then(reg => {
+                    console.log('ServiceWorker registrado');
+                    
+                    // Detectar si hay una actualización disponible en el servidor
+                    reg.addEventListener('updatefound', () => {
+                        const newWorker = reg.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            // Si se instaló un nuevo worker y ya había uno viejo controlando la página
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                if (confirm("Hay una nueva versión de EP Perfumes disponible. ¿Deseas actualizar ahora para ver los cambios?")) {
+                                    // Le decimos al nuevo worker que tome el control inmediatamente
+                                    newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                }
+                            }
+                        });
+                    });
+                }).catch(err => console.log('Error al registrar ServiceWorker: ', err));
+            });
+
+            // Este evento se dispara cuando el nuevo worker toma el control. Recarga la página sola.
+            let refreshing;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (refreshing) return;
+                refreshing = true;
+                window.location.reload();
             });
         }
     </script>
