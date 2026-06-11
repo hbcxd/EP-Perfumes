@@ -1,22 +1,16 @@
 {
-  "name": "EP Perfumes Admin",
+  "name": "EP Perfumes Panel",
   "short_name": "EP Perfumes",
-  "description": "Catálogo y Panel Administrativo de Perfumería Premium",
+  "description": "Catálogo y gestión administrativa de EP Perfumes",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f8f9fa",
   "theme_color": "#0f172a",
-  "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "icon-192x192.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "icon-512x512.png",
-      "type": "image/png",
-      "sizes": "512x512",
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ]
