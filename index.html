@@ -73,6 +73,55 @@
         }
         .admin-link:hover { transform: translateY(-3px) !important; box-shadow: 0 8px 25px rgba(15, 23, 42, 0.3) !important; }
 
+        /* === SECCIÓN DE COMPARTIR CATÁLOGO === */
+        .admin-share-section {
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+        .admin-share-section h4 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .share-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .share-row input {
+            flex: 1;
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            background: #f1f5f9;
+            color: var(--text-muted);
+        }
+        .btn-share-action {
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 8px 12px;
+            color: #fff;
+        }
+        .btn-copy { background-color: var(--accent); }
+        .btn-copy:hover { background-color: var(--accent-hover); }
+        .btn-whatsapp-share {
+            width: 100%;
+            background-color: #25d366;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-whatsapp-share:hover { background-color: #1ebd58; }
+
         /* === BOTONES Y FORMULARIOS === */
         .btn-submit { background-color: var(--accent); color: #ffffff; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: 500; font-size: 1rem; transition: background 0.3s, transform 0.2s; }
         .btn-submit:hover { background-color: var(--accent-hover); transform: translateY(-2px); }
@@ -223,7 +272,7 @@
             <a onclick="navigateToCategory('cat-ninos')">Niños</a>
             
             <div class="admin-link-container">
-                <a class="admin-link" onclick="solicitarAccesoAdmin()">⚙️ Acceso Admin</a>
+                <a class="admin-link" onclick="solicitarAccAccessAdmin()">⚙️ Acceso Admin</a>
             </div>
         </nav>
 
@@ -321,6 +370,17 @@
             <a onclick="switchTab('tab-inventario', this)">📦 3. Inventario</a>
             <a onclick="switchTab('tab-analitica', this)">📉 4. Analítica & Top 10</a>
             <a onclick="switchTab('tab-auditoria', this)">📋 5. Auditoría</a>
+
+            <div class="admin-share-section">
+                <h4>Compartir Catálogo</h4>
+                <div class="share-row">
+                    <input type="text" id="urlAdminCatalogo" readonly value="">
+                    <button type="button" class="btn-share-action btn-copy" id="btnCopiarLinkAdmin" onclick="copiarEnlaceCatalogo()">Copiar</button>
+                </div>
+                <button type="button" class="btn-share-action btn-whatsapp-share" onclick="compartirCatalogoNativo()">
+                    📱 Compartir Catálogo
+                </button>
+            </div>
         </nav>
 
         <div class="admin-container">
@@ -522,7 +582,7 @@
         let carrito = [];
 
         function abrirCarrito() { document.getElementById('cartModal').classList.add('active'); renderizarCarritoUI(); }
-        function cerrarCarrito() { document.getElementById('cartModal').classList.remove('active'); }
+        function cerrarCarrito() { document.getElementById('cartModal').remove('active'); }
 
         function agregarAlCarrito(id) {
             let p = appState.perfumes.find(x => x.id === id);
@@ -602,7 +662,7 @@
                 let p = appState.perfumes.find(x => x.id === item.id);
                 if(p.stock < item.qty) return alert(`Lo sentimos, el stock de ${p.name} cambió. Solo quedan ${p.stock}.`);
                 
-                itemsToProcess.push({ perfumeId: p.id, perfumeName: p.name, quantity: item.qty, cost: item.cost, price: item.price });
+                itemsToProcess.push({ perfumeId: p.id, perfumeName: p.name, quantity: item.qty, cost: p.cost, price: p.price });
                 totalPedido += (item.qty * item.price);
                 textoWhatsApp += `- ${item.qty}x ${item.name} ($${(item.qty * item.price).toFixed(2)})%0A`;
                 
@@ -662,6 +722,9 @@
                 if(document.getElementById('adminPanel').style.display === 'block') renderAllAdmin();
             });
             document.getElementById('saleDate').valueAsDate = new Date();
+            
+            // Asignar el enlace de la página de forma dinámica al input de compartir
+            document.getElementById('urlAdminCatalogo').value = window.location.href;
         };
 
         function saveToFirebase() { db.ref('tienda').set(appState); }
@@ -690,7 +753,7 @@
         function switchTab(tabId, btnElement) { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('#adminSideMenu a').forEach(a => a.classList.remove('active-link')); document.getElementById(tabId).classList.add('active'); btnElement.classList.add('active-link'); document.getElementById('adminSideMenu').classList.remove('active'); }
 
         // --- SISTEMA DE INICIO DE SESIÓN CON BIOMETRÍA MEJORADO ---
-        async function solicitarAccesoAdmin() {
+        async function solicitarAccAccessAdmin() {
             toggleMenu('sideMenu');
             
             if (!window.PublicKeyCredential) {
@@ -735,7 +798,7 @@
 
                     if (credential) {
                         alert("¡Llave biométrica vinculada correctamente! Ya puedes usar tu huella.");
-                        solicitarAccesoAdmin(); // Reintentamos de inmediato ahora que la llave existe
+                        solicitarAccAccessAdmin(); // Reintentamos de inmediato ahora que la llave existe
                     } else {
                         ingresoPorClave();
                     }
@@ -1000,6 +1063,41 @@
                     saveToFirebase();
                     renderAllAdmin();
                 }
+            }
+        }
+
+        // --- FUNCIONES NUEVAS PARA COMPARTIR EL CATÁLOGO ---
+        function copiarEnlaceCatalogo() {
+            const inputUrl = document.getElementById('urlAdminCatalogo');
+            inputUrl.select();
+            inputUrl.setSelectionRange(0, 99999);
+            
+            navigator.clipboard.writeText(inputUrl.value)
+                .then(() => {
+                    const btn = document.getElementById('btnCopiarLinkAdmin');
+                    btn.innerText = '¡Listo!';
+                    btn.style.backgroundColor = '#28a745';
+                    
+                    setTimeout(() => {
+                        btn.innerText = 'Copiar';
+                        btn.style.backgroundColor = 'var(--accent)';
+                    }, 2000);
+                })
+                .catch(err => console.error('Error al copiar: ', err));
+        }
+
+        function compartirCatalogoNativo() {
+            const url = document.getElementById('urlAdminCatalogo').value;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Catálogo Premium',
+                    text: 'Te invito a revisar nuestra variedad de perfumes de alta concentración ingresando aquí:',
+                    url: url
+                }).catch(err => console.log('Uso compartido cancelado o fallido', err));
+            } else {
+                // Alternativa de respaldo directa a WhatsApp si la API nativa no responde (por ejemplo, en desktops)
+                const mensaje = encodeURIComponent(`¡Hola! Te invito a revisar nuestro catálogo de fragancias premium ingresando aquí: ${url}`);
+                window.open(`https://wa.me/?text=${mensaje}`, '_blank');
             }
         }
     </script>
