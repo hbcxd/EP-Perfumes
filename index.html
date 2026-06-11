@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Perfumería Premium & Panel de Control</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="EP Perfumes">
+    <link rel="apple-touch-icon" href="icon-192x192.png">
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
@@ -681,8 +689,45 @@
         }
         function switchTab(tabId, btnElement) { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('#adminSideMenu a').forEach(a => a.classList.remove('active-link')); document.getElementById(tabId).classList.add('active'); btnElement.classList.add('active-link'); document.getElementById('adminSideMenu').classList.remove('active'); }
 
-        function solicitarAccesoAdmin() {
+        // --- SISTEMA DE INICIO DE SESIÓN CON BIOMETRÍA ---
+        async function solicitarAccesoAdmin() {
             toggleMenu('sideMenu');
+            
+            if (!window.PublicKeyCredential) {
+                alert("Tu dispositivo no soporta acceso biométrico desde el navegador. Usa la clave tradicional.");
+                ingresoPorClave();
+                return;
+            }
+
+            try {
+                const challenge = new Uint8Array(32);
+                window.crypto.getRandomValues(challenge);
+
+                const publicKeyCredentialRequestOptions = {
+                    challenge: challenge,
+                    rpId: window.location.hostname, 
+                    userVerification: "required", 
+                    timeout: 60000
+                };
+
+                const assertion = await navigator.credentials.get({
+                    publicKey: publicKeyCredentialRequestOptions
+                });
+
+                if (assertion) {
+                    currentUser = "Admin"; 
+                    abrirPanelAdmin();
+                } else {
+                    ingresoPorClave();
+                }
+
+            } catch (error) {
+                console.error("Error biométrico:", error);
+                ingresoPorClave();
+            }
+        }
+
+        function ingresoPorClave() {
             const password = prompt("Centro de Control - Clave de acceso:");
             if (!password) return;
             if (password === "EP-030699") { currentUser = "Víctor"; abrirPanelAdmin(); } 
@@ -775,7 +820,6 @@
 
             document.querySelectorAll('.perfume-select').forEach(sel => { let val = sel.value; sel.innerHTML = getPerfumeOptions(); sel.value = val; });
             
-            // Render Cuentas por Cobrar
             const pendBody = document.getElementById('pendingTableBody');
             pendBody.innerHTML = '';
             if(ventasPendientesData.length === 0){
@@ -786,7 +830,6 @@
                 });
             }
 
-            // Render Historial Ventas
             const salesBody = document.getElementById('salesTableBody');
             salesBody.innerHTML = '';
             [...appState.sales].sort((a,b) => parseInt(b.id.split('_')[1]) - parseInt(a.id.split('_')[1])).forEach(s => {
@@ -796,14 +839,12 @@
                 salesBody.innerHTML += `<tr><td>${s.date}</td><td><strong>${s.client}</strong></td><td style="font-size:0.8rem; color:#64748b;">${itemsList}</td><td style="font-weight:600;">$${totalAmount.toFixed(2)}</td><td><span class="status-badge ${s.status.toLowerCase()}">${s.status}</span></td><td><button class="btn-action" onclick="toggleStatusVenta('${s.id}')">Cambiar</button><button class="btn-action" onclick="abrirModalEdicion('${s.id}')">Editar</button><button class="btn-action" style="background:#fee2e2; color:#dc2626;" onclick="eliminarVenta('${s.id}')">Borrar</button></td></tr>`;
             });
 
-            // Render Inventario
             const invBody = document.getElementById('inventoryTableBody');
             invBody.innerHTML = '';
             [...appState.perfumes].sort((a,b) => a.name.localeCompare(b.name)).forEach(p => {
                 invBody.innerHTML += `<tr><td><strong>${p.name}</strong></td><td>${p.category}</td><td><span class="status-badge" style="background:#f1f5f9; color:#0f172a;">${p.stock}</span></td><td>$${p.price.toFixed(2)}</td><td><button class="btn-action" style="background:#fee2e2; color:#dc2626;" onclick="eliminarPerfume('${p.id}')">Borrar</button></td></tr>`;
             });
 
-            // Render TOP 10 Perfumes
             const topPerfumesBody = document.getElementById('topPerfumesBody');
             topPerfumesBody.innerHTML = '';
             let top10Perfumes = [...appState.perfumes].sort((a,b) => (b.soldQuantity || 0) - (a.soldQuantity || 0)).slice(0, 10);
@@ -813,7 +854,6 @@
                 }
             });
 
-            // Render TOP 10 Clientes
             const topClientsBody = document.getElementById('topClientsBody');
             topClientsBody.innerHTML = '';
             let conteoClientes = {};
@@ -827,7 +867,6 @@
                 topClientsBody.innerHTML += `<tr><td>#${idx+1}</td><td><strong>${c[0]}</strong></td><td>${c[1]} compras</td></tr>`;
             });
 
-            // Render Egresos
             const wBody = document.getElementById('withdrawalsTableBody');
             wBody.innerHTML = '';
             appState.withdrawals.forEach(w => {
@@ -943,6 +982,16 @@
                     renderAllAdmin();
                 }
             }
+        }
+    </script>
+    
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => console.log('ServiceWorker registrado con éxito'))
+                    .catch(err => console.log('Error al registrar ServiceWorker: ', err));
+            });
         }
     </script>
 </body>
