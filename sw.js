@@ -24,3 +24,10 @@ self.addEventListener('fetch', event => {
       })
   );
 });
+// Escucha cuando el SW recibe un mensaje para saltar la espera
+self.addEventListener('message', (event) => {
+  if (event.data === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
