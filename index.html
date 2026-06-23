@@ -462,7 +462,7 @@
         auth.languageCode = 'es'; 
 
         // --- CONFIGURACIÓN DE SUPABASE ---
-        // ¡IMPORTANTE! Reemplaza estos dos valores con los de tu proyecto de Supabase
+        // URL Corregida (sin el /rest/v1)
         const supabaseUrl = 'https://eyszpasslboiwszmuxad.supabase.co'; 
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5c3pwYXNzbGJvaXdzem11eGFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxNTMwNDEsImV4cCI6MjA5NzcyOTA0MX0.TW6Bx2L0S9EN5jfAtFN8teuMx16lUU8QGAnUoQsQ_sw'; 
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
@@ -517,7 +517,7 @@
 
             try {
                 const { data, error } = await supabaseClient.storage
-                    .from('Perfumes') // Tu bucket
+                    .from('Perfumes')
                     .upload(fileName, file, { upsert: true });
 
                 if (error) throw error;
@@ -528,7 +528,8 @@
 
                 let perfume = appState.perfumes.find(p => p.id === perfumeId);
                 if (perfume) {
-                    perfume.imageUrl = publicUrlData.publicUrl; 
+                    // Cache Busting: agregamos un timestamp para que se vea el cambio inmediatamente
+                    perfume.imageUrl = publicUrlData.publicUrl + '?t=' + new Date().getTime(); 
                     saveToFirebase();
                     registrarLog(`Subió nueva imagen para '${perfume.name}'`);
                     renderAllAdmin();
@@ -633,7 +634,6 @@
                     let btnDisabled = p.stock <= 0 ? 'disabled' : '';
                     let btnText = p.stock <= 0 ? 'Agotado' : 'Añadir al Carrito';
                     
-                    // AQUI USAMOS LA IMAGEN DE SUPABASE SI EXISTE
                     let currentImg = p.imageUrl ? p.imageUrl : imgFile;
                     
                     grid.innerHTML += `<div class="product-card"><img src="${currentImg}" onerror="this.src='https://via.placeholder.com/300'" class="product-img"><div class="product-title">${p.name}</div><span class="product-stock">Disp: ${p.stock}</span><button class="btn-cart-add" ${btnDisabled} onclick="agregarAlCarrito('${p.id}')">${btnText}</button></div>`; 
