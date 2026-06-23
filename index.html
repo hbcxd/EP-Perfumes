@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Perfumería Premium & Panel de Control</title>
     
-    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="EP Perfumes">
-    <link rel="apple-touch-icon" href="icon-192x192.png">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
@@ -52,7 +50,7 @@
         .cart-btn { position: relative; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--accent); }
         .cart-badge { position: absolute; top: -5px; right: -8px; background: #dc2626; color: white; font-size: 0.7rem; font-weight: bold; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         
-        .menu-btn { font-size: 24px; cursor: pointer; background: none; border: none; display: flex; flex-direction: column; gap: 6px; padding: 5px; }
+        .menu-btn { font-size: 24px; cursor: pointer; background: none; border: none; display: flex; flex-direction: column; gap: 6px; padding: 5px; z-index: 101; }
         .menu-btn span { display: block; width: 28px; height: 2px; background-color: var(--text-main); transition: 0.3s; border-radius: 2px; }
         
         /* === MENÚ LATERAL === */
@@ -64,7 +62,7 @@
             overflow-y: auto; 
         }
         .side-menu.active { right: 0; }
-        .close-btn { position: absolute; top: 20px; right: 25px; font-size: 32px; cursor: pointer; border: none; background: none; color: var(--text-main); transition: transform 0.3s; }
+        .close-btn { position: absolute; top: 20px; right: 25px; font-size: 32px; cursor: pointer; border: none; background: none; color: var(--text-main); transition: transform 0.3s; z-index: 201; }
         .close-btn:hover { transform: rotate(90deg); }
         .side-menu a { text-decoration: none; color: var(--text-muted); font-size: 1.1rem; margin: 15px 0; cursor: pointer; transition: all 0.2s; padding: 8px 12px; border-radius: 8px; }
         .side-menu a:hover, .side-menu a.active-link { background: var(--bg-body); color: var(--text-main); font-weight: 600; transform: translateX(5px); }
@@ -124,7 +122,7 @@
         .toggle-icon { font-size: 1.1rem; transition: transform 0.3s ease; color: var(--text-muted); }
         .category-title.collapsed .toggle-icon { transform: rotate(-90deg); }
 
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; transition: max-height 0.4s ease, opacity 0.3s ease; opacity: 1; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; opacity: 1; }
         .product-grid.collapsed { display: none; opacity: 0; }
         
         .product-card { background: var(--bg-card); border-radius: var(--radius-md); padding: 15px; transition: transform 0.3s ease, box-shadow 0.3s ease; border: 1px solid #e2e8f0; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; }
@@ -290,7 +288,7 @@
     <div id="loginModal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Acceso Secure</h3>
+                <h3>Acceso Seguro</h3>
                 <button class="close-btn" style="position:static; font-size:24px;" onclick="cerrarModalLogin()">&times;</button>
             </div>
             <form id="loginForm" onsubmit="iniciarSesionFirebase(event)">
@@ -437,26 +435,40 @@
 
     <script>
         // ======================================================
-        // 1. CONFIGURACIÓN CENTRALIZADA (Sustituye por tus claves reales)
+        // 1. CONFIGURACIÓN CENTRALIZADA E INICIALIZACIÓN SEGURA
         // ======================================================
-        const firebaseConfig = {
-            apiKey: "AIzaSyArphq3sSjhWWXr8w6I6f7UVGRMwaDp7i0",
-            authDomain: "ep-perfumes-92b9c.firebaseapp.com",
-            databaseURL: "https://ep-perfumes-92b9c-default-rtdb.firebaseio.com",
-            projectId: "ep-perfumes-92b9c",
-            storageBucket: "ep-perfumes-92b9c.firebasestorage.app",
-            messagingSenderId: "914809541616",
-            appId: "1:914809541616:web:d99ba79fa586355de24335"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const auth = firebase.auth();
-        auth.languageCode = 'es';
+        let db, auth, supabase;
 
-        // Configuración Exclusiva de Supabase Storage
-        const supabaseUrl = "https://eyszpasslboiwszmuxad.supabase.co/rest/v1/"; 
-        const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5c3pwYXNzbGJvaXdzem11eGFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxNTMwNDEsImV4cCI6MjA5NzcyOTA0MX0.TW6Bx2L0S9EN5jfAtFN8teuMx16lUU8QGAnUoQsQ_sw";
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+        try {
+            const firebaseConfig = {
+                apiKey: "AIzaSyArphq3sSjhWWXr8w6I6f7UVGRMwaDp7i0",
+                authDomain: "ep-perfumes-92b9c.firebaseapp.com",
+                databaseURL: "https://ep-perfumes-92b9c-default-rtdb.firebaseio.com",
+                projectId: "ep-perfumes-92b9c",
+                storageBucket: "ep-perfumes-92b9c.firebasestorage.app",
+                messagingSenderId: "914809541616",
+                appId: "1:914809541616:web:d99ba79fa586355de24335"
+            };
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.database();
+            auth = firebase.auth();
+            auth.languageCode = 'es';
+        } catch (error) {
+            console.error("Error crítico inicializando Firebase:", error);
+        }
+
+        try {
+            const supabaseUrl = "https://eyszpasslboiwszmuxad.supabase.co/rest/v1/"; 
+            const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5c3pwYXNzbGJvaXdzem11eGFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxNTMwNDEsImV4cCI6MjA5NzcyOTA0MX0.TW6Bx2L0S9EN5jfAtFN8teuMx16lUU8QGAnUoQsQ_sw";
+            // Validación de seguridad para evitar que la inicialización rompa el código
+            if(window.supabase && supabaseUrl.startsWith("https://")) {
+                supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+            } else {
+                console.warn("Supabase no inicializado correctamente. Revisa la URL o el CDN.");
+            }
+        } catch (error) {
+            console.error("Error inicializando Supabase:", error);
+        }
 
         // ======================================================
         // 2. ESTADO GLOBAL
@@ -466,33 +478,31 @@
         let firebaseUserAuth = null;
         let carrito = [];
 
-        // --- AUTENTICACIÓN FIREBASE ---
-        auth.onAuthStateChanged((user) => {
-            firebaseUserAuth = user;
-            if (user) {
-                let emailName = user.email.split('@')[0];
-                currentUser = emailName.charAt(0).toUpperCase() + emailName.slice(1);
-                
-                if (document.getElementById('loginModal').classList.contains('active')) {
-                    cerrarModalLogin();
-                    abrirPanelAdmin();
+        if(auth) {
+            auth.onAuthStateChanged((user) => {
+                firebaseUserAuth = user;
+                if (user) {
+                    let emailName = user.email.split('@')[0];
+                    currentUser = emailName.charAt(0).toUpperCase() + emailName.slice(1);
+                    
+                    if (document.getElementById('loginModal').classList.contains('active')) {
+                        cerrarModalLogin();
+                        abrirPanelAdmin();
+                    }
+                } else {
+                    currentUser = null;
+                    if (document.getElementById('adminPanel').style.display === 'block') {
+                        document.getElementById('adminPanel').style.display = 'none';
+                        document.getElementById('publicSite').style.display = 'block';
+                    }
                 }
-            } else {
-                currentUser = null;
-                if (document.getElementById('adminPanel').style.display === 'block') {
-                    document.getElementById('adminPanel').style.display = 'none';
-                    document.getElementById('publicSite').style.display = 'block';
-                }
-            }
-        });
+            });
+        }
 
         function solicitarAccAccessAdmin() {
             toggleMenu('sideMenu');
-            if (firebaseUserAuth) {
-                abrirPanelAdmin();
-            } else {
-                document.getElementById('loginModal').classList.add('active');
-            }
+            if (firebaseUserAuth) abrirPanelAdmin();
+            else document.getElementById('loginModal').classList.add('active');
         }
 
         function cerrarModalLogin() { document.getElementById('loginModal').classList.remove('active'); }
@@ -531,13 +541,8 @@
             renderAllAdmin();
         }
 
-        function cerrarSesionAdmin() {
-            auth.signOut().then(() => {
-                registrarLog("Cierre de sesión.");
-            });
-        }
+        function cerrarSesionAdmin() { auth.signOut().then(() => registrarLog("Cierre de sesión.")); }
 
-        // --- SISTEMA INTERNO DE COMPORTAMIENTOS ---
         function getSaleItems(sale) { 
             if (sale.items && Array.isArray(sale.items)) return sale.items; 
             return [{ perfumeId: sale.perfumeId || '', perfumeName: sale.perfumeName || 'Perfume', quantity: sale.quantity || 1, price: sale.price || 0, cost: sale.cost || 0 }]; 
@@ -548,10 +553,10 @@
         
         function agregarAlCarrito(id) { 
             let p = appState.perfumes.find(x => x.id === id); 
-            if(!p || p.stock <= 0) return alert("Agotado."); 
+            if(!p || p.stock <= 0) return alert("Agotado o no disponible."); 
             let itemCarrito = carrito.find(x => x.id === id); 
             if(itemCarrito) { 
-                if(itemCarrito.qty < p.stock) itemCarrito.qty++; else alert("Límite de stock."); 
+                if(itemCarrito.qty < p.stock) itemCarrito.qty++; else alert("Límite de stock alcanzado."); 
             } else { 
                 carrito.push({ id: p.id, name: p.name, price: p.price, cost: p.cost, qty: 1 }); 
             } 
@@ -561,11 +566,13 @@
         function modificarCantCarrito(id, delta) { 
             let item = carrito.find(x => x.id === id); 
             let p = appState.perfumes.find(x => x.id === id); 
-            if(item) { 
+            if(item && p) { 
                 item.qty += delta; 
                 if(item.qty <= 0) carrito = carrito.filter(x => x.id !== id); 
-                else if(item.qty > p.stock) { item.qty = p.stock; } 
-            } 
+                else if(item.qty > p.stock) item.qty = p.stock;
+            } else {
+                carrito = carrito.filter(x => x.id !== id);
+            }
             renderizarCarritoUI(); 
             actualizarBadgeCarrito(); 
         }
@@ -602,7 +609,8 @@
             
             for(let item of carrito) { 
                 let p = appState.perfumes.find(x => x.id === item.id); 
-                if(p.stock < item.qty) return alert(`Stock cambió.`); 
+                if(!p) return alert(`El producto ${item.name} ya no está disponible.`);
+                if(p.stock < item.qty) return alert(`El stock de ${p.name} cambió. Revisa el carrito.`); 
                 itemsToProcess.push({ perfumeId: p.id, perfumeName: p.name, quantity: item.qty, cost: p.cost, price: p.price }); 
                 totalPedido += (item.qty * item.price); 
                 textoWhatsApp += `- ${item.qty}x ${item.name} ($${(item.qty * item.price).toFixed(2)})%0A`; 
@@ -621,7 +629,8 @@
 
         function getPerfumeOptions() { 
             let options = '<option value="">Seleccione Perfume...</option>'; 
-            [...appState.perfumes].sort((a,b) => a.name.localeCompare(b.name)).forEach(p => { 
+            // Manejo seguro por si hay datos corruptos sin la propiedad 'name'
+            [...appState.perfumes].filter(p => p && p.name).sort((a,b) => (a.name || '').localeCompare(b.name || '')).forEach(p => { 
                 options += `<option value="${p.id}">${p.name} (Disp: ${p.stock})</option>`; 
             }); 
             return options; 
@@ -637,22 +646,33 @@
         }
 
         window.onload = function() { 
-            db.ref('tienda').on('value', (snapshot) => { 
-                const data = snapshot.val(); 
-                if(data) { 
-                    appState.perfumes = data.perfumes ? Object.values(data.perfumes) : []; 
-                    appState.sales = data.sales ? Object.values(data.sales) : []; 
-                    appState.withdrawals = data.withdrawals ? Object.values(data.withdrawals) : []; 
-                    appState.logs = data.logs ? Object.values(data.logs) : []; 
-                } 
-                renderAll(); 
-                if(document.getElementById('adminPanel').style.display === 'block') renderAllAdmin(); 
-            }); 
-            document.getElementById('saleDate').valueAsDate = new Date(); 
-            document.getElementById('urlAdminCatalogo').value = window.location.href; 
+            if (db) {
+                db.ref('tienda').on('value', (snapshot) => { 
+                    const data = snapshot.val(); 
+                    if(data) { 
+                        appState.perfumes = data.perfumes ? Object.values(data.perfumes) : []; 
+                        appState.sales = data.sales ? Object.values(data.sales) : []; 
+                        appState.withdrawals = data.withdrawals ? Object.values(data.withdrawals) : []; 
+                        appState.logs = data.logs ? Object.values(data.logs) : []; 
+                    } 
+                    renderAll(); 
+                    if(document.getElementById('adminPanel').style.display === 'block') renderAllAdmin(); 
+                }, (error) => {
+                    console.error("Error al leer la base de datos de Firebase:", error);
+                    renderAll(); // Forzamos el renderizado visual aunque no haya datos
+                }); 
+            } else {
+                renderAll(); // Si db no existe, al menos mostrar la interfaz vacía
+            }
+
+            const saleDateEl = document.getElementById('saleDate');
+            if (saleDateEl) saleDateEl.valueAsDate = new Date(); 
+            
+            const urlAdminEl = document.getElementById('urlAdminCatalogo');
+            if (urlAdminEl) urlAdminEl.value = window.location.href; 
         };
 
-        function saveToFirebase() { db.ref('tienda').set(appState); }
+        function saveToFirebase() { if(db) db.ref('tienda').set(appState); }
         function toggleMenu(menuId) { document.getElementById(menuId).classList.toggle('active'); }
         function toggleCategorySection(gridId, headerElement) { document.getElementById(gridId).classList.toggle('collapsed'); headerElement.classList.toggle('collapsed'); }
         
@@ -683,19 +703,25 @@
             if(appState.logs.length > 100) appState.logs.pop(); 
         }
 
-        // --- RENDERIZADO DEL CATÁLOGO PÚBLICO (Muestra las imágenes de Supabase) ---
         function renderAll() {
-            const searchTerm = document.getElementById('searchCatalog') ? document.getElementById('searchCatalog').value.toLowerCase().trim() : '';
-            let catPerfumes = [...appState.perfumes].sort((a,b) => a.name.localeCompare(b.name));
+            const searchEl = document.getElementById('searchCatalog');
+            const searchTerm = searchEl ? searchEl.value.toLowerCase().trim() : '';
+            
+            // Protección contra datos corruptos (nombres indefinidos)
+            let catPerfumes = [...appState.perfumes].filter(p => p && p.name).sort((a,b) => (a.name || '').localeCompare(b.name || ''));
             
             ['Caballeros', 'Damas', 'Unisex', 'Niños'].forEach(cat => {
                 const grid = document.getElementById(`grid-${cat}`);
                 if(!grid) return;
-                grid.innerHTML = '';
-                const filtered = catPerfumes.filter(p => p.category === cat && p.name.toLowerCase().includes(searchTerm));
-                if(filtered.length === 0) { grid.innerHTML = `<p style="grid-column: 1 / -1; color: var(--text-muted); font-size:0.9rem;">No hay resultados.</p>`; return; }
                 
-                // Respaldo por si el registro antiguo no tiene imagen asignada
+                const filtered = catPerfumes.filter(p => p.category === cat && (p.name || '').toLowerCase().includes(searchTerm));
+                
+                if(filtered.length === 0) { 
+                    grid.innerHTML = `<p style="grid-column: 1 / -1; color: var(--text-muted); font-size:0.9rem; text-align:center;">No hay resultados.</p>`; 
+                    return; 
+                }
+                
+                grid.innerHTML = '';
                 let backupImg = cat === 'Caballeros' ? 'caballeros.jpg' : cat === 'Damas' ? 'damas.jpg' : cat === 'Unisex' ? 'unisex.jpg' : 'ninos.jpg';
                 
                 filtered.forEach(p => { 
@@ -705,7 +731,7 @@
 
                     grid.innerHTML += `
                         <div class="product-card">
-                            <img src="${finalImg}" onerror="this.src='https://via.placeholder.com/300'" class="product-img">
+                            <img src="${finalImg}" onerror="this.src='https://via.placeholder.com/300?text=Perfume'" class="product-img">
                             <div class="product-title">${p.name}</div>
                             <span class="product-stock">Disp: ${p.stock}</span>
                             <button class="btn-cart-add" ${btnDisabled} onclick="agregarAlCarrito('${p.id}')">${btnText}</button>
@@ -714,7 +740,6 @@
             });
         }
 
-        // --- RENDERIZADO COMPONENTE ADMINISTRATIVO ---
         function renderAllAdmin() {
             let tVentasPagadas = 0, tCostosPagados = 0, tPendientes = 0;
             let ventasPendientesData = [];
@@ -762,16 +787,15 @@
             else ventasPendientesData.forEach(p => pendBody.innerHTML += `<tr><td><strong>${p.client}</strong></td><td>$${p.amount.toFixed(2)}</td><td><button class="btn-action" onclick="toggleStatusVenta('${p.id}')">Pagado</button></td></tr>`);
 
             const salesBody = document.getElementById('salesTableBody'); salesBody.innerHTML = '';
-            [...appState.sales].sort((a,b) => parseInt(b.id.split('_')[1]) - parseInt(a.id.split('_')[1])).forEach(s => {
+            [...appState.sales].sort((a,b) => parseInt((b.id||'').split('_')[1]) - parseInt((a.id||'').split('_')[1])).forEach(s => {
                 let items = getSaleItems(s); 
                 let itemsList = items.map(i => `${i.quantity}x ${i.perfumeName}`).join(', '); 
                 let totalAmount = items.reduce((acc, i) => acc + (i.quantity * i.price), 0);
                 salesBody.innerHTML += `<tr><td>${s.date}</td><td><strong>${s.client}</strong></td><td>${itemsList}</td><td>$${totalAmount.toFixed(2)}</td><td><span class="status-badge ${s.status.toLowerCase()}">${s.status}</span></td><td><button class="btn-action" onclick="toggleStatusVenta('${s.id}')">Cambiar</button><button class="btn-action" onclick="abrirModalEdicion('${s.id}')">Editar</button><button class="btn-action" style="color:#dc2626;" onclick="eliminarVenta('${s.id}')">Borrar</button></td></tr>`;
             });
 
-            // Agregada columna miniatura para verificar la imagen cargada de Supabase
             const invBody = document.getElementById('inventoryTableBody'); invBody.innerHTML = '';
-            [...appState.perfumes].sort((a,b) => a.name.localeCompare(b.name)).forEach(p => {
+            [...appState.perfumes].filter(p => p && p.name).sort((a,b) => (a.name || '').localeCompare(b.name || '')).forEach(p => {
                 let currentThumb = p.imageUrl ? p.imageUrl : 'https://via.placeholder.com/50';
                 invBody.innerHTML += `<tr><td><img src="${currentThumb}" style="width:40px; height:40px; object-fit:cover; border-radius:4px;"></td><td><strong>${p.name}</strong></td><td>${p.category}</td><td>${p.stock}</td><td>$${p.price.toFixed(2)}</td><td><button class="btn-action" style="color:#dc2626;" onclick="eliminarPerfume('${p.id}')">Borrar</button></td></tr>`;
             });
@@ -790,7 +814,6 @@
             appState.logs.forEach(l => audBody.innerHTML += `<tr><td>${l.timestamp}</td><td><strong>${l.user}</strong></td><td>${l.action}</td></tr>`);
         }
 
-        // --- SUBIDA INTEGRADA A SUPABASE STORAGE + ESCRITURA EN FIREBASE REALTIME ---
         async function registrarPerfume(e) { 
             e.preventDefault(); 
             const submitBtn = document.getElementById('btnGuardarPerfume');
@@ -802,50 +825,34 @@
             const fileInput = document.getElementById('perfumeImage');
             const archivoImagen = fileInput.files[0];
 
-            if (!archivoImagen) {
-                alert("Por favor selecciona una imagen para el perfume.");
-                return;
-            }
+            if (!archivoImagen) return alert("Por favor selecciona una imagen para el perfume.");
+            if (!supabase) return alert("Supabase no está configurado correctamente.");
 
             submitBtn.disabled = true;
             submitBtn.innerText = "Subiendo archivo...";
 
             try {
-                // 1. Crear nombre único y subir a Supabase Storage
                 const extension = archivoImagen.name.split('.').pop();
                 const nombreArchivo = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${extension}`;
 
-                const { data: uploadData, error: uploadError } = await supabase.storage
-                    .from('perfumes')
-                    .upload(nombreArchivo, archivoImagen);
-
+                const { data: uploadData, error: uploadError } = await supabase.storage.from('perfumes').upload(nombreArchivo, archivoImagen);
                 if (uploadError) throw uploadError;
 
-                // 2. Obtener URL pública desde tu bucket de Supabase
-                const { data: urlData } = supabase.storage
-                    .from('perfumes')
-                    .getPublicUrl(nombreArchivo);
-                
+                const { data: urlData } = supabase.storage.from('perfumes').getPublicUrl(nombreArchivo);
                 const urlFinalDeImagen = urlData.publicUrl;
 
-                // 3. Procesar y guardar en Firebase Realtime Database
                 let item = appState.perfumes.find(p => p.name.toLowerCase() === name.toLowerCase()); 
                 if(item) { 
                     item.stock += stockToAdd; 
                     item.cost = cost; 
                     item.price = price; 
-                    item.imageUrl = urlFinalDeImagen; // Reemplaza la imagen por la nueva
+                    item.imageUrl = urlFinalDeImagen;
                     registrarLog(`Actualizó '${name}' con nueva imagen.`); 
                 } else { 
                     appState.perfumes.push({ 
                         id: 'p_' + Date.now(), 
-                        name, 
-                        category, 
-                        stock: stockToAdd, 
-                        cost, 
-                        price, 
-                        soldQuantity: 0,
-                        imageUrl: urlFinalDeImagen // Se introduce al documento en Firebase
+                        name, category, stock: stockToAdd, cost, price, soldQuantity: 0,
+                        imageUrl: urlFinalDeImagen
                     }); 
                     registrarLog(`Ingresó '${name}' desde panel.`); 
                 } 
@@ -863,7 +870,7 @@
             }
         }
 
-        function registrarVenta(e) { e.preventDefault(); const date = document.getElementById('saleDate').value ? new Date(document.getElementById('saleDate').value + "T12:00:00").toLocaleDateString('es-VE') : new Date().toLocaleDateString('es-VE'); const client = document.getElementById('saleClient').value.trim(); const status = document.getElementById('saleStatus').value; const rows = document.querySelectorAll('#saleItemsContainer .sale-item-row'); if(rows.length === 0) return; let itemsToProcess = []; for(let row of rows) { let pId = row.querySelector('.perfume-select').value; let qty = parseInt(row.querySelector('.qty-input').value); let p = appState.perfumes.find(x => x.id === pId); if(p.stock < qty) return alert(`Sin stock: ${p.name}`); itemsToProcess.push({ perfumeId: p.id, perfumeName: p.name, quantity: qty, cost: p.cost, price: p.price }); } itemsToProcess.forEach(item => { let p = appState.perfumes.find(x => x.id === item.perfumeId); p.stock -= item.quantity; p.soldQuantity = (p.soldQuantity || 0) + item.quantity; }); appState.sales.unshift({ id: 's_' + Date.now(), date, client, items: itemsToProcess, status, user: currentUser }); registrarLog(`Venta a '${client}'.`); saveToFirebase(); document.getElementById('saleForm').reset(); document.getElementById('saleItemsContainer').innerHTML = ''; addSaleItemRow('saleItemsContainer'); }
+        function registrarVenta(e) { e.preventDefault(); const date = document.getElementById('saleDate').value ? new Date(document.getElementById('saleDate').value + "T12:00:00").toLocaleDateString('es-VE') : new Date().toLocaleDateString('es-VE'); const client = document.getElementById('saleClient').value.trim(); const status = document.getElementById('saleStatus').value; const rows = document.querySelectorAll('#saleItemsContainer .sale-item-row'); if(rows.length === 0) return; let itemsToProcess = []; for(let row of rows) { let pId = row.querySelector('.perfume-select').value; let qty = parseInt(row.querySelector('.qty-input').value); let p = appState.perfumes.find(x => x.id === pId); if(!p) return alert("Selecciona un perfume válido."); if(p.stock < qty) return alert(`Sin stock: ${p.name}`); itemsToProcess.push({ perfumeId: p.id, perfumeName: p.name, quantity: qty, cost: p.cost, price: p.price }); } itemsToProcess.forEach(item => { let p = appState.perfumes.find(x => x.id === item.perfumeId); p.stock -= item.quantity; p.soldQuantity = (p.soldQuantity || 0) + item.quantity; }); appState.sales.unshift({ id: 's_' + Date.now(), date, client, items: itemsToProcess, status, user: currentUser }); registrarLog(`Venta a '${client}'.`); saveToFirebase(); document.getElementById('saleForm').reset(); document.getElementById('saleItemsContainer').innerHTML = ''; addSaleItemRow('saleItemsContainer'); }
         function toggleStatusVenta(id) { const sale = appState.sales.find(s => s.id === id); if(sale) { sale.status = sale.status === 'Pagada' ? 'Pendiente' : 'Pagada'; saveToFirebase(); } }
         function eliminarVenta(id) { if(confirm("¿Eliminar pedido?")) { const sale = appState.sales.find(s => s.id === id); if(sale) { getSaleItems(sale).forEach(item => { let p = appState.perfumes.find(x => x.id === item.perfumeId); if(p) { p.stock += item.quantity; p.soldQuantity -= item.quantity; } }); appState.sales = appState.sales.filter(s => s.id !== id); registrarLog(`Eliminó venta de '${sale.client}'.`); saveToFirebase(); renderAllAdmin(); } } }
         function abrirModalEdicion(id) { const sale = appState.sales.find(s => s.id === id); if(!sale) return; document.getElementById('editSaleId').value = sale.id; let parts = sale.date.split('/'); document.getElementById('editSaleDate').value = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`; document.getElementById('editSaleClient').value = sale.client; document.getElementById('editSaleStatus').value = sale.status; const container = document.getElementById('editSaleItemsContainer'); container.innerHTML = ''; getSaleItems(sale).forEach(i => addSaleItemRow('editSaleItemsContainer', i.perfumeId, i.quantity)); document.getElementById('editSaleModal').classList.add('active'); }
