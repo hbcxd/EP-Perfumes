@@ -18,6 +18,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         /* === VARIABLES & ESTILOS GLOBALES === */
         :root {
@@ -300,6 +302,38 @@
         </div>
     </div>
 
+    <div id="editSaleModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Editar Venta</h3><button class="close-btn" style="position:static; font-size:24px;" onclick="cerrarModalEdicion()">&times;</button></div>
+            <form id="editSaleForm" onsubmit="guardarEdicionVenta(event)">
+                <input type="hidden" id="editSaleId">
+                <div class="form-group"><label>Fecha</label><input type="date" id="editSaleDate" required></div>
+                <div class="form-group"><label>Cliente</label><input type="text" id="editSaleClient" required></div>
+                <div id="editSaleItemsContainer"></div>
+                <button type="button" class="btn-add-row" onclick="addSaleItemRow('editSaleItemsContainer')">+ Añadir perfume</button>
+                <div class="form-group"><label>Estatus</label><select id="editSaleStatus"><option value="Pagada">Pagada</option><option value="Pendiente">Pendiente</option></select></div>
+                <button type="submit" class="btn-submit">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="imageUploadModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Subir Imagen del Perfume</h3>
+                <button class="close-btn" style="position:static; font-size:24px;" onclick="cerrarModalImagen()">&times;</button>
+            </div>
+            <form id="imageUploadForm" onsubmit="subirImagenSupabase(event)">
+                <input type="hidden" id="uploadPerfumeId">
+                <div class="form-group">
+                    <label>Selecciona una imagen (JPG, PNG)</label>
+                    <input type="file" id="imagenInput" accept="image/*" required>
+                </div>
+                <button type="submit" class="btn-submit" id="btnUploadImage">Subir y Guardar</button>
+            </form>
+        </div>
+    </div>
+
     <div id="adminPanel">
         <div class="admin-header-bar">
             <h2><button class="menu-btn" onclick="toggleMenu('adminSideMenu')"><span></span><span></span><span></span></button>Centro de Control</h2>
@@ -412,21 +446,6 @@
         </div>
     </div>
 
-    <div id="editSaleModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header"><h3>Editar Venta</h3><button class="close-btn" style="position:static; font-size:24px;" onclick="cerrarModalEdicion()">&times;</button></div>
-            <form id="editSaleForm" onsubmit="guardarEdicionVenta(event)">
-                <input type="hidden" id="editSaleId">
-                <div class="form-group"><label>Fecha</label><input type="date" id="editSaleDate" required></div>
-                <div class="form-group"><label>Cliente</label><input type="text" id="editSaleClient" required></div>
-                <div id="editSaleItemsContainer"></div>
-                <button type="button" class="btn-add-row" onclick="addSaleItemRow('editSaleItemsContainer')">+ Añadir perfume</button>
-                <div class="form-group"><label>Estatus</label><select id="editSaleStatus"><option value="Pagada">Pagada</option><option value="Pendiente">Pendiente</option></select></div>
-                <button type="submit" class="btn-submit">Guardar Cambios</button>
-            </form>
-        </div>
-    </div>
-
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyArphq3sSjhWWXr8w6I6f7UVGRMwaDp7i0",
@@ -440,34 +459,93 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const auth = firebase.auth();
-        auth.languageCode = 'es'; // Mensajes de error en español
+        auth.languageCode = 'es'; 
+
+        // --- CONFIGURACIÓN DE SUPABASE ---
+        // ¡IMPORTANTE! Reemplaza estos dos valores con los de tu proyecto de Supabase
+        const supabaseUrl = 'https://eyszpasslboiwszmuxad.supabase.co/rest/v1/'; 
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5c3pwYXNzbGJvaXdzem11eGFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxNTMwNDEsImV4cCI6MjA5NzcyOTA0MX0.TW6Bx2L0S9EN5jfAtFN8teuMx16lUU8QGAnUoQsQ_sw'; 
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         let appState = { perfumes: [], sales: [], withdrawals: [], logs: [] };
         let currentUser = null; 
         let firebaseUserAuth = null;
         
-        // --- SISTEMA DE AUTENTICACIÓN FIREBASE ---
         auth.onAuthStateChanged((user) => {
             firebaseUserAuth = user;
             if (user) {
-                // Formatear el nombre desde el correo (ej. victor@... -> Victor)
                 let emailName = user.email.split('@')[0];
                 currentUser = emailName.charAt(0).toUpperCase() + emailName.slice(1);
-                
-                // Si el modal de login está abierto, cerrarlo
                 if (document.getElementById('loginModal').classList.contains('active')) {
                     cerrarModalLogin();
                     abrirPanelAdmin();
                 }
             } else {
                 currentUser = null;
-                // Si el panel está abierto y se cierra sesión, devolver al catálogo
                 if (document.getElementById('adminPanel').style.display === 'block') {
                     document.getElementById('adminPanel').style.display = 'none';
                     document.getElementById('publicSite').style.display = 'block';
                 }
             }
         });
+
+        // --- FUNCIONES DE IMÁGENES CON SUPABASE ---
+        function abrirModalImagen(id) {
+            document.getElementById('uploadPerfumeId').value = id;
+            document.getElementById('imageUploadModal').classList.add('active');
+            document.getElementById('imagenInput').value = ""; 
+        }
+
+        function cerrarModalImagen() {
+            document.getElementById('imageUploadModal').classList.remove('active');
+        }
+
+        async function subirImagenSupabase(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnUploadImage');
+            const fileInput = document.getElementById('imagenInput');
+            const perfumeId = document.getElementById('uploadPerfumeId').value;
+            const file = fileInput.files[0];
+
+            if (!file) return;
+
+            btn.innerText = "Subiendo...";
+            btn.disabled = true;
+
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${perfumeId}.${fileExt}`; 
+
+            try {
+                const { data, error } = await supabaseClient.storage
+                    .from('Perfumes') // Tu bucket
+                    .upload(fileName, file, { upsert: true });
+
+                if (error) throw error;
+
+                const { data: publicUrlData } = supabaseClient.storage
+                    .from('Perfumes')
+                    .getPublicUrl(fileName);
+
+                let perfume = appState.perfumes.find(p => p.id === perfumeId);
+                if (perfume) {
+                    perfume.imageUrl = publicUrlData.publicUrl; 
+                    saveToFirebase();
+                    registrarLog(`Subió nueva imagen para '${perfume.name}'`);
+                    renderAllAdmin();
+                    renderAll();
+                }
+
+                cerrarModalImagen();
+                alert("¡Imagen actualizada exitosamente!");
+
+            } catch (err) {
+                console.error("Error subiendo imagen:", err);
+                alert("Hubo un error al subir la imagen.");
+            } finally {
+                btn.innerText = "Subir y Guardar";
+                btn.disabled = false;
+            }
+        }
 
         function solicitarAccAccessAdmin() {
             toggleMenu('sideMenu');
@@ -494,7 +572,6 @@
                     btn.innerText = 'Ingresar';
                     btn.disabled = false;
                     document.getElementById('loginForm').reset();
-                    // El onAuthStateChanged se encargará de abrir el panel
                 })
                 .catch((error) => {
                     btn.innerText = 'Ingresar';
@@ -521,7 +598,6 @@
             });
         }
 
-        // --- EL RESTO DE TUS FUNCIONES SE MANTIENEN EXACTAMENTE IGUAL ---
         function getSaleItems(sale) { if (sale.items && Array.isArray(sale.items)) return sale.items; return [{ perfumeId: sale.perfumeId || '', perfumeName: sale.perfumeName || 'Perfume', quantity: sale.quantity || 1, price: sale.price || 0, cost: sale.cost || 0 }]; }
 
         let carrito = [];
@@ -556,7 +632,11 @@
                 filtered.forEach(p => { 
                     let btnDisabled = p.stock <= 0 ? 'disabled' : '';
                     let btnText = p.stock <= 0 ? 'Agotado' : 'Añadir al Carrito';
-                    grid.innerHTML += `<div class="product-card"><img src="${imgFile}" onerror="this.src='https://via.placeholder.com/300'" class="product-img"><div class="product-title">${p.name}</div><span class="product-stock">Disp: ${p.stock}</span><button class="btn-cart-add" ${btnDisabled} onclick="agregarAlCarrito('${p.id}')">${btnText}</button></div>`; 
+                    
+                    // AQUI USAMOS LA IMAGEN DE SUPABASE SI EXISTE
+                    let currentImg = p.imageUrl ? p.imageUrl : imgFile;
+                    
+                    grid.innerHTML += `<div class="product-card"><img src="${currentImg}" onerror="this.src='https://via.placeholder.com/300'" class="product-img"><div class="product-title">${p.name}</div><span class="product-stock">Disp: ${p.stock}</span><button class="btn-cart-add" ${btnDisabled} onclick="agregarAlCarrito('${p.id}')">${btnText}</button></div>`; 
                 });
             });
         }
@@ -598,7 +678,7 @@
             });
 
             const invBody = document.getElementById('inventoryTableBody'); invBody.innerHTML = '';
-            [...appState.perfumes].sort((a,b) => a.name.localeCompare(b.name)).forEach(p => invBody.innerHTML += `<tr><td><strong>${p.name}</strong></td><td>${p.category}</td><td>${p.stock}</td><td>$${p.price.toFixed(2)}</td><td><button class="btn-action" style="color:#dc2626;" onclick="eliminarPerfume('${p.id}')">Borrar</button></td></tr>`);
+            [...appState.perfumes].sort((a,b) => a.name.localeCompare(b.name)).forEach(p => invBody.innerHTML += `<tr><td><strong>${p.name}</strong></td><td>${p.category}</td><td>${p.stock}</td><td>$${p.price.toFixed(2)}</td><td><button class="btn-action" style="background:#e0f2fe; color:#0284c7;" onclick="abrirModalImagen('${p.id}')">📷 Imagen</button><button class="btn-action" style="color:#dc2626;" onclick="eliminarPerfume('${p.id}')">Borrar</button></td></tr>`);
 
             const topBody = document.getElementById('topPerfumesBody'); topBody.innerHTML = '';
             [...appState.perfumes].sort((a,b) => (b.soldQuantity || 0) - (a.soldQuantity || 0)).slice(0, 10).forEach((p, idx) => { if((p.soldQuantity || 0) > 0) topBody.innerHTML += `<tr><td>#${idx+1}</td><td><strong>${p.name}</strong></td><td>${p.soldQuantity}</td></tr>`; });
@@ -629,4 +709,3 @@
     </script>
 </body>
 </html>
-
