@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ep-perfumes-v1.9';
+const CACHE_NAME = 'ep-perfumes-v2.0';
 const urlsToCache = [
   './',
   './index.html',
