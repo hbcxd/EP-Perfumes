@@ -23,17 +23,19 @@
     <style>
         /* === VARIABLES & ESTILOS GLOBALES === */
         :root {
-            --bg-body: #f8f9fa;
+            --bg-body: #f8fafc;
             --bg-card: #ffffff;
-            --text-main: #1a1a1a;
+            --text-main: #0f172a;
             --text-muted: #64748b;
             --accent: #0f172a;
-            --accent-hover: #334155;
+            --accent-hover: #1e293b;
             --border-color: #e2e8f0;
             --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             --shadow-md: 0 10px 30px -3px rgba(0, 0, 0, 0.08);
             --radius-md: 12px;
             --radius-lg: 20px;
+            /* Efecto tornasol sutil para elementos primarios */
+            --tornasol-gradient: linear-gradient(135deg, #0f172a 0%, #334155 50%, #0f172a 100%);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
@@ -71,9 +73,10 @@
         
         .admin-link-container { margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-color); }
         .admin-link { 
-            display: block; background: linear-gradient(135deg, var(--accent), #475569); color: #ffffff !important; 
+            display: block; background: var(--tornasol-gradient); background-size: 200% 200%; color: #ffffff !important; 
             padding: 15px; text-align: center; border-radius: var(--radius-md); font-weight: 600; letter-spacing: 0.5px;
             box-shadow: 0 4px 15px rgba(15, 23, 42, 0.2); transition: transform 0.3s, box-shadow 0.3s !important;
+            animation: TornasolShift 4s ease infinite;
         }
         .admin-link:hover { transform: translateY(-3px) !important; box-shadow: 0 8px 25px rgba(15, 23, 42, 0.3) !important; }
 
@@ -89,8 +92,19 @@
         .btn-whatsapp-share:hover { background-color: #1ebd58; }
 
         /* === BOTONES Y FORMULARIOS === */
-        .btn-submit { background-color: var(--accent); color: #ffffff; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: 500; font-size: 1rem; transition: background 0.3s, transform 0.2s; }
-        .btn-submit:hover { background-color: var(--accent-hover); transform: translateY(-2px); }
+        .btn-submit { 
+            background: var(--tornasol-gradient); background-size: 200% 200%; color: #ffffff; 
+            border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; width: 100%; 
+            font-weight: 500; font-size: 1rem; transition: transform 0.2s, box-shadow 0.3s;
+            animation: TornasolShift 4s ease infinite;
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+        
+        @keyframes TornasolShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
         
         .btn-action { background-color: #f1f5f9; color: #334155; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500; transition: 0.2s; margin-left: 5px; }
         .btn-action:hover { background-color: #e2e8f0; }
@@ -103,10 +117,12 @@
         /* === BANNER === */
         .banner { background: #ffffff; padding: 60px 5%; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 40px; border-bottom: 1px solid var(--border-color); }
         .banner-content { flex: 1; min-width: 300px; max-width: 600px; animation: slideUp 0.8s ease-out; }
-        .banner-content h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 15px; line-height: 1.2; letter-spacing: -1px; background: linear-gradient(90deg, #1a1a1a, #64748b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .banner-content h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 15px; line-height: 1.2; letter-spacing: -1px; background: linear-gradient(90deg, #0f172a, #64748b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .banner-content p { color: var(--text-muted); margin-bottom: 25px; font-size: 1.05rem; line-height: 1.6; }
         .banner-image { flex: 1; min-width: 300px; max-width: 500px; display: flex; justify-content: center; animation: fadeIn 1s ease-out; }
-        .banner-image img { width: 100%; border-radius: var(--radius-lg); object-fit: cover; box-shadow: var(--shadow-md); transform: rotate(-2deg); transition: transform 0.5s; }
+        /* Imagen del banner enderezada y con efecto hover */
+        .banner-image img { width: 100%; border-radius: var(--radius-lg); object-fit: cover; box-shadow: var(--shadow-md); transform: none; transition: transform 0.5s, box-shadow 0.5s; }
+        .banner-image img:hover { transform: translateY(-5px); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15); }
         
         .price-tag { font-size: 1.4rem; font-weight: 600; color: var(--text-main); }
         .promo-tag { display: inline-block; background-color: #ecfdf5; color: #059669; padding: 8px 20px; border-radius: 30px; font-size: 0.9rem; margin-top: 15px; font-weight: 600; border: 1px solid #a7f3d0; }
@@ -114,28 +130,34 @@
         /* === CATÁLOGO PÚBLICO === */
         .catalogo { padding: 40px 5%; max-width: 1300px; margin: 0 auto; }
         
-        .search-container { text-align: center; margin-bottom: 40px; }
-        .search-container input { width: 100%; max-width: 500px; padding: 15px 25px; border-radius: 30px; border: 2px solid var(--border-color); font-size: 1.05rem; box-shadow: var(--shadow-sm); background: #ffffff; transition: 0.3s; }
+        .search-container { text-align: center; margin-bottom: 40px; position: relative; }
+        .search-container input { 
+            width: 100%; max-width: 500px; padding: 15px 25px 15px 50px; 
+            border-radius: 30px; border: 2px solid var(--border-color); 
+            font-size: 1.05rem; box-shadow: var(--shadow-sm); 
+            background: #ffffff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="%2364748b" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>') no-repeat 20px center; 
+            transition: all 0.3s ease; 
+        }
         .search-container input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.1); }
 
-        .category-section { margin-bottom: 40px; background: #ffffff; padding: 20px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); transition: all 0.3s ease; }
-        .category-title { font-size: 1.3rem; font-weight: 700; color: var(--accent); margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; }
+        .category-section { margin-bottom: 40px; background: #ffffff; padding: 25px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); transition: all 0.4s ease; }
+        .category-title { font-size: 1.3rem; font-weight: 700; color: var(--accent); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; }
         .category-title:hover { color: var(--accent-hover); }
         .toggle-icon { font-size: 1.1rem; transition: transform 0.3s ease; color: var(--text-muted); }
         .category-title.collapsed .toggle-icon { transform: rotate(-90deg); }
 
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; transition: max-height 0.4s ease, opacity 0.3s ease; opacity: 1; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; transition: max-height 0.4s ease, opacity 0.3s ease; opacity: 1; }
         .product-grid.collapsed { display: none; opacity: 0; }
         
-        .product-card { background: var(--bg-card); border-radius: var(--radius-md); padding: 15px; transition: transform 0.3s ease, box-shadow 0.3s ease; border: 1px solid #e2e8f0; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; }
-        .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: #cbd5e1; }
-        .product-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; margin-bottom: 10px; background: #f8fafc; }
-        .product-title { font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; color: var(--text-main); line-height: 1.2; }
-        .product-stock { font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 10px; }
+        .product-card { background: var(--bg-body); border-radius: var(--radius-md); padding: 15px; transition: transform 0.3s ease, box-shadow 0.3s ease; border: 1px solid #e2e8f0; text-align: center; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: #cbd5e1; background: #ffffff; }
+        .product-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; margin-bottom: 12px; background: #f1f5f9; }
+        .product-title { font-weight: 600; margin-bottom: 8px; font-size: 0.95rem; color: var(--text-main); line-height: 1.3; }
+        .product-stock { font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 15px; font-weight: 500; }
         
-        .btn-cart-add { background: var(--accent); color: white; border: none; padding: 8px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.3s; width: 100%; }
-        .btn-cart-add:hover { background: var(--accent-hover); }
-        .btn-cart-add:disabled { background: #cbd5e1; cursor: not-allowed; }
+        .btn-cart-add { background: var(--bg-card); color: var(--accent); border: 2px solid var(--accent); padding: 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s; width: 100%; }
+        .btn-cart-add:hover { background: var(--accent); color: white; }
+        .btn-cart-add:disabled { background: #e2e8f0; color: #94a3b8; border-color: #e2e8f0; cursor: not-allowed; }
 
         /* === MODALES === */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 1000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; padding: 20px; }
@@ -211,10 +233,10 @@
         <nav class="side-menu" id="sideMenu">
             <button class="close-btn" onclick="toggleMenu('sideMenu')">&times;</button>
             <h3 style="margin-bottom: 25px; font-weight: 600; color: var(--accent);">Categorías</h3>
-            <a onclick="navigateToCategory('cat-caballeros')">Caballeros</a>
-            <a onclick="navigateToCategory('cat-damas')">Damas</a>
-            <a onclick="navigateToCategory('cat-unisex')">Unisex</a>
-            <a onclick="navigateToCategory('cat-ninos')">Niños</a>
+            <a onclick="navigateToCategory('cat-Caballeros')">Caballeros</a>
+            <a onclick="navigateToCategory('cat-Damas')">Damas</a>
+            <a onclick="navigateToCategory('cat-Unisex')">Unisex</a>
+            <a onclick="navigateToCategory('cat-Niños')">Niños</a>
             
             <div class="admin-link-container">
                 <a class="admin-link" onclick="solicitarAccAccessAdmin()">⚙️ Acceso Admin</a>
@@ -235,28 +257,30 @@
 
         <section class="catalogo">
             <div class="search-container">
-                <input type="text" id="searchCatalog" placeholder="🔍 Buscar perfume por nombre..." onkeyup="renderAll()">
+                <input type="text" id="searchCatalog" placeholder="Buscar perfume por nombre..." oninput="renderAll()">
             </div>
 
-            <div class="category-section" id="cat-caballeros">
+            <!-- IDs actualizados para coincidir correctamente con JavaScript -->
+            <div class="category-section" id="cat-Caballeros">
                 <h2 class="category-title" onclick="toggleCategorySection('grid-Caballeros', this)">Caballeros <span class="toggle-icon">▼</span></h2>
                 <div class="product-grid" id="grid-Caballeros"></div>
             </div>
-            <div class="category-section" id="cat-damas">
+            <div class="category-section" id="cat-Damas">
                 <h2 class="category-title" onclick="toggleCategorySection('grid-Damas', this)">Damas <span class="toggle-icon">▼</span></h2>
                 <div class="product-grid" id="grid-Damas"></div>
             </div>
-            <div class="category-section" id="cat-unisex">
+            <div class="category-section" id="cat-Unisex">
                 <h2 class="category-title" onclick="toggleCategorySection('grid-Unisex', this)">Unisex <span class="toggle-icon">▼</span></h2>
                 <div class="product-grid" id="grid-Unisex"></div>
             </div>
-            <div class="category-section" id="cat-ninos">
+            <div class="category-section" id="cat-Niños">
                 <h2 class="category-title" onclick="toggleCategorySection('grid-Niños', this)">Niños <span class="toggle-icon">▼</span></h2>
                 <div class="product-grid" id="grid-Niños"></div>
             </div>
         </section>
     </div>
 
+    <!-- Modales permanecen intactos -->
     <div id="cartModal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -334,6 +358,7 @@
         </div>
     </div>
 
+    <!-- Panel de Control intacto -->
     <div id="adminPanel">
         <div class="admin-header-bar">
             <h2><button class="menu-btn" onclick="toggleMenu('adminSideMenu')"><span></span><span></span><span></span></button>Centro de Control</h2>
@@ -461,8 +486,6 @@
         const auth = firebase.auth();
         auth.languageCode = 'es'; 
 
-        // --- CONFIGURACIÓN DE SUPABASE ---
-        // URL Corregida (sin el /rest/v1)
         const supabaseUrl = 'https://eyszpasslboiwszmuxad.supabase.co'; 
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5c3pwYXNzbGJvaXdzem11eGFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxNTMwNDEsImV4cCI6MjA5NzcyOTA0MX0.TW6Bx2L0S9EN5jfAtFN8teuMx16lUU8QGAnUoQsQ_sw'; 
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
@@ -495,10 +518,7 @@
             document.getElementById('imageUploadModal').classList.add('active');
             document.getElementById('imagenInput').value = ""; 
         }
-
-        function cerrarModalImagen() {
-            document.getElementById('imageUploadModal').classList.remove('active');
-        }
+        function cerrarModalImagen() { document.getElementById('imageUploadModal').classList.remove('active'); }
 
         async function subirImagenSupabase(e) {
             e.preventDefault();
@@ -516,29 +536,20 @@
             const fileName = `${perfumeId}.${fileExt}`; 
 
             try {
-                const { data, error } = await supabaseClient.storage
-                    .from('Perfumes')
-                    .upload(fileName, file, { upsert: true });
-
+                const { data, error } = await supabaseClient.storage.from('Perfumes').upload(fileName, file, { upsert: true });
                 if (error) throw error;
-
-                const { data: publicUrlData } = supabaseClient.storage
-                    .from('Perfumes')
-                    .getPublicUrl(fileName);
+                const { data: publicUrlData } = supabaseClient.storage.from('Perfumes').getPublicUrl(fileName);
 
                 let perfume = appState.perfumes.find(p => p.id === perfumeId);
                 if (perfume) {
-                    // Cache Busting: agregamos un timestamp para que se vea el cambio inmediatamente
                     perfume.imageUrl = publicUrlData.publicUrl + '?t=' + new Date().getTime(); 
                     saveToFirebase();
                     registrarLog(`Subió nueva imagen para '${perfume.name}'`);
                     renderAllAdmin();
                     renderAll();
                 }
-
                 cerrarModalImagen();
                 alert("¡Imagen actualizada exitosamente!");
-
             } catch (err) {
                 console.error("Error subiendo imagen:", err);
                 alert("Hubo un error al subir la imagen.");
@@ -548,13 +559,10 @@
             }
         }
 
+        // Navegación de Catálogo y Menú
         function solicitarAccAccessAdmin() {
             toggleMenu('sideMenu');
-            if (firebaseUserAuth) {
-                abrirPanelAdmin();
-            } else {
-                document.getElementById('loginModal').classList.add('active');
-            }
+            if (firebaseUserAuth) { abrirPanelAdmin(); } else { document.getElementById('loginModal').classList.add('active'); }
         }
 
         function cerrarModalLogin() { document.getElementById('loginModal').classList.remove('active'); }
@@ -569,18 +577,8 @@
             btn.disabled = true;
 
             auth.signInWithEmailAndPassword(email, pass)
-                .then(() => {
-                    btn.innerText = 'Ingresar';
-                    btn.disabled = false;
-                    document.getElementById('loginForm').reset();
-                })
-                .catch((error) => {
-                    btn.innerText = 'Ingresar';
-                    btn.disabled = false;
-                    let msj = "Error de acceso.";
-                    if(error.code === 'auth/invalid-credential') msj = "Correo o contraseña incorrectos.";
-                    alert(msj);
-                });
+                .then(() => { btn.innerText = 'Ingresar'; btn.disabled = false; document.getElementById('loginForm').reset(); })
+                .catch((error) => { btn.innerText = 'Ingresar'; btn.disabled = false; let msj = "Error de acceso."; if(error.code === 'auth/invalid-credential') msj = "Correo o contraseña incorrectos."; alert(msj); });
         }
 
         function abrirPanelAdmin() {
@@ -593,12 +591,7 @@
             renderAllAdmin();
         }
 
-        function cerrarSesionAdmin() {
-            auth.signOut().then(() => {
-                registrarLog("Cierre de sesión.");
-            });
-        }
-
+        function cerrarSesionAdmin() { auth.signOut().then(() => { registrarLog("Cierre de sesión."); }); }
         function getSaleItems(sale) { if (sale.items && Array.isArray(sale.items)) return sale.items; return [{ perfumeId: sale.perfumeId || '', perfumeName: sale.perfumeName || 'Perfume', quantity: sale.quantity || 1, price: sale.price || 0, cost: sale.cost || 0 }]; }
 
         let carrito = [];
@@ -615,32 +608,110 @@
         window.onload = function() { db.ref('tienda').on('value', (snapshot) => { const data = snapshot.val(); if(data) { appState.perfumes = data.perfumes ? Object.values(data.perfumes) : []; appState.sales = data.sales ? Object.values(data.sales) : []; appState.withdrawals = data.withdrawals ? Object.values(data.withdrawals) : []; appState.logs = data.logs ? Object.values(data.logs) : []; } renderAll(); if(document.getElementById('adminPanel').style.display === 'block') renderAllAdmin(); }); document.getElementById('saleDate').valueAsDate = new Date(); document.getElementById('urlAdminCatalogo').value = window.location.href; };
         function saveToFirebase() { db.ref('tienda').set(appState); }
         function toggleMenu(menuId) { document.getElementById(menuId).classList.toggle('active'); }
-        function toggleCategorySection(gridId, headerElement) { document.getElementById(gridId).classList.toggle('collapsed'); headerElement.classList.toggle('collapsed'); }
-        function navigateToCategory(id) { toggleMenu('sideMenu'); const el = document.getElementById(id); if(el) { const grid = document.getElementById(id.replace('cat-', 'grid-')); if (grid.classList.contains('collapsed')) { grid.classList.remove('collapsed'); el.querySelector('.category-title').classList.remove('collapsed'); } el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }
+        
+        function toggleCategorySection(gridId, headerElement) { 
+            document.getElementById(gridId).classList.toggle('collapsed'); 
+            headerElement.classList.toggle('collapsed'); 
+        }
+
+        // Navegación fluida del menú a las secciones
+        function navigateToCategory(id) { 
+            toggleMenu('sideMenu'); 
+            const sectionEl = document.getElementById(id); 
+            if(sectionEl) { 
+                const gridId = id.replace('cat-', 'grid-'); 
+                const grid = document.getElementById(gridId); 
+                const title = sectionEl.querySelector('.category-title');
+                
+                // Si está contraído, lo expandimos automáticamente al navegar
+                if (grid && grid.classList.contains('collapsed')) { 
+                    grid.classList.remove('collapsed'); 
+                    if(title) title.classList.remove('collapsed'); 
+                } 
+                
+                // Scroll con compensación para el header fijo
+                const headerOffset = 85; 
+                const elementPosition = sectionEl.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+            } 
+        }
+
         function switchTab(tabId, btnElement) { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('#adminSideMenu a').forEach(a => a.classList.remove('active-link')); document.getElementById(tabId).classList.add('active'); btnElement.classList.add('active-link'); document.getElementById('adminSideMenu').classList.remove('active'); }
         function registrarLog(accion) { if(!currentUser) return; appState.logs.unshift({ timestamp: new Date().toLocaleString('es-VE'), user: currentUser, action: accion }); if(appState.logs.length > 100) appState.logs.pop(); }
 
+        // Buscador y renderizado optimizado
         function renderAll() {
-            const searchTerm = document.getElementById('searchCatalog') ? document.getElementById('searchCatalog').value.toLowerCase().trim() : '';
+            const searchInput = document.getElementById('searchCatalog');
+            const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
             let catPerfumes = [...appState.perfumes].sort((a,b) => a.name.localeCompare(b.name));
+            let totalMatches = 0;
+
             ['Caballeros', 'Damas', 'Unisex', 'Niños'].forEach(cat => {
-                const grid = document.getElementById(`grid-${cat}`);
-                if(!grid) return;
+                const gridId = `grid-${cat}`;
+                const catId = `cat-${cat}`;
+                const grid = document.getElementById(gridId);
+                const section = document.getElementById(catId);
+                
+                if(!grid || !section) return;
+                
                 grid.innerHTML = '';
                 const filtered = catPerfumes.filter(p => p.category === cat && p.name.toLowerCase().includes(searchTerm));
-                if(filtered.length === 0) { grid.innerHTML = `<p style="grid-column: 1 / -1;">No hay resultados.</p>`; return; }
-                let imgFile = cat === 'Caballeros' ? 'caballeros.jpg' : cat === 'Damas' ? 'damas.jpg' : cat === 'Unisex' ? 'unisex.jpg' : 'ninos.jpg';
-                filtered.forEach(p => { 
-                    let btnDisabled = p.stock <= 0 ? 'disabled' : '';
-                    let btnText = p.stock <= 0 ? 'Agotado' : 'Añadir al Carrito';
+                
+                if(filtered.length === 0) {
+                    if (searchTerm !== '') {
+                        section.style.display = 'none'; // Oculta categoría limpia si no hay coincidencia
+                    } else {
+                        section.style.display = 'block'; 
+                        grid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 20px;">No hay perfumes registrados en esta categoría por el momento.</p>`;
+                    }
+                } else {
+                    section.style.display = 'block';
+                    totalMatches += filtered.length;
                     
-                    let currentImg = p.imageUrl ? p.imageUrl : imgFile;
+                    // Al buscar, forzamos que se desplieguen los resultados
+                    if (searchTerm !== '') {
+                        grid.classList.remove('collapsed');
+                        section.querySelector('.category-title').classList.remove('collapsed');
+                    }
+
+                    let imgFile = cat === 'Caballeros' ? 'caballeros.jpg' : cat === 'Damas' ? 'damas.jpg' : cat === 'Unisex' ? 'unisex.jpg' : 'ninos.jpg';
                     
-                    grid.innerHTML += `<div class="product-card"><img src="${currentImg}" onerror="this.src='https://via.placeholder.com/300'" class="product-img"><div class="product-title">${p.name}</div><span class="product-stock">Disp: ${p.stock}</span><button class="btn-cart-add" ${btnDisabled} onclick="agregarAlCarrito('${p.id}')">${btnText}</button></div>`; 
-                });
+                    filtered.forEach(p => { 
+                        let btnDisabled = p.stock <= 0 ? 'disabled' : '';
+                        let btnText = p.stock <= 0 ? 'Agotado' : 'Añadir al Carrito';
+                        let currentImg = p.imageUrl ? p.imageUrl : imgFile;
+                        
+                        grid.innerHTML += `
+                        <div class="product-card">
+                            <img src="${currentImg}" onerror="this.src='https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=300&q=80'" class="product-img" alt="${p.name}">
+                            <div class="product-title">${p.name}</div>
+                            <span class="product-stock">Disp: ${p.stock}</span>
+                            <button class="btn-cart-add" ${btnDisabled} onclick="agregarAlCarrito('${p.id}')">${btnText}</button>
+                        </div>`; 
+                    });
+                }
             });
+
+            // Mensaje global de "no encontrado"
+            let noResultsMsg = document.getElementById('global-no-results');
+            if (searchTerm !== '' && totalMatches === 0) {
+                if (!noResultsMsg) {
+                    noResultsMsg = document.createElement('div');
+                    noResultsMsg.id = 'global-no-results';
+                    noResultsMsg.style.textAlign = 'center';
+                    noResultsMsg.style.padding = '40px 20px';
+                    noResultsMsg.innerHTML = `<h3 style="color: var(--text-muted); font-weight: 500;">No se encontró ningún perfume que coincida con "${searchTerm}"</h3>`;
+                    document.querySelector('.catalogo').appendChild(noResultsMsg);
+                } else {
+                    noResultsMsg.style.display = 'block';
+                }
+            } else if (noResultsMsg) {
+                noResultsMsg.style.display = 'none';
+            }
         }
 
+        // Panel de Administración Completo (Funcionalidad Preservada)
         function renderAllAdmin() {
             let tVentasPagadas = 0, tCostosPagados = 0, tPendientes = 0;
             let ventasPendientesData = [];
